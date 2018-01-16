@@ -1,0 +1,54 @@
+{% extends "admin.html.twig" %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Administration des utilisateurs</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>Liste des utilisateurs</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Adresse e-mail</th>
+                                <th>Rôle</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for u in users %}
+                                <tr>
+                                    <td>{{ u.lastName }}</td>
+                                    <td>{{ u.firstName }}</td>
+                                    <td>{{ u.email }}</td>
+                                    <td>
+                                        {% if "ROLE_ADMIN" in u.roles %}
+                                            Administrateur
+                                        {% elseif "ROLE_ETUDIANT" in u.roles %}
+                                            Étudiant
+                                        {% elseif "ROLE_ENSEIGNANT" in u.roles %}
+                                            Enseignant
+                                        {% else %}
+                                            Non défini
+                                        {% endif %}
+                                    </td>
+                                    <td>Modifier / Supprimer</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

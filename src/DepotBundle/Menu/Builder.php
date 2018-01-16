@@ -19,6 +19,14 @@ class Builder implements ContainerAwareInterface
         $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
         return $menu;
     }
+
+    public function adminMainMenu(FactoryInterface $factory, array $options)
+    {
+        $menu = $factory->createItem('root');
+        $menu->addChild('Accueil', array('route' => 'index_admin'));
+        $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'));
+        return $menu;
+    }
 }
 
 ?>
