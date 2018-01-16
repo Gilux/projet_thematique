@@ -8,4 +8,13 @@ UserBundle\Entity\User:
             id: true
             generator:
                 strategy: AUTO
+
+    fields:
+        first_name:
+            type: string
+            length: 60
+
+        last_name:
+            type: string
+            length: 60
     lifecycleCallbacks: {  }
