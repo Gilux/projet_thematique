@@ -1,0 +1,156 @@
+$primary: #934a30;
+
+body {
+  background-color: #EEEEEE;
+}
+
+.login-form-main {
+  height:100vh;
+  width:100%;
+  margin:0;
+  padding:0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  form {
+    width:40%;
+    background-color: white;
+    border:0;
+    border-top: 5px solid $primary;
+    padding: 10px 20px;
+    box-shadow: 0px 9px 14px 0px #AAA;
+  }
+}
+
+form {
+  .form-group {
+    width: 100%;
+    display: block;
+    margin-bottom:10px;
+
+    input[type=text], input[type=password], input[type=email] {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid #DDDDDD;
+      padding: 5px 20px;
+      font-size: 2rem;
+    }
+    label {
+      font-size: 1.5rem;
+      color: #444444;
+    }
+  }
+
+  input[type=submit] {
+    @extend .btn;
+  }
+}
+
+.btn {
+  border:0;
+  background-color: $primary;
+  color: white;
+
+  padding:5px 10px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+main {
+  width:100%;
+  min-height:100vh;
+  display:flex;
+}
+
+section {
+  flex:1;
+}
+
+nav {
+  width: 200px;
+  background-color: #333333;
+  color: #FFFFFF;
+}
+
+nav {
+  >ul {
+    padding:0;
+  }
+
+  li {
+    &:not(.last) {
+      border-bottom:1px solid #777777;
+    }
+
+    &.current {
+      background-color: $primary;
+    }
+
+    padding:10px 0px 10px 15px;
+
+    a {
+      color:white;
+      font-size:1.6rem;
+
+      &:hover {
+        color:white;
+        text-decoration: none;
+      }
+
+      &:focus {
+        color: white;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+section {
+  padding: 10px 10px;
+}
+
+
+.item {
+  min-height:100px;
+  margin-bottom:10px;
+
+  background-color: white;
+  border:0;
+  border-top: 3px solid $primary;
+  padding: 10px 20px;
+  box-shadow: 0px 9px 14px 0px #AAA;
+}
+
+ul {
+  padding-left:0;
+}
+
+.groupesProjet {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  .groupe {
+
+    min-width:200px;
+
+    ul {
+      list-style-type: none;
+    }
+  }
+}
+
+button {
+  background-color:$primary;
+  border:none;
+  color:white;
+}
+
+/* tmp */
+#dropzone {
+  border:2px dashed #b3b4ff;
+}

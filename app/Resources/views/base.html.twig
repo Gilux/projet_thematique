@@ -2,12 +2,28 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Test{% endblock %}</title>
+        <link rel="stylesheet" href="{{ asset('css/utils.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/main.css') }}">
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <main>
+            {% block body %}
+                <nav>
+                    <h1 class="text-center">MiageDepot</h1>
+                    {% block menu %}
+                        {{ knp_menu_render('DepotBundle:Builder:mainMenu') }}
+                    {% endblock %}
+                </nav>
+                <section>
+                    {% block main %} {% endblock %}
+                </section>
+            {% endblock %}
+        </main>
+
+
         {% block javascripts %}{% endblock %}
     </body>
 </html>

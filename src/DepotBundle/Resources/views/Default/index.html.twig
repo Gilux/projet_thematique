@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Bienvenue sur l'application de dépôts de devoirs du département MIAGE !</h1>
+                <div class="alert">Attention ! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur deserunt dolore fugiat id molestias non sunt vitae. Aliquid, exercitationem harum nulla optio pariatur reiciendis? Dolorem, mollitia, sit. Consequatur exercitationem, fuga.</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <a href="{{ path("show_devoir") }}">Voir un devoir</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

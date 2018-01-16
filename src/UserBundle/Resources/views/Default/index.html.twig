@@ -1,0 +1,30 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Bienvenue sur l'application de dépôt de devoirs en ligne du MIAGE Amiens !</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="login login-etud">
+                    <p>Je suis étudiant</p>
+                    <a href="{{ path("fos_user_security_login") }}">Me connecter à l'application</a>
+                </div>
+
+            </div>
+
+            <div class="col-sm-6">
+                <div class="login login-etud">
+                    <p>Je suis enseignant</p>
+                    <a href="{{ path("fos_user_security_login") }}">Me connecter à l'application</a> ou <a
+                            href="{{ path("fos_user_registration_register") }}">Demander la création de mon compte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Créer un nouveau devoir</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>Informations générales du devoir</h3>
+                        Nom, date de rendu, individuel/groupes...
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-4 col-left">
+                <div class="item">
+                    <h3>Groupes d'étudiants concernés</h3>
+                    <p>
+                        Lister les groupes Jaya, laisser le choix.
+                        <br>Si plusieurs groupes, mutualisé ou pas ? (si oui, les groupes de projet peuvent être mixés entre les 2 groupes, sinon création de x devoirs distincts mais liés entre eux : si modif, propagation du changement aux autres)
+                    </p>
+
+                </div>
+                <div class="item">
+                    <h3>Rendu</h3>
+                    <p>30 Janvier 2018, 17:00</p>
+                </div>
+                <div class="item">
+                    <h3>Description</h3>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at atque consequatur,
+                        debitis deserunt dolor doloremque, ipsum obcaecati officia quis repellat veritatis vitae. Eaque
+                        illum nesciunt pariatur quaerat unde.
+                    </p>
+
+                </div>
+            </div>
+
+            <div class="col-xs-8 col-right">
+                <div class="item">
+                    <h3>Consignes et documents</h3>
+                    <p id="dropzone">
+                        Déposer votre fichier ici
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

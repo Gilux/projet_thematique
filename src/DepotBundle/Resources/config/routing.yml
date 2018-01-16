@@ -1,0 +1,11 @@
+depot_homepage:
+    path:     /
+    defaults: { _controller: DepotBundle:Default:index }
+
+show_devoir:
+    path:     /devoir/view
+    defaults: { _controller: DepotBundle:Devoir:index }
+
+new_devoir:
+    path:     /devoir/new
+    defaults: { _controller: DepotBundle:Devoir:new }
