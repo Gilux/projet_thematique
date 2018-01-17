@@ -88,4 +88,43 @@ class User extends BaseUser
     {
         return $this->last_name;
     }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $commentaires;
+
+
+    /**
+     * Add commentaire
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentaire
+     *
+     * @return User
+     */
+    public function addCommentaire(\DepotBundle\Entity\Commentaire $commentaire)
+    {
+        $this->commentaires[] = $commentaire;
+
+        return $this;
+    }
+
+    /**
+     * Remove commentaire
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentaire
+     */
+    public function removeCommentaire(\DepotBundle\Entity\Commentaire $commentaire)
+    {
+        $this->commentaires->removeElement($commentaire);
+    }
+
+    /**
+     * Get commentaires
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCommentaires()
+    {
+        return $this->commentaires;
+    }
 }

@@ -23,7 +23,7 @@ DepotBundle\Entity\Commentaire:
 
     manyToOne:
         user:
-            targetEntity: User
-            inversed_by: commentaires
+            targetEntity: UserBundle\Entity\User
+            inversedBy: commentaires
 
     lifecycleCallbacks: {  }

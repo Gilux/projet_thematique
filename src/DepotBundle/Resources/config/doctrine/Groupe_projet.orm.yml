@@ -1,13 +1,14 @@
 DepotBundle\Entity\Groupe_projet:
     type: entity
     table: null
-    repositoryClass: DepotBundle\Repository\GroupeRepository
+    repositoryClass: DepotBundle\Repository\Groupe_projetRepository
     id:
         id:
             type: integer
             id: true
             generator:
                 strategy: AUTO
+
     manyToOne:
         devoir:
             targetEntity: Devoir
