@@ -49,10 +49,12 @@ form {
 
 .btn {
   border:0;
+  padding:5px 10px;
+}
+
+.btn-primary {
   background-color: $primary;
   color: white;
-
-  padding:5px 10px;
 }
 
 .text-center {
@@ -148,6 +150,48 @@ button {
   background-color:$primary;
   border:none;
   color:white;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding:2px 10px;
+  border-radius: 10px;
+  color: white;
+
+  &.success {
+    background-color: #6b9311;
+  }
+
+  &.danger {
+    background-color: #932c28;
+  }
+}
+
+
+
+/* Admin */
+table {
+  width:100%;
+
+
+  tr {
+    border:1px solid black;
+  }
+
+  thead tr {
+    border:none;
+  }
+
+  th {
+    background-color: $primary;
+    color: white;
+  }
+
+  td {
+    text-align: center;
+    padding:5px 10px;
+  }
 }
 
 /* tmp */

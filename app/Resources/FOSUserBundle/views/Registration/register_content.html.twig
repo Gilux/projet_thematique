@@ -4,6 +4,10 @@
 {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
 
 <h2>Demander la création d'un compte Enseignant</h2>
+<p>
+    <em>Votre demande sera transmise à l'administrateur, qui pourra valider votre compte. Si votre compte est validé, vous recevrez alors
+    un e-mail vous indiquant vos identifiants temporaires.</em>
+</p>
 <div class="form-group">
     {{ form_label(form.email) }}
     {{ form_errors(form.email) }}
@@ -11,9 +15,15 @@
 </div>
 
 <div class="form-group">
-    {{ form_label(form.username) }}
-    {{ form_errors(form.username) }}
-    {{ form_widget(form.username) }}
+    {{ form_label(form.first_name) }}
+    {{ form_errors(form.first_name) }}
+    {{ form_widget(form.first_name) }}
+</div>
+
+<div class="form-group">
+    {{ form_label(form.last_name) }}
+    {{ form_errors(form.last_name) }}
+    {{ form_widget(form.last_name) }}
 </div>
 
 <div class="form-group">

@@ -24,7 +24,7 @@ class Builder implements ContainerAwareInterface
     {
         $menu = $factory->createItem('root');
         $menu->addChild('Accueil', array('route' => 'index_admin'));
-        $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'));
+        $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'))->setExtra('routes', ['users_admin', 'users_admin_new', 'users_admin_edit']);;
         return $menu;
     }
 }

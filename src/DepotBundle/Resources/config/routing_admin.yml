@@ -5,3 +5,11 @@ index_admin:
 users_admin:
     path:     /users
     defaults: { _controller: DepotBundle:Admin\UserAdmin:index }
+
+users_admin_edit:
+    path:      /users/edit/{id}
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:edit }
+
+users_admin_new:
+    path:      /users/new
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:new }
