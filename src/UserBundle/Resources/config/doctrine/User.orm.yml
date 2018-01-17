@@ -13,8 +13,16 @@ UserBundle\Entity\User:
         first_name:
             type: string
             length: 60
+            nullable: true
 
         last_name:
             type: string
             length: 60
+            nullable: true
+
+    oneToMany:
+        commentaires:
+            targetEntity: Commentaire
+            inversed_by: user
+
     lifecycleCallbacks: {  }

@@ -1,0 +1,21 @@
+DepotBundle\Entity\UE:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\UERepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+    fields:
+        code:
+            type: string
+            length: 60
+
+        nom:
+            type: string
+            length: 60
+
+    lifecycleCallbacks: {  }

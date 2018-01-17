@@ -1,0 +1,39 @@
+DepotBundle\Entity\Devoir:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\DevoirRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+    fields:
+        intitule:
+            type: string
+            length: 60
+
+        titre:
+            type: string
+            length: 60
+
+        fichier:
+            type: string
+            length: 60
+
+        extensions_authorisee:
+            type: string
+            length: 60
+
+    manyToMany:
+        groupes:
+            targetEntity: Groupe
+            inversed_by: devoirs
+
+    oneToMany:
+        groupes_projets:
+            targetEntity: Groupe_projet
+            inversed_by: devoir
+
+    lifecycleCallbacks: {  }
