@@ -26,14 +26,19 @@ DepotBundle\Entity\Devoir:
             type: string
             length: 60
 
-    manyToMany:
-        groupes:
-            targetEntity: Groupe
-            inversed_by: devoirs
 
     oneToMany:
         groupes_projets:
             targetEntity: Groupe_projet
             mappedBy: devoir
+
+        groupe_devoir:
+            targetEntity: Groupe_Devoir
+            mappedBy: groupe
+
+    manyToOne:
+         UE:
+             targetEntity: UE
+             inversedBy: devoirs
 
     lifecycleCallbacks: {  }

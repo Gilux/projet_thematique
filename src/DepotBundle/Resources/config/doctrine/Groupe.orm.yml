@@ -8,15 +8,21 @@ DepotBundle\Entity\Groupe:
             id: true
             generator:
                 strategy: AUTO
-
     fields:
         name:
             type: string
             length: 60
-
+    oneToMany:
+        groupe_devoir:
+            targetEntity: Groupe_Devoir
+            mappedBy: groupe
+    manyToOne:
+        UE:
+            targetEntity: UE
+            mappedBy: groupes
     manyToMany:
-        devoirs:
-            targetEntity: Devoir
-            inversed_by: groupes
+        users:
+            targetEntity: UserBundle\Entity\User
+            mappedBy: groupes
 
     lifecycleCallbacks: {  }

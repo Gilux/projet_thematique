@@ -18,4 +18,14 @@ DepotBundle\Entity\UE:
             type: string
             length: 60
 
+    oneToMany:
+        devoirs:
+            targetEntity: Devoir
+            mappedBy: UE
+        groupes:
+            targetEntity: Groupe
+            mappedBy: UE
+
+
+
     lifecycleCallbacks: {  }

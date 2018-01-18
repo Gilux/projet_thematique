@@ -127,4 +127,82 @@ class User extends BaseUser
     {
         return $this->commentaires;
     }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $groupes;
+
+
+    /**
+     * Add groupe
+     *
+     * @param \DepotBundle\Entity\Groupe $groupe
+     *
+     * @return User
+     */
+    public function addGroupe(\DepotBundle\Entity\Groupe $groupe)
+    {
+        $this->groupes[] = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * Remove groupe
+     *
+     * @param \DepotBundle\Entity\Groupe $groupe
+     */
+    public function removeGroupe(\DepotBundle\Entity\Groupe $groupe)
+    {
+        $this->groupes->removeElement($groupe);
+    }
+
+    /**
+     * Get groupes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroupes()
+    {
+        return $this->groupes;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $groupes_projet;
+
+
+    /**
+     * Add groupesProjet
+     *
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
+     *
+     * @return User
+     */
+    public function addGroupesProjet(\DepotBundle\Entity\Groupe_projet $groupesProjet)
+    {
+        $this->groupes_projet[] = $groupesProjet;
+
+        return $this;
+    }
+
+    /**
+     * Remove groupesProjet
+     *
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
+     */
+    public function removeGroupesProjet(\DepotBundle\Entity\Groupe_projet $groupesProjet)
+    {
+        $this->groupes_projet->removeElement($groupesProjet);
+    }
+
+    /**
+     * Get groupesProjet
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroupesProjet()
+    {
+        return $this->groupes_projet;
+    }
 }

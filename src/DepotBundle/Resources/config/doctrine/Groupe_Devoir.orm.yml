@@ -1,0 +1,39 @@
+DepotBundle\Entity\Groupe_Devoir:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\Groupe_DevoirRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+    fields:
+        date_a_rendre:
+            type: date
+            length: 60
+
+        date_bloquante:
+            type: boolean
+            options:
+                default: false
+
+        nb_max_etudiant:
+            type: integer
+            length: 60
+
+        nb_min_etudiant:
+            type: integer
+            length: 60
+
+    manyToOne:
+        groupe:
+            targetEntity: Groupe
+            inversedBy: groupe_devoir
+
+        devoir:
+            targetEntity: Devoir
+            inversedBy: groupe_devoir
+
+    lifecycleCallbacks: {  }
