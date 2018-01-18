@@ -51,7 +51,7 @@ class UserAdminController extends Controller
             $em->persist($user);
             $em->flush();
 
-            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
+            $request->getSession()->getFlashBag()->add('notice', 'Utilisateur bien enregistré.');
 
             return $this->redirectToRoute('users_admin', array('id' => $user->getId()));
         }

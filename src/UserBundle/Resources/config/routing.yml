@@ -5,3 +5,7 @@ app_homepage:
 user_profil:
     path:     /user/profil
     defaults: { _controller: UserBundle:UserProfile:index }
+
+user_demandecompte:
+    path:     /user/demandecompte
+    defaults: { _controller: UserBundle:UserRegistration:demande }

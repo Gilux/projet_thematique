@@ -8,6 +8,18 @@ class BackofficeController extends Controller
 {
     public function indexAction()
     {
-        return $this->render('DepotBundle:Admin\Backoffice:index.html.twig');
+        $disabledUsers = $this->getDoctrine()->getRepository("UserBundle:User")->findBy(
+            array(
+                "lastLogin" => null,
+                "enabled" => false
+            )
+        );
+
+        return $this->render('DepotBundle:Admin\Backoffice:index.html.twig',
+            array(
+                "disabledUsers" => $disabledUsers
+            )
+        );
+
     }
 }

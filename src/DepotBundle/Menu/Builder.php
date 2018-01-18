@@ -12,11 +12,24 @@ class Builder implements ContainerAwareInterface
 
     public function mainMenu(FactoryInterface $factory, array $options)
     {
+        $ts = $this->container->get('security.token_storage');
+
+        $user = $ts->getToken()->getUser();
+
         $menu = $factory->createItem('root');
+
         $menu->addChild('Accueil', array('route' => 'depot_homepage'));
-        $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
+
+        if($user->hasRole('ROLE_ETUDIANT')) {
+            $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
+        }
+
         $menu->addChild('Mes options', array('route' => 'user_profil'));
-        $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
+
+        if($user->hasRole('ROLE_ENSEIGNANT')) {
+            $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
+        }
+
         return $menu;
     }
 

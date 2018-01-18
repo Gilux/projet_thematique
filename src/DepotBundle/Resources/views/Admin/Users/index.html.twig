@@ -49,7 +49,14 @@
                                             Non défini
                                         {% endif %}
                                     </td>
-                                    <td><a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a> / Supprimer</td>
+                                    <td>
+                                        <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
+                                        /
+                                        Supprimer
+                                        {% if u.lastLogin == null and not u.enabled  %}
+                                            / Valider le compte
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

@@ -18,6 +18,9 @@
                     {% endblock %}
                 </nav>
                 <section>
+                    {% for flashMessage in app.session.flashbag.get('notice') %}
+                        {{ flashMessage }}
+                    {% endfor %}
                     {% block main %} {% endblock %}
                 </section>
             {% endblock %}
