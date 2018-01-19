@@ -205,4 +205,43 @@ class User extends BaseUser
     {
         return $this->groupes_projet;
     }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $notifications;
+
+
+    /**
+     * Add notification
+     *
+     * @param \DepotBundle\Entity\Notification $notification
+     *
+     * @return User
+     */
+    public function addNotification(\DepotBundle\Entity\Notification $notification)
+    {
+        $this->notifications[] = $notification;
+
+        return $this;
+    }
+
+    /**
+     * Remove notification
+     *
+     * @param \DepotBundle\Entity\Notification $notification
+     */
+    public function removeNotification(\DepotBundle\Entity\Notification $notification)
+    {
+        $this->notifications->removeElement($notification);
+    }
+
+    /**
+     * Get notifications
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
 }
