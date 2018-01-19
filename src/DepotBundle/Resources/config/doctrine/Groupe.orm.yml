@@ -1,0 +1,28 @@
+DepotBundle\Entity\Groupe:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\GroupeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 60
+    oneToMany:
+        groupe_devoir:
+            targetEntity: Groupe_Devoir
+            mappedBy: groupe
+    manyToOne:
+        UE:
+            targetEntity: UE
+            mappedBy: groupes
+    manyToMany:
+        users:
+            targetEntity: UserBundle\Entity\User
+            mappedBy: groupes
+
+    lifecycleCallbacks: {  }

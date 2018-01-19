@@ -8,13 +8,30 @@ UserBundle\Entity\User:
             id: true
             generator:
                 strategy: AUTO
-
     fields:
         first_name:
             type: string
             length: 60
+            nullable: true
 
         last_name:
             type: string
             length: 60
+            nullable: true
+    oneToMany:
+        commentaires:
+            targetEntity: DepotBundle\Entity\Commentaire
+            mappedBy: user
+        notifications:
+            targetEntity: DepotBundle\Entity\Notification
+            mappedBy: user
+
+    manyToMany:
+        groupes:
+            targetEntity: DepotBundle\Entity\Groupe
+            inversedBy: users
+        groupes_projet:
+            targetEntity: DepotBundle\Entity\Groupe_projet
+            inversedBy: users
+
     lifecycleCallbacks: {  }
