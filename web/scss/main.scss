@@ -4,6 +4,50 @@ body {
   background-color: #EEEEEE;
 }
 
+*:focus {
+  outline: none;
+}
+
+
+
+form {
+  .form-group {
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .form-group.row [class^="col-"]{
+    padding-right:5px;
+  }
+
+  input[type=text], input[type=password], input[type=email], input[type=number] {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid #DDDDDD;
+    padding: 5px 20px;
+    font-size: 1.5rem;
+    &:focus {
+      border-bottom: 1px solid $primary;
+    }
+  }
+
+  input[type=number] {
+    padding-top: inherit;
+    padding-bottom: inherit;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  label {
+    font-size: 1.5rem;
+    color: #444444;
+  }
+
+  input[type=submit] {
+    @extend .btn;
+  }
+}
 .login-form-main {
   height:100vh;
   width:100%;
@@ -21,31 +65,13 @@ body {
     padding: 10px 20px;
     box-shadow: 0px 9px 14px 0px #AAA;
   }
-}
 
-form {
-  .form-group {
-    width: 100%;
-    display: block;
-    margin-bottom:10px;
-
-    input[type=text], input[type=password], input[type=email] {
-      width: 100%;
-      border: 0;
-      border-bottom: 1px solid #DDDDDD;
-      padding: 5px 20px;
-      font-size: 2rem;
-    }
-    label {
-      font-size: 1.5rem;
-      color: #444444;
-    }
-  }
-
-  input[type=submit] {
-    @extend .btn;
+  input[type=text], input[type=password] {
+    font-size:2rem;
   }
 }
+
+
 
 .btn {
   border:0;
@@ -59,6 +85,10 @@ form {
 
 .text-center {
   text-align: center;
+}
+
+.text-right {
+  text-align: right;
 }
 
 main {

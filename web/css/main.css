@@ -1,1 +1,155 @@
-body{background-color:#EEEEEE}.login-form-main{height:100vh;width:100%;margin:0;padding:0;display:flex;justify-content:center;align-items:center}.login-form-main form{width:40%;background-color:white;border:0;border-top:5px solid #934a30;padding:10px 20px;box-shadow:0px 9px 14px 0px #AAA}form .form-group{width:100%;display:block;margin-bottom:10px}form .form-group input[type=text],form .form-group input[type=password],form .form-group input[type=email]{width:100%;border:0;border-bottom:1px solid #DDDDDD;padding:5px 20px;font-size:2rem}form .form-group label{font-size:1.5rem;color:#444444}.btn,form input[type=submit]{border:0;padding:5px 10px}.btn-primary{background-color:#934a30;color:white}.text-center{text-align:center}main{width:100%;min-height:100vh;display:flex}section{flex:1}nav{width:200px;background-color:#333333;color:#FFFFFF}nav>ul{padding:0}nav li{padding:10px 0px 10px 15px}nav li:not(.last){border-bottom:1px solid #777777}nav li.current{background-color:#934a30}nav li a{color:white;font-size:1.6rem}nav li a:hover{color:white;text-decoration:none}nav li a:focus{color:white;text-decoration:none}section{padding:10px 10px}.item{min-height:100px;margin-bottom:10px;background-color:white;border:0;border-top:3px solid #934a30;padding:10px 20px;box-shadow:0px 9px 14px 0px #AAA}ul{padding-left:0}.groupesProjet{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start}.groupesProjet .groupe{min-width:200px}.groupesProjet .groupe ul{list-style-type:none}button{background-color:#934a30;border:none;color:white}.badge{display:inline-block;padding:2px 10px;border-radius:10px;color:white}.badge.success{background-color:#6b9311}.badge.danger{background-color:#932c28}table{width:100%}table tr{border:1px solid black}table thead tr{border:none}table th{background-color:#934a30;color:white}table td{text-align:center;padding:5px 10px}#dropzone{border:2px dashed #b3b4ff}
+body {
+  background-color: #EEEEEE; }
+
+*:focus {
+  outline: none; }
+
+form .form-group {
+  width: 100%;
+  display: block;
+  margin-bottom: 10px; }
+
+form .form-group.row [class^="col-"] {
+  padding-right: 5px; }
+
+form input[type=text], form input[type=password], form input[type=email], form input[type=number] {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #DDDDDD;
+  padding: 5px 20px;
+  font-size: 1.5rem; }
+  form input[type=text]:focus, form input[type=password]:focus, form input[type=email]:focus, form input[type=number]:focus {
+    border-bottom: 1px solid #934a30; }
+
+form input[type=number] {
+  padding-top: inherit;
+  padding-bottom: inherit;
+  padding-left: 0;
+  padding-right: 0; }
+
+form label {
+  font-size: 1.5rem;
+  color: #444444; }
+
+.login-form-main {
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+  .login-form-main form {
+    width: 40%;
+    background-color: white;
+    border: 0;
+    border-top: 5px solid #934a30;
+    padding: 10px 20px;
+    box-shadow: 0px 9px 14px 0px #AAA; }
+  .login-form-main input[type=text], .login-form-main input[type=password] {
+    font-size: 2rem; }
+
+.btn, form input[type=submit] {
+  border: 0;
+  padding: 5px 10px; }
+
+.btn-primary {
+  background-color: #934a30;
+  color: white; }
+
+.text-center {
+  text-align: center; }
+
+.text-right {
+  text-align: right; }
+
+main {
+  width: 100%;
+  min-height: 100vh;
+  display: flex; }
+
+section {
+  flex: 1; }
+
+nav {
+  width: 200px;
+  background-color: #333333;
+  color: #FFFFFF; }
+
+nav > ul {
+  padding: 0; }
+
+nav li {
+  padding: 10px 0px 10px 15px; }
+  nav li:not(.last) {
+    border-bottom: 1px solid #777777; }
+  nav li.current {
+    background-color: #934a30; }
+  nav li a {
+    color: white;
+    font-size: 1.6rem; }
+    nav li a:hover {
+      color: white;
+      text-decoration: none; }
+    nav li a:focus {
+      color: white;
+      text-decoration: none; }
+
+section {
+  padding: 10px 10px; }
+
+.item {
+  min-height: 100px;
+  margin-bottom: 10px;
+  background-color: white;
+  border: 0;
+  border-top: 3px solid #934a30;
+  padding: 10px 20px;
+  box-shadow: 0px 9px 14px 0px #AAA; }
+
+ul {
+  padding-left: 0; }
+
+.groupesProjet {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start; }
+  .groupesProjet .groupe {
+    min-width: 200px; }
+    .groupesProjet .groupe ul {
+      list-style-type: none; }
+
+button {
+  background-color: #934a30;
+  border: none;
+  color: white; }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  color: white; }
+  .badge.success {
+    background-color: #6b9311; }
+  .badge.danger {
+    background-color: #932c28; }
+
+/* Admin */
+table {
+  width: 100%; }
+  table tr {
+    border: 1px solid black; }
+  table thead tr {
+    border: none; }
+  table th {
+    background-color: #934a30;
+    color: white; }
+  table td {
+    text-align: center;
+    padding: 5px 10px; }
+
+/* tmp */
+#dropzone {
+  border: 2px dashed #b3b4ff; }
