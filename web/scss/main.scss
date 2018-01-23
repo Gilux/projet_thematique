@@ -4,6 +4,50 @@ body {
   background-color: #EEEEEE;
 }
 
+*:focus {
+  outline: none;
+}
+
+
+
+form {
+  .form-group {
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .form-group.row [class^="col-"]{
+    padding-right:5px;
+  }
+
+  input[type=text], input[type=password], input[type=email], input[type=number] {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid #DDDDDD;
+    padding: 5px 20px;
+    font-size: 1.5rem;
+    &:focus {
+      border-bottom: 1px solid $primary;
+    }
+  }
+
+  input[type=number] {
+    padding-top: inherit;
+    padding-bottom: inherit;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  label {
+    font-size: 1.5rem;
+    color: #444444;
+  }
+
+  input[type=submit] {
+    @extend .btn;
+  }
+}
 .login-form-main {
   height:100vh;
   width:100%;
@@ -21,42 +65,30 @@ body {
     padding: 10px 20px;
     box-shadow: 0px 9px 14px 0px #AAA;
   }
-}
 
-form {
-  .form-group {
-    width: 100%;
-    display: block;
-    margin-bottom:10px;
-
-    input[type=text], input[type=password], input[type=email] {
-      width: 100%;
-      border: 0;
-      border-bottom: 1px solid #DDDDDD;
-      padding: 5px 20px;
-      font-size: 2rem;
-    }
-    label {
-      font-size: 1.5rem;
-      color: #444444;
-    }
-  }
-
-  input[type=submit] {
-    @extend .btn;
+  input[type=text], input[type=password] {
+    font-size:2rem;
   }
 }
+
+
 
 .btn {
   border:0;
+  padding:5px 10px;
+}
+
+.btn-primary {
   background-color: $primary;
   color: white;
-
-  padding:5px 10px;
 }
 
 .text-center {
   text-align: center;
+}
+
+.text-right {
+  text-align: right;
 }
 
 main {
@@ -148,6 +180,48 @@ button {
   background-color:$primary;
   border:none;
   color:white;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding:2px 10px;
+  border-radius: 10px;
+  color: white;
+
+  &.success {
+    background-color: #6b9311;
+  }
+
+  &.danger {
+    background-color: #932c28;
+  }
+}
+
+
+
+/* Admin */
+table {
+  width:100%;
+
+
+  tr {
+    border:1px solid black;
+  }
+
+  thead tr {
+    border:none;
+  }
+
+  th {
+    background-color: $primary;
+    color: white;
+  }
+
+  td {
+    text-align: center;
+    padding:5px 10px;
+  }
 }
 
 /* tmp */

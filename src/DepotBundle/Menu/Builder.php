@@ -12,11 +12,24 @@ class Builder implements ContainerAwareInterface
 
     public function mainMenu(FactoryInterface $factory, array $options)
     {
+        $ts = $this->container->get('security.token_storage');
+
+        $user = $ts->getToken()->getUser();
+
         $menu = $factory->createItem('root');
+
         $menu->addChild('Accueil', array('route' => 'depot_homepage'));
-        $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
+
+        if($user->hasRole('ROLE_ETUDIANT')) {
+            $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
+        }
+
         $menu->addChild('Mes options', array('route' => 'user_profil'));
-        $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
+
+        if($user->hasRole('ROLE_ENSEIGNANT')) {
+            $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
+        }
+
         return $menu;
     }
 
@@ -24,7 +37,7 @@ class Builder implements ContainerAwareInterface
     {
         $menu = $factory->createItem('root');
         $menu->addChild('Accueil', array('route' => 'index_admin'));
-        $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'));
+        $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'))->setExtra('routes', ['users_admin', 'users_admin_new', 'users_admin_edit']);;
         return $menu;
     }
 }

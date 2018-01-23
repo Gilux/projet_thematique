@@ -8,13 +8,15 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="item">
-                    <h3>Bienvenue sur l'interface d'administration !</h3>
+        {% if(disabledUsers) %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="item">
+                        <h3>{{ disabledUsers|length }} demandes d'activation de comptes enseignant</h3>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        {% endif %}
 
+    </div>
 {% endblock %}

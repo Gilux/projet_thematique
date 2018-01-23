@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <h1>Administration des utilisateurs</h1>
+                <h1>Administration des utilisateurs </h1><a class="btn btn-primary pull-right" href="{{ path("users_admin_new") }}">Nouvel utilisateur</a>
             </div>
         </div>
 
@@ -19,6 +19,7 @@
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Adresse e-mail</th>
+                                <th>Compte activé ?</th>
                                 <th>Rôle</th>
                                 <th>Actions</th>
                             </tr>
@@ -31,6 +32,13 @@
                                     <td>{{ u.firstName }}</td>
                                     <td>{{ u.email }}</td>
                                     <td>
+                                        {% if(u.enabled) %}
+                                            <span class="badge success">Oui</span>
+                                        {% else %}
+                                            <span class="badge danger">Non</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         {% if "ROLE_ADMIN" in u.roles %}
                                             Administrateur
                                         {% elseif "ROLE_ETUDIANT" in u.roles %}
@@ -41,7 +49,14 @@
                                             Non défini
                                         {% endif %}
                                     </td>
-                                    <td>Modifier / Supprimer</td>
+                                    <td>
+                                        <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
+                                        /
+                                        Supprimer
+                                        {% if u.lastLogin == null and not u.enabled  %}
+                                            / Valider le compte
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

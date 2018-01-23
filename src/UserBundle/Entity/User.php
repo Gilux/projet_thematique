@@ -4,9 +4,12 @@ namespace UserBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
- * User
+ * @UniqueEntity(fields="email", message="Cette adresse e-mail est déjà utilisée")
  */
 class User extends BaseUser
 {
