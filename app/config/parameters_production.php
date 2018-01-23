@@ -1,5 +1,6 @@
 <?php
 $db = parse_url(getenv('CLEARDB_DATABASE_URL'));
+//$db = array("host" => "localhost", "port" => null, "user" => "root", "path" => ".depot", "pass" => "", "secret" => "osef");
 
 $container->setParameter('database_driver', 'pdo_mysql');
 $container->setParameter('database_host', $db['host']);
