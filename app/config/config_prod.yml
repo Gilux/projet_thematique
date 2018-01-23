@@ -8,6 +8,9 @@ imports:
 #        result_cache_driver: apc
 #        query_cache_driver: apc
 
+framework:
+    default_locale: "fr"
+
 monolog:
     handlers:
         main:
