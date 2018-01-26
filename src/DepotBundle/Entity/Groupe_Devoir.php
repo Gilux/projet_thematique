@@ -197,4 +197,3 @@ class Groupe_Devoir
         return $this->devoir;
     }
 }
-

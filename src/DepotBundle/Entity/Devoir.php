@@ -43,11 +43,6 @@ class Devoir
     private $groupe_devoir;
 
     /**
-     * @var \DepotBundle\Entity\UE
-     */
-    private $UE;
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -231,6 +226,11 @@ class Devoir
     }
 
     /**
+     * @var \DepotBundle\Entity\UE
+     */
+    private $UE;
+
+    /**
      * Set uE
      *
      * @param \DepotBundle\Entity\UE $uE
@@ -254,4 +254,3 @@ class Devoir
         return $this->UE;
     }
 }
-

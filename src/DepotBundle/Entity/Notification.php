@@ -139,4 +139,3 @@ class Notification
         return $this->user;
     }
 }
-

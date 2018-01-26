@@ -28,17 +28,11 @@ class UE
     private $devoirs;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $groupes;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
         $this->devoirs = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groupes = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -132,6 +126,12 @@ class UE
     {
         return $this->devoirs;
     }
+  
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $groupes;
+
 
     /**
      * Add groupe
@@ -167,4 +167,3 @@ class UE
         return $this->groupes;
     }
 }
-

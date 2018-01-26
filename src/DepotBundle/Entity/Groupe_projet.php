@@ -13,21 +13,6 @@ class Groupe_projet
     private $id;
 
     /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $fichier;
-
-    /**
-     * @var \DateTime
-     */
-    private $date;
-
-    /**
      * @var \DepotBundle\Entity\Devoir
      */
     private $devoir;
@@ -56,6 +41,67 @@ class Groupe_projet
     }
 
     /**
+     * Set devoir
+     *
+     * @param \DepotBundle\Entity\Devoir $devoir
+     *
+     * @return Groupe_projet
+     */
+    public function setDevoir(\DepotBundle\Entity\Devoir $devoir = null)
+    {
+        $this->devoir = $devoir;
+        return $this;
+    }
+
+    /**
+     * Get devoir
+     *
+     * @return \DepotBundle\Entity\Devoir
+     */
+    public function getDevoir()
+    {
+        return $this->devoir;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \UserBundle\Entity\User $user
+     *
+     * @return Groupe_projet
+     */
+    public function addUser(\UserBundle\Entity\User $user)
+    {
+        $this->users[] = $user;
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \UserBundle\Entity\User $user
+     */
+    public function removeUser(\UserBundle\Entity\User $user)
+    {
+        $this->users->removeElement($user);
+    }
+
+    /**
+     * Get users
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsers()
+    {
+        return $this->users;
+    }
+    /**
+     * @var string
+     */
+    private $name;
+
+
+    /**
      * Set name
      *
      * @param string $name
@@ -65,11 +111,11 @@ class Groupe_projet
     public function setName($name)
     {
         $this->name = $name;
-
         return $this;
     }
 
     /**
+
      * Get name
      *
      * @return string
@@ -78,6 +124,16 @@ class Groupe_projet
     {
         return $this->name;
     }
+    /**
+     * @var string
+     */
+    private $fichier;
+
+    /**
+     * @var \DateTime
+     */
+    private $date;
+
 
     /**
      * Set fichier
@@ -89,11 +145,11 @@ class Groupe_projet
     public function setFichier($fichier)
     {
         $this->fichier = $fichier;
-
         return $this;
     }
 
     /**
+
      * Get fichier
      *
      * @return string
@@ -126,63 +182,4 @@ class Groupe_projet
     {
         return $this->date;
     }
-
-    /**
-     * Set devoir
-     *
-     * @param \DepotBundle\Entity\Devoir $devoir
-     *
-     * @return Groupe_projet
-     */
-    public function setDevoir(\DepotBundle\Entity\Devoir $devoir = null)
-    {
-        $this->devoir = $devoir;
-
-        return $this;
-    }
-
-    /**
-     * Get devoir
-     *
-     * @return \DepotBundle\Entity\Devoir
-     */
-    public function getDevoir()
-    {
-        return $this->devoir;
-    }
-
-    /**
-     * Add user
-     *
-     * @param \UserBundle\Entity\User $user
-     *
-     * @return Groupe_projet
-     */
-    public function addUser(\UserBundle\Entity\User $user)
-    {
-        $this->users[] = $user;
-
-        return $this;
-    }
-
-    /**
-     * Remove user
-     *
-     * @param \UserBundle\Entity\User $user
-     */
-    public function removeUser(\UserBundle\Entity\User $user)
-    {
-        $this->users->removeElement($user);
-    }
-
-    /**
-     * Get users
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUsers()
-    {
-        return $this->users;
-    }
 }
-

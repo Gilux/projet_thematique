@@ -23,11 +23,6 @@ class Groupe
     private $groupe_devoir;
 
     /**
-     * @var \DepotBundle\Entity\UE
-     */
-    private $UE;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $users;
@@ -110,30 +105,6 @@ class Groupe
     }
 
     /**
-     * Set uE
-     *
-     * @param \DepotBundle\Entity\UE $uE
-     *
-     * @return Groupe
-     */
-    public function setUE(\DepotBundle\Entity\UE $uE = null)
-    {
-        $this->UE = $uE;
-
-        return $this;
-    }
-
-    /**
-     * Get uE
-     *
-     * @return \DepotBundle\Entity\UE
-     */
-    public function getUE()
-    {
-        return $this->UE;
-    }
-
-    /**
      * Add user
      *
      * @param \UserBundle\Entity\User $user
@@ -166,5 +137,34 @@ class Groupe
     {
         return $this->users;
     }
-}
+  
+    /**
+     * @var \DepotBundle\Entity\UE
+     */
+    private $UE;
 
+
+    /**
+     * Set uE
+     *
+     * @param \DepotBundle\Entity\UE $uE
+     *
+     * @return Groupe
+     */
+    public function setUE(\DepotBundle\Entity\UE $uE = null)
+    {
+        $this->UE = $uE;
+
+        return $this;
+    }
+
+    /**
+     * Get uE
+     *
+     * @return \DepotBundle\Entity\UE
+     */
+    public function getUE()
+    {
+        return $this->UE;
+    }
+}
