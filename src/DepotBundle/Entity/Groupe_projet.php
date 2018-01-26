@@ -50,7 +50,6 @@ class Groupe_projet
     public function setDevoir(\DepotBundle\Entity\Devoir $devoir = null)
     {
         $this->devoir = $devoir;
-
         return $this;
     }
 
@@ -74,7 +73,6 @@ class Groupe_projet
     public function addUser(\UserBundle\Entity\User $user)
     {
         $this->users[] = $user;
-
         return $this;
     }
 
@@ -113,11 +111,11 @@ class Groupe_projet
     public function setName($name)
     {
         $this->name = $name;
-
         return $this;
     }
 
     /**
+
      * Get name
      *
      * @return string
@@ -147,11 +145,11 @@ class Groupe_projet
     public function setFichier($fichier)
     {
         $this->fichier = $fichier;
-
         return $this;
     }
 
     /**
+
      * Get fichier
      *
      * @return string

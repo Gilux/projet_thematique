@@ -224,11 +224,11 @@ class Devoir
     {
         return $this->groupe_devoir;
     }
+
     /**
      * @var \DepotBundle\Entity\UE
      */
     private $UE;
-
 
     /**
      * Set uE

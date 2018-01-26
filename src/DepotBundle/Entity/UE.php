@@ -126,6 +126,7 @@ class UE
     {
         return $this->devoirs;
     }
+  
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
