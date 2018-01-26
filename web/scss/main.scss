@@ -76,6 +76,10 @@ form {
 .btn {
   border:0;
   padding:5px 10px;
+  &:hover {
+    text-decoration: none;
+    color:white;
+  }
 }
 
 .btn-primary {
@@ -105,6 +109,19 @@ nav {
   width: 200px;
   background-color: #333333;
   color: #FFFFFF;
+  position: relative;
+
+  .logout-zone {
+    position: absolute;
+    bottom:0;
+    @extend li;
+    @extend li.current;
+    width:100%;
+
+    a {
+
+    }
+  }
 }
 
 nav {
@@ -221,6 +238,13 @@ table {
   td {
     text-align: center;
     padding:5px 10px;
+  }
+}
+
+.item {
+  h3 {
+    display: inline-block;
+    max-width: 70%;
   }
 }
 

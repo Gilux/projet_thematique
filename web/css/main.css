@@ -52,6 +52,9 @@ form label {
 .btn, form input[type=submit] {
   border: 0;
   padding: 5px 10px; }
+  .btn:hover, form input[type=submit]:hover {
+    text-decoration: none;
+    color: white; }
 
 .btn-primary {
   background-color: #934a30;
@@ -74,24 +77,29 @@ section {
 nav {
   width: 200px;
   background-color: #333333;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+  position: relative; }
+  nav .logout-zone {
+    position: absolute;
+    bottom: 0;
+    width: 100%; }
 
 nav > ul {
   padding: 0; }
 
-nav li {
+nav li, nav .logout-zone {
   padding: 10px 0px 10px 15px; }
-  nav li:not(.last) {
+  nav li:not(.last), nav .logout-zone:not(.last) {
     border-bottom: 1px solid #777777; }
-  nav li.current {
+  nav li.current, nav .logout-zone {
     background-color: #934a30; }
-  nav li a {
+  nav li a, nav .logout-zone a {
     color: white;
     font-size: 1.6rem; }
-    nav li a:hover {
+    nav li a:hover, nav .logout-zone a:hover {
       color: white;
       text-decoration: none; }
-    nav li a:focus {
+    nav li a:focus, nav .logout-zone a:focus {
       color: white;
       text-decoration: none; }
 
@@ -149,6 +157,10 @@ table {
   table td {
     text-align: center;
     padding: 5px 10px; }
+
+.item h3 {
+  display: inline-block;
+  max-width: 70%; }
 
 /* tmp */
 #dropzone {
