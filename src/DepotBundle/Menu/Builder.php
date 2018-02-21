@@ -18,13 +18,13 @@ class Builder implements ContainerAwareInterface
 
         $menu = $factory->createItem('root');
 
-        $menu->addChild('Accueil', array('route' => 'depot_homepage'));
+        $menu->addChild('Mes Devoirs', array('route' => 'depot_homepage'));
 
         if($user->hasRole('ROLE_ETUDIANT')) {
             $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
         }
 
-        $menu->addChild('Mes options', array('route' => 'user_profil'));
+        $menu->addChild('Mon Profil', array('route' => 'user_profil'));
 
         if($user->hasRole('ROLE_ENSEIGNANT')) {
             $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
@@ -36,7 +36,6 @@ class Builder implements ContainerAwareInterface
     public function adminMainMenu(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');
-        $menu->addChild('Accueil', array('route' => 'index_admin'));
         $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'))->setExtra('routes', ['users_admin', 'users_admin_new', 'users_admin_edit']);;
         return $menu;
     }

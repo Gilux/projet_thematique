@@ -7,5 +7,9 @@ user_profil:
     defaults: { _controller: UserBundle:UserProfile:index }
 
 user_demandecompte:
-    path:     /user/demandecompte
+    path:     /user/request_account
     defaults: { _controller: UserBundle:UserRegistration:demande }
+
+user_edit:
+    path:     /user/edit
+    defaults: { _controller: UserBundle:UserProfile:edit }

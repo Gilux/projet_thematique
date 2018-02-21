@@ -9,6 +9,14 @@ depot_admin:
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 
+fos_user_change_password:
+    resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
+    prefix: "/user/profil"
+
+fos_user_resetting_request:
+    resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
+    prefix: "/user/compte"
+
 user:
     resource: "@UserBundle/Resources/config/routing.yml"
     prefix:   /
