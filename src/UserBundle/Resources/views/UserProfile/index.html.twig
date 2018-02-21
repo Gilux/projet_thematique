@@ -1,10 +1,26 @@
 {% extends "base.html.twig" %}
-
+{% dump user %}
 {% block main %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <h1>Modifier les options de mon profil</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>
+                        Profil
+                        <small><a class="btn btn-primary" href="{{ path('user_edit') }}" >Modifier</a></small>
+                    </h3>
+                    <a class="btn btn-primary pull-right" href="{{ path('fos_user_change_password') }}" >Modifier votre mot de passe</a>
+                    <p><strong>Nom d'utilisateur :</strong> {{user.username}}</p>
+                    <p><strong>Nom :</strong> {{user.lastname}}</p>
+                    <p><strong>Prénom :</strong> {{user.firstname}}</p>
+                    <p><strong>Courriel :</strong> {{user.email}}</p>
+                </div>
             </div>
         </div>
     </div>

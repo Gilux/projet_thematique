@@ -1,9 +1,5 @@
-index_admin:
-    path: /
-    defaults: { _controller: DepotBundle:Admin\Backoffice:index }
-
 users_admin:
-    path:     /users
+    path:     /
     defaults: { _controller: DepotBundle:Admin\UserAdmin:index }
 
 users_admin_edit:

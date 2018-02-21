@@ -36,6 +36,12 @@
         </div>
 
         <div class="form-group">
+            {{ form_label(form.groupes) }}
+            {{ form_errors(form.groupes) }}
+            {{ form_widget(form.groupes) }}
+        </div>
+
+        <div class="form-group">
             {{ form_widget(form.submit) }}
         </div>
 
