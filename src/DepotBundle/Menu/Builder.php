@@ -18,6 +18,10 @@ class Builder implements ContainerAwareInterface
 
         $menu = $factory->createItem('root');
 
+        if($user->hasRole('ROLE_ENSEIGNANT')) {
+            $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
+        }
+
         $menu->addChild('Mes Devoirs', array('route' => 'depot_homepage'));
 
         if($user->hasRole('ROLE_ETUDIANT')) {
@@ -25,10 +29,6 @@ class Builder implements ContainerAwareInterface
         }
 
         $menu->addChild('Mon Profil', array('route' => 'user_profil'));
-
-        if($user->hasRole('ROLE_ENSEIGNANT')) {
-            $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
-        }
 
         return $menu;
     }
