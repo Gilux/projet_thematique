@@ -34,7 +34,11 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
-    app.form.registration:
-        class: UserBundle\Form\Type\UserRegistrationType
+    app.security.authentication_event_listener:
+        class: UserBundle\EventListener\LoginListener
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@security.token_storage"
+            - "@security.authentication_utils"
         tags:
-            - { name: form.type, alias: app_user_registration }
+            - { name: kernel.event_subscriber }
