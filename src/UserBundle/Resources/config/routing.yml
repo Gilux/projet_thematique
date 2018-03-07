@@ -2,14 +2,10 @@ app_homepage:
     path:     /
     defaults: { _controller: UserBundle:Default:index }
 
-user_profil:
-    path:     /user/profil
-    defaults: { _controller: UserBundle:UserProfile:index }
-
 user_demandecompte:
     path:     /user/request_account
     defaults: { _controller: UserBundle:UserRegistration:demande }
 
 user_edit:
-    path:     /user/edit
+    path:     /user/profil/edit
     defaults: { _controller: UserBundle:UserProfile:edit }
