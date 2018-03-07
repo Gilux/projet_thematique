@@ -28,7 +28,7 @@ class Builder implements ContainerAwareInterface
             $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
         }
 
-        $menu->addChild('Mon Profil', array('route' => 'user_profil'));
+        $menu->addChild('Mon Profil', array('route' => 'fos_user_profile_show'));
 
         return $menu;
     }

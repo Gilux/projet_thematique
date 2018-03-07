@@ -17,6 +17,10 @@ fos_user_resetting_request:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: "/user/compte"
 
+fos_user_profile_show:
+    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
+    prefix: "/user/profil"
+
 user:
     resource: "@UserBundle/Resources/config/routing.yml"
     prefix:   /
