@@ -38,5 +38,15 @@ monolog:
         #    type: chromephp
         #    level: info
 
+swiftmailer:
+    transport: smtp
+    host: '%mailer_host%'
+    port: '%mailer_port%'
+    encryption: '%mailer_encryption%'
+    username:  '%mailer_user%'
+    password:  '%mailer_password%'
+
+
+
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']
