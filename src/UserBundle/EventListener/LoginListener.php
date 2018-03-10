@@ -16,7 +16,6 @@ use \Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class LoginListener implements EventSubscriberInterface
 {
-
     private $entityManager;
     private $tokenStorage;
     private $authenticationUtils;
@@ -40,14 +39,32 @@ class LoginListener implements EventSubscriberInterface
         );
     }
 
-    public function onSecurityInteractiveLogin( InteractiveLoginEvent $event )
+    public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if($user->getLastLogin() == NULL)
-        {
+        if ($user->getLastLogin() == NULL) {
             $this->dispatcher->addListener('kernel.response', array($this, 'redirectUser'));
+        } else {
+            $roles = $user->getRoles();
+            if (in_array('ROLE_ADMIN', $roles)) {
+                $this->dispatcher->addListener('kernel.response', array($this, 'redirectToAdmin'));
+            } else if (in_array('ROLE_ENSEIGNANT', $roles)) {
+                $this->dispatcher->addListener('kernel.response', array($this, 'redirectToEnseignant'));
+            }
         }
+    }
+
+    public function redirectToAdmin(FilterResponseEvent $event)
+    {
+        $response = new RedirectResponse('/admin');
+        $event->setResponse($response);
+    }
+
+    public function redirectToEnseignant(FilterResponseEvent $event)
+    {
+        $response = new RedirectResponse('/depot');
+        $event->setResponse($response);
     }
 
     public function redirectUser(FilterResponseEvent $event)
