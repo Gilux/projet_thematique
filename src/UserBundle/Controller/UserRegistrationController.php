@@ -14,7 +14,7 @@ class UserRegistrationController extends Controller
         $user = new User();
 
         $form = $this->get('form.factory')->create(UserRegistrationType::class, $user);
-
+        
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
             // Mettre un username et un mot de passe temporaire
             $user->setUsername($user->getEmail());

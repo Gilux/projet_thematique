@@ -13,5 +13,18 @@ Utilise Symfony 3.3
 - php bin\console fos:user:create
 - php bin\console server:run
 
+##Configuration
+
+à ajouter dans 
+
+app/config/parameters.yml : 
+
+ - dev_mailer_transport: smtp
+ - dev_mailer_host: smtp-mail.outlook.com
+ - dev_mailer_port: 587
+ - dev_mailer_user: miage_depot_devoirs@outlook.fr
+ - dev_mailer_password: (voir messenger)
+ - dev_mailer_encryption: tls
+
 
 

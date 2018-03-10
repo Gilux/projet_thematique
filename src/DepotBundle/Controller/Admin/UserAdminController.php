@@ -19,8 +19,9 @@ class UserAdminController extends Controller
         );
     }
 
-    public function editAction(Request $request, User $user) {
-        $form   = $this->get('form.factory')->create(UserEditType::class, $user);
+    public function editAction(Request $request, User $user)
+    {
+        $form = $this->get('form.factory')->create(UserEditType::class, $user);
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -37,7 +38,8 @@ class UserAdminController extends Controller
         ));
     }
 
-    public function newAction(Request $request) {
+    public function newAction(Request $request)
+    {
         $user = new User();
 
         $form = $this->get('form.factory')->create(UserEditType::class, $user);
@@ -45,11 +47,29 @@ class UserAdminController extends Controller
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
             $user->setUsername($user->getEmail());
             $randomFirstPassword = uniqid();
+
             $user->setPlainPassword($randomFirstPassword);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
+
+            // TODO : Gérer les envois de mails
+            $message = (new \Swift_Message('[MIAGE] Vos identifiants du dépôt de devoirs en ligne'))
+                ->setFrom([$this->getParameter('dev_mailer_user') => 'Dépôt de devoirs'])
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'Emails/registration.html.twig',
+                        array('first_name' => $user->getFirstName(), 'last_name' => $user->getLastName(), 'credentials' => [
+                            'login' => $user->getEmail(),
+                            'first_password' => $randomFirstPassword
+                        ])
+                    ),
+                    'text/html'
+                );
+            $retour = $this->get('mailer')->send($message);
+
 
             $request->getSession()->getFlashBag()->add('notice', 'Utilisateur bien enregistré.');
 
