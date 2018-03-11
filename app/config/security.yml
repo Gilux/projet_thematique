@@ -21,7 +21,6 @@ security:
                 always_use_default_target_path: false
             logout:       true
             anonymous:    true
-            logout_on_user_change:  true
 
     access_control:
         - { path: ^/$, role: IS_AUTHENTICATED_ANONYMOUSLY }

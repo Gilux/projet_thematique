@@ -1,0 +1,16 @@
+{% extends "::Emails/base.html.twig" %}
+
+{% block body %}
+
+    <p>Hello {{ first_name }} {{ last_name }} ! Ton inscription au service de dépôt de devoirs en ligne est réussie
+        !<br>
+        <br>
+        Pour accéder à ton compte, rdv ici : http://.....</p>
+
+    <p>Voici tes identifiants <u>temporaires</u> pour ta première connexion :</p>
+
+    <p> Identifiant de connexion : {{ credentials.login }}</p>
+    <p> Mot de passe : {{ credentials.first_password }} </p>
+
+    <p>A noter : lors de ta première connexion, un formulaire te demandera de changer ton mot passe</p>
+{% endblock %}
