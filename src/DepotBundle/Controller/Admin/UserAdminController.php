@@ -11,12 +11,41 @@ class UserAdminController extends Controller
 {
     public function indexAction()
     {
-        $users = $this->getDoctrine()->getRepository("UserBundle:User")->findAll();
+        $users = $this->getDoctrine()->getRepository("UserBundle:User")->findBy(array('enabled' => 1));
+        $users_pending = $this->getDoctrine()->getRepository("UserBundle:User")->findBy(array('enabled' => 0));
         return $this->render('DepotBundle:Admin\Users:index.html.twig',
             array(
-                "users" => $users
+                "users" => $users,
+                "users_pending" => $users_pending
             )
         );
+    }
+
+    public function deleteAction(Request $request, User $user)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($user);
+        $em->flush();
+        return $this->redirectToRoute('users_admin');
+
+    }
+
+    public function validateAccountAction(Request $request, User $user)
+    {
+        $user->setEnabled(1);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+        return $this->redirectToRoute('users_admin');
+    }
+
+    public function disableAccountAction(Request $request, User $user)
+    {
+        $user->setEnabled(0);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+        return $this->redirectToRoute('users_admin');
     }
 
     public function editAction(Request $request, User $user)
@@ -81,3 +110,4 @@ class UserAdminController extends Controller
         ));
     }
 }
+
