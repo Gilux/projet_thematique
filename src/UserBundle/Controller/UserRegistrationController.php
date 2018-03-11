@@ -11,16 +11,23 @@ class UserRegistrationController extends Controller
 {
     public function demandeAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $user = new User();
 
-        $form = $this->get('form.factory')->create(UserRegistrationType::class, $user);
-        
+        $form = $this->get('form.factory')->create(UserRegistrationType::class, $user, array(
+            'entity_manager' => $em,
+        ));
+
+
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+
             // Mettre un username et un mot de passe temporaire
             $user->setUsername($user->getEmail());
             $randomFirstPassword = uniqid();
             $user->setPlainPassword($randomFirstPassword);
             $user->addRole("ROLE_ENSEIGNANT");
+
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
