@@ -70,13 +70,25 @@ fos_user:
     firewall_name: main
     user_class: UserBundle\Entity\User
     from_email:
-        address: "%dev_mailer_user%"
-        sender_name: "%dev_mailer_user%"
+        address: "%mailer_user%"
+        sender_name: "%mailer_user%"
     registration:
         form:
             type: UserBundle\Form\Type\UserRegistrationType
     resetting:
         email:
             from_email:
-                address: "%dev_mailer_user%"
-                sender_name: "%dev_mailer_user%"
+                address: "%mailer_user%"
+                sender_name: "%mailer_user%"
+
+swiftmailer:
+    transport: '%mailer_transport%'
+    host:      '%mailer_host%'
+    username:  '%mailer_user%'
+    port: '%mailer_port%'
+    encryption: '%mailer_encryption%'
+    password:  '%mailer_password%'
+    stream_options:
+      ssl:
+        allow_self_signed: true
+        verify_peer: false
