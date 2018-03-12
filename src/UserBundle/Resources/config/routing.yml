@@ -7,5 +7,5 @@ user_demandecompte:
     defaults: { _controller: UserBundle:UserRegistration:demande }
 
 user_edit:
-    path:     /user/profil/edit
+    path:     /user/edit
     defaults: { _controller: UserBundle:UserProfile:edit }

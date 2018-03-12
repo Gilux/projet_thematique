@@ -1,7 +1,7 @@
 Projet thématique "Dépôt de devoirs en ligne"
 ========================
 
-Utilise Symfony 3.3
+Utilise Symfony 3.4
 
 ## Installation du projet
 
@@ -19,12 +19,12 @@ Utilise Symfony 3.3
 
 app/config/parameters.yml : 
 
- - dev_mailer_transport: smtp
- - dev_mailer_host: smtp-mail.outlook.com
- - dev_mailer_port: 587
- - dev_mailer_user: miage_depot_devoirs@outlook.fr
- - dev_mailer_password: (voir messenger)
- - dev_mailer_encryption: tls
+ - mailer_transport: smtp
+ - mailer_host: smtp-mail.outlook.com
+ - mailer_port: 587
+ - mailer_user: miage_depot_devoirs@outlook.fr
+ - mailer_password: (voir messenger)
+ - mailer_encryption: tls
 
 
 
