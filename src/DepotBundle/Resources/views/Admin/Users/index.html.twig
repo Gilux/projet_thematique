@@ -43,7 +43,9 @@
                                     <td>
                                         <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
                                         /
-                                        Supprimer
+                                        <a href="{{ path("users_admin_delete", {id:u.id}) }}">
+                                            Supprimer
+                                        </a>
                                         {% if u.lastLogin == null and not u.enabled %}
                                             / <a href="{{ path("users_admin_validate_account", {id:u.id}) }}">Valider le
                                             compte</a>
@@ -94,7 +96,7 @@
                                 <td>
                                     <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
                                     {% if app.user.id != u.id %}
-                                        / <a href="{{ path("users_admin_disable_account", {id:u.id}) }}">Supprimer</a>
+                                        / <a href="{{ path("users_admin_delete", {id:u.id}) }}">Supprimer</a>
                                     {% endif %}
                                     {% if app.user.id != u.id  and u.enabled %}
                                         / <a href="{{ path("users_admin_disable_account", {id:u.id}) }}">Désactiver le
