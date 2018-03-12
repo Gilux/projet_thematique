@@ -11,14 +11,9 @@ class UserRegistrationController extends Controller
 {
     public function demandeAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
         $user = new User();
 
-        $form = $this->get('form.factory')->create(UserRegistrationType::class, $user, array(
-            'entity_manager' => $em,
-        ));
-
+        $form = $this->get('form.factory')->create(UserRegistrationType::class, $user);
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
 

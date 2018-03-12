@@ -26,6 +26,11 @@ DepotBundle\Entity\UE:
             targetEntity: Groupe
             mappedBy: UE
 
+    manyToMany:
+        users:
+            targetEntity: UserBundle\Entity\User
+            mappedBy: ues
+
 
 
     lifecycleCallbacks: {  }
