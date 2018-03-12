@@ -33,5 +33,8 @@ UserBundle\Entity\User:
         groupes_projet:
             targetEntity: DepotBundle\Entity\Groupe_projet
             inversedBy: users
+        ues:
+            targetEntity: DepotBundle\Entity\User
+            inversedBy: users
 
     lifecycleCallbacks: {  }
