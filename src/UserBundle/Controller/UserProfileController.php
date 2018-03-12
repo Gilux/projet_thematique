@@ -23,7 +23,7 @@ class UserProfileController extends Controller
     {
         $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
 
-        $editForm = $this->createForm('UserBundle\Form\Type\UserRegistrationType', $user);
+        $editForm = $this->createForm('UserBundle\Form\Type\UserRegistrationEditType', $user);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
