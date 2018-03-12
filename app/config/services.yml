@@ -33,3 +33,12 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+
+    app.security.authentication_event_listener:
+        class: UserBundle\EventListener\LoginListener
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@security.token_storage"
+            - "@security.authentication_utils"
+        tags:
+            - { name: kernel.event_subscriber }

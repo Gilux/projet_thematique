@@ -1,0 +1,32 @@
+DepotBundle\Entity\Groupe_projet:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\Groupe_projetRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 60
+        fichier:
+            type: string
+            length: 60
+            nullable: true
+        date:
+            type: date
+            nullable: true
+
+    manyToOne:
+        devoir:
+            targetEntity: Devoir
+            inversed_by: groupes_projets
+    manyToMany:
+          users:
+              targetEntity: UserBundle\Entity\User
+              mappedBy: groupes_projet
+
+    lifecycleCallbacks: {  }

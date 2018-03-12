@@ -1,0 +1,23 @@
+users_admin:
+    path:     /
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:index }
+
+users_admin_edit:
+    path:      /users/edit/{id}
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:edit }
+
+users_admin_delete:
+    path:      /users/delete/{id}
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:delete }
+
+users_admin_validate_account:
+    path:      /users/validate_account/{id}
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:validateAccount }
+
+users_admin_disable_account:
+    path:      /users/disable_account/{id}
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:disableAccount }
+
+users_admin_new:
+    path:      /users/new
+    defaults: { _controller: DepotBundle:Admin\UserAdmin:new }

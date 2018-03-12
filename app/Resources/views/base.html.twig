@@ -5,6 +5,7 @@
         <title>{% block title %}Test{% endblock %}</title>
         <link rel="stylesheet" href="{{ asset('css/utils.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/icons.css') }}">
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
@@ -16,8 +17,15 @@
                     {% block menu %}
                         {{ knp_menu_render('DepotBundle:Builder:mainMenu') }}
                     {% endblock %}
+
+                    <div class="logout-zone">
+                        <a href="{{ path("fos_user_security_logout") }}"><i class="icon-exit"></i> Déconnexion</a>
+                    </div>
                 </nav>
                 <section>
+                    {% for flashMessage in app.session.flashbag.get('notice') %}
+                        {{ flashMessage }}
+                    {% endfor %}
                     {% block main %} {% endblock %}
                 </section>
             {% endblock %}

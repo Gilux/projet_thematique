@@ -1,4 +1,5 @@
 imports:
+    - { resource: parameters.yml }
     - { resource: config.yml }
 
 framework:
@@ -36,6 +37,19 @@ monolog:
         #chromephp:
         #    type: chromephp
         #    level: info
+
+swiftmailer:
+    transport: %dev_mailer_transport%
+    host:      %dev_mailer_host%
+    username:  %dev_mailer_user%
+    port: %dev_mailer_port%
+    encryption: %dev_mailer_encryption%
+    password:  %dev_mailer_password%
+    stream_options:
+      ssl:
+        allow_self_signed: true
+        verify_peer: false
+
 
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']

@@ -1,0 +1,31 @@
+{% extends "admin.html.twig" %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Administration</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>Item 1</h3>
+                    <p>Accueil de l'interface d'administration : Inclure les demandes d'activation de compte...</p>
+                </div>
+            </div>
+        </div>
+
+        {% if(disabledUsers) %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="item">
+                        <h3>{{ disabledUsers|length }} demandes d'activation de comptes enseignant</h3>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

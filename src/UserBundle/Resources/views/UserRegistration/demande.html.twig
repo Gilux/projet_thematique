@@ -1,0 +1,51 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <div class="login-form-main">
+        {{ form_start(form, {'method': 'post', 'action': path('user_demandecompte'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+
+        {% for flashMessage in app.session.flashbag.get('notice') %}
+            {{ flashMessage }}
+        {% endfor %}
+
+        <h2>Demander la création d'un compte Enseignant</h2>
+        <p>
+            <em>Votre demande sera transmise à l'administrateur, qui pourra valider votre compte. Si votre compte est validé, vous recevrez alors
+                un e-mail vous indiquant vos identifiants temporaires.</em>
+        </p>
+
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.email) }}
+            {{ form_errors(form.email) }}
+            {{ form_widget(form.email) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.first_name) }}
+            {{ form_errors(form.first_name) }}
+            {{ form_widget(form.first_name) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.last_name) }}
+            {{ form_errors(form.last_name) }}
+            {{ form_widget(form.last_name) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.groupes) }}
+            {{ form_errors(form.groupes) }}
+            {{ form_widget(form.groupes) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_widget(form.submit) }}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "admin.html.twig" %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Administration des utilisateurs</h1>
+            </div>
+        </div>
+        {% if users_pending is not empty %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="item">
+                        <h3>Liste des utilisateurs en attente de modération</h3>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Adresse e-mail</th>
+                                <th>Rôle</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for u in users_pending %}
+                                <tr>
+                                    <td>{{ u.lastName }}</td>
+                                    <td>{{ u.firstName }}</td>
+                                    <td>{{ u.email }}</td>
+                                    <td>
+                                        {% if "ROLE_ADMIN" in u.roles %}
+                                            Administrateur
+                                        {% elseif "ROLE_ETUDIANT" in u.roles %}
+                                            Étudiant
+                                        {% elseif "ROLE_ENSEIGNANT" in u.roles %}
+                                            Enseignant
+                                        {% else %}
+                                            Non défini
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
+                                        /
+                                        <a href="{{ path("users_admin_delete", {id:u.id}) }}">
+                                            Supprimer
+                                        </a>
+                                        {% if u.lastLogin == null and not u.enabled %}
+                                            / <a href="{{ path("users_admin_validate_account", {id:u.id}) }}">Valider le
+                                            compte</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>Liste des utilisateurs</h3>
+                    <a class="btn btn-primary pull-right" href="{{ path("users_admin_new") }}">Nouvel utilisateur</a>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Adresse e-mail</th>
+                            <th>Rôle</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for u in users %}
+                            <tr>
+                                <td>{{ u.lastName }}</td>
+                                <td>{{ u.firstName }}</td>
+                                <td>{{ u.email }}</td>
+                                <td>
+                                    {% if "ROLE_ADMIN" in u.roles %}
+                                        Administrateur
+                                    {% elseif "ROLE_ETUDIANT" in u.roles %}
+                                        Étudiant
+                                    {% elseif "ROLE_ENSEIGNANT" in u.roles %}
+                                        Enseignant
+                                    {% else %}
+                                        Non défini
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
+                                    {% if app.user.id != u.id %}
+                                        / <a href="{{ path("users_admin_delete", {id:u.id}) }}">Supprimer</a>
+                                    {% endif %}
+                                    {% if app.user.id != u.id  and u.enabled %}
+                                        / <a href="{{ path("users_admin_disable_account", {id:u.id}) }}">Désactiver le
+                                        compte</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

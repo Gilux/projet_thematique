@@ -1,0 +1,29 @@
+DepotBundle\Entity\Commentaire:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\CommentaireRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+    fields:
+        texte:
+            type: string
+            length: 60
+
+        date:
+            type: date
+
+        commentaire_parent_id:
+            type: string
+            length: 60
+
+    manyToOne:
+        user:
+            targetEntity: UserBundle\Entity\User
+            inversedBy: commentaires
+
+    lifecycleCallbacks: {  }
