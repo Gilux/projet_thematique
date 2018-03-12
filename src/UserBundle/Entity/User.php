@@ -33,6 +33,7 @@ class User extends BaseUser
     {
         return $this->id;
     }
+
     /**
      * @var string
      */
@@ -91,6 +92,7 @@ class User extends BaseUser
     {
         return $this->last_name;
     }
+
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
@@ -130,6 +132,7 @@ class User extends BaseUser
     {
         return $this->commentaires;
     }
+
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
@@ -169,6 +172,7 @@ class User extends BaseUser
     {
         return $this->groupes;
     }
+
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
@@ -208,6 +212,7 @@ class User extends BaseUser
     {
         return $this->groupes_projet;
     }
+
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
@@ -246,5 +251,69 @@ class User extends BaseUser
     public function getNotifications()
     {
         return $this->notifications;
+    }
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $ues;
+
+
+    /**
+     * Add ue
+     *
+     * @param \DepotBundle\Entity\UE $ue
+     *
+     * @return User
+     */
+    public function addUes(\DepotBundle\Entity\UE $ue)
+    {
+        $this->ues[] = $ue;
+
+        return $this;
+    }
+
+    /**
+     * Remove ue
+     *
+     * @param \DepotBundle\Entity\UE $ue
+     */
+    public function removeUes(\DepotBundle\Entity\UE $ue)
+    {
+        $this->ues->removeElement($ue);
+    }
+
+    /**
+     * Get ue
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUes()
+    {
+        return $this->ues;
+    }
+
+    /**
+     * Add ue
+     *
+     * @param \DepotBundle\Entity\UE $ue
+     *
+     * @return User
+     */
+    public function addUe(\DepotBundle\Entity\UE $ue)
+    {
+        $this->ues[] = $ue;
+
+        return $this;
+    }
+
+    /**
+     * Remove ue
+     *
+     * @param \DepotBundle\Entity\UE $ue
+     */
+    public function removeUe(\DepotBundle\Entity\UE $ue)
+    {
+        $this->ues->removeElement($ue);
     }
 }

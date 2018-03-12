@@ -30,9 +30,32 @@ class UserAdminController extends Controller
 
     }
 
+    public function sendCredentials(User $user, $randomPassword)
+    {
+        $message = (new \Swift_Message('[MIAGE] Vos identifiants du dépôt de devoirs en ligne'))
+            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+            ->setTo($user->getEmail())
+            ->setBody(
+                $this->renderView(
+                    'Emails/registration.html.twig',
+                    array('first_name' => $user->getFirstName(), 'last_name' => $user->getLastName(), 'credentials' => [
+                        'login' => $user->getEmail(),
+                        'first_password' => $randomPassword
+                    ])
+                ),
+                'text/html'
+            );
+        $this->get('mailer')->send($message);
+    }
+
     public function validateAccountAction(Request $request, User $user)
     {
         $user->setEnabled(1);
+        if ($user->getLastLogin() == NULL) {
+            $randomFirstPassword = uniqid();
+            $user->setPlainPassword($randomFirstPassword);
+            $this->sendCredentials($user, $randomFirstPassword);
+        }
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
         $em->flush();
@@ -78,26 +101,11 @@ class UserAdminController extends Controller
             $randomFirstPassword = uniqid();
 
             $user->setPlainPassword($randomFirstPassword);
-
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
 
-            // TODO : Gérer les envois de mails
-            $message = (new \Swift_Message('[MIAGE] Vos identifiants du dépôt de devoirs en ligne'))
-                ->setFrom([$this->getParameter('dev_mailer_user') => 'Dépôt de devoirs'])
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->renderView(
-                        'Emails/registration.html.twig',
-                        array('first_name' => $user->getFirstName(), 'last_name' => $user->getLastName(), 'credentials' => [
-                            'login' => $user->getEmail(),
-                            'first_password' => $randomFirstPassword
-                        ])
-                    ),
-                    'text/html'
-                );
-            $retour = $this->get('mailer')->send($message);
+            $this->sendCredentials($user, $randomFirstPassword);
 
 
             $request->getSession()->getFlashBag()->add('notice', 'Utilisateur bien enregistré.');
