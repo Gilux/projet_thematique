@@ -11,8 +11,7 @@ DepotBundle\Entity\Devoir:
 
     fields:
         intitule:
-            type: string
-            length: 60
+            type: text
 
         titre:
             type: string
@@ -20,11 +19,8 @@ DepotBundle\Entity\Devoir:
 
         fichier:
             type: string
-            length: 60
-
-        extensions_authorisee:
-            type: string
-            length: 60
+            length: 255
+            nullable: true
 
 
     oneToMany:
@@ -40,5 +36,10 @@ DepotBundle\Entity\Devoir:
          UE:
              targetEntity: UE
              inversedBy: devoirs
+
+    manyToMany:
+        extensions:
+            targetEntity: DepotBundle\Entity\FileExtension
+            inversedBy: devoirs
 
     lifecycleCallbacks: {  }

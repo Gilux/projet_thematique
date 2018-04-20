@@ -19,7 +19,7 @@ DepotBundle\Entity\Groupe:
     manyToOne:
         UE:
             targetEntity: UE
-            mappedBy: groupes
+            inversedBy: groupes
     manyToMany:
         users:
             targetEntity: UserBundle\Entity\User

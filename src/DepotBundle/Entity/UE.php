@@ -35,6 +35,11 @@ class UE
         $this->devoirs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->code. " ". $this->nom;
+    }
+
     /**
      * Get id
      *

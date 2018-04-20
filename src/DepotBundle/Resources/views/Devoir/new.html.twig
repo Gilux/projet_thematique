@@ -1,55 +1,123 @@
 {% extends "base.html.twig" %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
+{% endblock %}
+
 {% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <script src="{{ asset("vendor/ckeditor/ckeditor.js") }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function(e){
-            CKEDITOR.replace( "description" )
-        })
+            CKEDITOR.replace( "devoir_new_intitule" )
+        });
+
+        $("#{{ add_form.UE.vars.id }}").on("change", function () {
+            $.ajax({
+                url:'{{ (path('get_groupe')) }}',
+                type: "POST",
+                dataType: "text",
+                data: {
+                    "ue_id": $("#{{ add_form.UE.vars.id }}").val()
+                },
+                async: true,
+                success: function (data)
+                {
+                    $("#bloc_groupes").html(data);
+                }
+            });
+        });
+
+        $("#{{ add_form.UE.vars.id }}").trigger("change");
+
+        $("#{{ add_form.extensions.vars.id }}").select2({width: '100%'});
+
+        $("#{{ add_form.fichiers.vars.id }}").on("change", function(e){
+            var files = e.target.files || e.dataTransfer.files;
+
+            $("#message").html("");
+            for (var i = 0, f; f = files[i]; i++) {
+                $("#message").html($("#message").html()+
+                    "<p>Information sur le fichier : <strong>" + f.name +
+                    "</strong> type: <strong>" + f.type +
+                    "</strong> taille: <strong>" + f.size*(Math.pow(10, -6)) +
+                    "</strong> MB</p>"
+                )
+            }
+        });
+
+        $("#{{ add_form.if_groupes.vars.id }}").on("change", function(){
+            if($(this).is(":checked"))
+            {
+                $("#{{ add_form.nb_min_etudiant.vars.id }}").val("");
+                $("#{{ add_form.nb_max_etudiant.vars.id }}").val("");
+                $("#bloc_nb_etudiant").show();
+            }
+            else
+            {
+                $("#{{ add_form.nb_min_etudiant.vars.id }}").val(1);
+                $("#{{ add_form.nb_max_etudiant.vars.id }}").val(1);
+                $("#bloc_nb_etudiant").hide();
+            }
+        });
+
     </script>
 {% endblock %}
 
-
 {% block main %}
     <div class="container">
-        <form>
             <div class="row">
                 <div class="col-xs-12">
                     <h1>Créer un nouveau devoir</h1>
                 </div>
             </div>
 
+            {{ form_start(add_form) }}
+            {% if errors is defined %}
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul class="text-danger">
+                            {% for error in errors %}
+                                {% if error != '' %}
+                                    <li>{{ error }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
             <div class="row">
                 <div class="col-xs-12">
                     <div class="item">
                         <h3>Informations générales du devoir</h3>
                         <div class="form-group">
-                            <label for="nom">Nom</label>
-                            <input type="text" class="form-control" id="nom" placeholder="Nom du devoir">
+                            {{ form_row(add_form.titre) }}
                         </div>
 
                         <div class="form-group">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" value="" name="groupes">
-                                    Ce devoir est à rendre par groupes
+                                    {{ form_row(add_form.if_groupes) }}
                                 </label>
                             </div>
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group" id="bloc_nb_etudiant">
                             <div class="row">
                                 <span class="col-md-3 control-label">Configuration des groupes</span>
                                 <div class="col-md-9">
                                     <div class="form-group row">
-                                        <label for="inputKey" class="col-md-1 control-label">Minimum</label>
+                                        <label for="inputValue" class="col-md-1 control-label">{{ form_label(add_form.nb_min_etudiant) }}</label>
                                         <div class="col-md-2">
-                                            <input type="number" class="form-control" id="inputKey" value="3">
+                                            {{ form_widget(add_form.nb_min_etudiant) }}
                                         </div>
-                                        <label for="inputValue" class="col-md-1 control-label">Maximum</label>
+                                        <label for="inputValue" class="col-md-1 control-label">{{ form_label(add_form.nb_max_etudiant) }}</label>
                                         <div class="col-md-2">
-                                            <input type="number" class="form-control" id="inputValue" value="5">
+                                            {{ form_widget(add_form.nb_max_etudiant) }}
                                         </div>
                                     </div>
                                 </div>
@@ -66,100 +134,58 @@
                     <div class="item">
                         <h3>Groupes d'étudiants concernés et rendus</h3>
                         <div class="form-group">
-                            <label for="ue">UE :</label>
-                            <select name="ue" id="ue" value="option2">
-                                <option value="1">ASI</option>
-                                <option value="2">ASI2</option>
-                                <option value="3">ASI Avancé</option>
-                            </select>
+                            {{ form_row(add_form.UE) }}
+                        </div>
+
+                        <div class="form-group" id="bloc_groupes">
+
                         </div>
 
                         <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <div class="col-md-3">
-                                            <label>
-                                                <input type="checkbox" value="" name="groupes">
-                                                GR1
-                                            </label>
-                                        </div>
-
-                                        <label for="inputValue" class="col-md-3 control-label text-right">rendu :</label>
-                                        <div class="col-md-3">
-                                            <input type="date" class="form-control" id="inputValue"
-                                                   placeholder="Value">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <div class="col-md-3">
-                                            <label>
-                                                <input type="checkbox" value="" name="groupes">
-                                                GR2
-                                            </label>
-                                        </div>
-
-                                        <label for="inputValue" class="col-md-3 control-label text-right">rendu :</label>
-                                        <div class="col-md-3">
-                                            <input type="date" class="form-control" id="inputValue"
-                                                   placeholder="Value">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <div class="col-md-3">
-                                            <label>
-                                                <input type="checkbox" value="" name="groupes">
-                                                GR3
-                                            </label>
-                                        </div>
-
-                                        <label for="inputValue" class="col-md-3 control-label text-right">rendu :</label>
-                                        <div class="col-md-3">
-                                            <input type="date" class="form-control" id="inputValue"
-                                                   placeholder="Value">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form_row(add_form.date_bloquante) }}
+                                </label>
                             </div>
                         </div>
 
-
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    {{ form_row(add_form.extensions) }}
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="item">
-                        <h3>Description</h3>
+                        <h3>Consignes et documents</h3>
                         <div class="form-group">
-                            <textarea id="description">
-
-                            </textarea>
+                            {{ form_row(add_form.fichiers, { 'attr': {'accept': '.pdf, .zip, .doc, .docx'} }) }}
                         </div>
+                        <div id="message">
 
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-xs-7 col-right">
                     <div class="item">
-                        <h3>Consignes et documents</h3>
-                        <p id="dropzone">
-                            Déposer votre fichier ici
-                        </p>
+                        <h3>Description</h3>
+                        <div class="form-group">
+                            {{ form_widget(add_form.intitule) }}
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <input type="submit" class="btn btn-primary pull-right" id="_submit" name="_submit" value="Enregistrer" />.
+                    {{ form_widget(add_form.save, { 'attr': {'class': 'pull-right'} }) }}
                 </div>
             </div>
-        </form>
+
+
+            {{ form_end(add_form) }}
 
     </div>
 

@@ -9,3 +9,7 @@ show_devoir:
 new_devoir:
     path:     /devoir/new
     defaults: { _controller: DepotBundle:Devoir:new }
+
+get_groupe:
+    path: /groupe
+    defaults: { _controller: DepotBundle:Devoir:getgroupe }

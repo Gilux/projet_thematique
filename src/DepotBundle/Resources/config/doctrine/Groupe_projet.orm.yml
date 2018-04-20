@@ -23,7 +23,7 @@ DepotBundle\Entity\Groupe_projet:
     manyToOne:
         devoir:
             targetEntity: Devoir
-            inversed_by: groupes_projets
+            inversedBy: groupes_projets
     manyToMany:
           users:
               targetEntity: UserBundle\Entity\User

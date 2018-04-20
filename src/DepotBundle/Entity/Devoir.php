@@ -28,11 +28,6 @@ class Devoir
     private $fichier;
 
     /**
-     * @var string
-     */
-    private $extensions_authorisee;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $groupes_projets;
@@ -43,12 +38,23 @@ class Devoir
     private $groupe_devoir;
 
     /**
+     * @var \DepotBundle\Entity\UE
+     */
+    private $UE;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $extensions;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->groupes_projets = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groupe_devoir = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->extensions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -134,30 +140,6 @@ class Devoir
     }
 
     /**
-     * Set extensionsAuthorisee
-     *
-     * @param string $extensionsAuthorisee
-     *
-     * @return Devoir
-     */
-    public function setExtensionsAuthorisee($extensionsAuthorisee)
-    {
-        $this->extensions_authorisee = $extensionsAuthorisee;
-
-        return $this;
-    }
-
-    /**
-     * Get extensionsAuthorisee
-     *
-     * @return string
-     */
-    public function getExtensionsAuthorisee()
-    {
-        return $this->extensions_authorisee;
-    }
-
-    /**
      * Add groupesProjet
      *
      * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
@@ -226,11 +208,6 @@ class Devoir
     }
 
     /**
-     * @var \DepotBundle\Entity\UE
-     */
-    private $UE;
-
-    /**
      * Set uE
      *
      * @param \DepotBundle\Entity\UE $uE
@@ -252,5 +229,39 @@ class Devoir
     public function getUE()
     {
         return $this->UE;
+    }
+
+    /**
+     * Add extension
+     *
+     * @param \DepotBundle\Entity\FileExtension $extension
+     *
+     * @return Devoir
+     */
+    public function addExtension(\DepotBundle\Entity\FileExtension $extension )
+    {
+        $this->extensions[] = $extension;
+
+        return $this;
+    }
+
+    /**
+     * Remove extension
+     *
+     * @param \DepotBundle\Entity\FileExtension $extension
+     */
+    public function removeExtension(\DepotBundle\Entity\FileExtension $extension)
+    {
+        $this->extensions->removeElement($extension);
+    }
+
+    /**
+     * Get extension
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getExtensions()
+    {
+        return $this->extensions;
     }
 }
