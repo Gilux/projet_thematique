@@ -1,0 +1,22 @@
+DepotBundle\Entity\FileExtension:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\FileExtensionRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        extension:
+            type: string
+            length: '10'
+
+
+    manyToMany:
+        devoirs:
+            targetEntity: DepotBundle\Entity\Devoir
+            mappedBy: extensions
+
+    lifecycleCallbacks: {  }

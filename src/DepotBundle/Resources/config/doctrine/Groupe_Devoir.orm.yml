@@ -11,7 +11,7 @@ DepotBundle\Entity\Groupe_Devoir:
 
     fields:
         date_a_rendre:
-            type: date
+            type: datetime
             length: 60
 
         date_bloquante:
