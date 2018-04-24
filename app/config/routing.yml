@@ -24,3 +24,7 @@ fos_user_profile_show:
 user:
     resource: "@UserBundle/Resources/config/routing.yml"
     prefix:   /
+
+mgilet_notifications:
+    resource: "@MgiletNotificationBundle/Controller/"
+    prefix: /notifications

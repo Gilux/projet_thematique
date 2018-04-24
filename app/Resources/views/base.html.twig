@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Test{% endblock %}</title>
-        <link rel="stylesheet" href="{{ asset('css/utils.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/icons.css') }}">
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
-        <main>
-            {% block body %}
-                <nav>
-                    <h1 class="text-center">MiageDepot</h1>
-                    {% block menu %}
-                        {{ knp_menu_render('DepotBundle:Builder:mainMenu') }}
-                    {% endblock %}
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Test{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/utils.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/icons.css') }}">
+    {% block stylesheets %}{% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+</head>
+<body>
+<main>
 
-                    <div class="logout-zone">
-                        <a href="{{ path("fos_user_security_logout") }}"><i class="icon-exit"></i> Déconnexion</a>
-                    </div>
-                </nav>
-                <section>
-                    {% for flashMessage in app.session.flashbag.get('notice') %}
-                        {{ flashMessage }}
-                    {% endfor %}
-                    {% block main %} {% endblock %}
-                </section>
+    {% block body %}
+        <nav>
+            <h1 class="text-center">MiageDepot</h1>
+            {% block menu %}
+                {{ knp_menu_render('DepotBundle:Builder:mainMenu') }}
             {% endblock %}
-        </main>
+            <details>
+                <summary>Show notifications</summary>
+                <p>{{ mgilet_notification_render(app.user) }}</p>
+            </details>
+            <div class="logout-zone">
+                <a href="{{ path("fos_user_security_logout") }}"><i class="icon-exit"></i> Déconnexion</a>
+            </div>
+        </nav>
+        <section>
+            {% for flashMessage in app.session.flashbag.get('notice') %}
+                {{ flashMessage }}
+            {% endfor %}
+            {% block main %} {% endblock %}
+        </section>
+    {% endblock %}
+</main>
 
 
-        {% block javascripts %}{% endblock %}
-    </body>
+{% block javascripts %}{% endblock %}
+</body>
 </html>

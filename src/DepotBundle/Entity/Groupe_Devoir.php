@@ -2,9 +2,11 @@
 
 namespace DepotBundle\Entity;
 
+
 /**
  * Groupe_Devoir
  */
+
 class Groupe_Devoir
 {
     /**
