@@ -26,5 +26,8 @@ user:
     prefix:   /
 
 mgilet_notifications:
-    resource: "@MgiletNotificationBundle/Controller/"
+    resource: "@DepotBundle/Controller/NotificationController.php"
     prefix: /notifications
+    type: annotation
+
+

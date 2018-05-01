@@ -5,15 +5,12 @@ namespace DepotBundle\Controller;
 use DepotBundle\Entity\Devoir;
 use DepotBundle\Entity\Groupe;
 use DepotBundle\Entity\Groupe_Devoir;
-use Mgilet\NotificationBundle\Controller\NotificationController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\DateTime;
 use UserBundle\Entity\User;
 
 class DevoirController extends Controller

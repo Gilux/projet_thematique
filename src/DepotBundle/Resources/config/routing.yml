@@ -13,3 +13,4 @@ new_devoir:
 get_groupe:
     path: /groupe
     defaults: { _controller: DepotBundle:Devoir:getgroupe }
+

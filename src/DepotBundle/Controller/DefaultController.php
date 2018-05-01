@@ -2,7 +2,6 @@
 
 namespace DepotBundle\Controller;
 
-use Mgilet\NotificationBundle\Controller\NotificationController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class DefaultController extends Controller
