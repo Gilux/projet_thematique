@@ -10,6 +10,15 @@ new_devoir:
     path:     /devoir/new
     defaults: { _controller: DepotBundle:Devoir:new }
 
+edit_devoir:
+    path:     /devoir/{id}/edit
+    defaults: { _controller: DepotBundle:Devoir:edit }
+
+delete_devoir:
+    path:     /devoir/{id}/delete
+    defaults: { _controller: DepotBundle:Devoir:delete }
+    methods: DELETE
+
 get_groupe:
     path: /groupe
     defaults: { _controller: DepotBundle:Devoir:getgroupe }

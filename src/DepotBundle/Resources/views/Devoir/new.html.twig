@@ -12,7 +12,7 @@
     <script src="{{ asset("vendor/ckeditor/ckeditor.js") }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function(e){
-            CKEDITOR.replace( "devoir_new_intitule" )
+            CKEDITOR.replace( "{{ add_form.intitule.vars.id }}" )
         });
 
         $("#{{ add_form.UE.vars.id }}").on("change", function () {
@@ -35,25 +35,9 @@
 
         $("#{{ add_form.extensions.vars.id }}").select2({width: '100%'});
 
-        $("#{{ add_form.fichiers.vars.id }}").on("change", function(e){
-            var files = e.target.files || e.dataTransfer.files;
-
-            $("#message").html("");
-            for (var i = 0, f; f = files[i]; i++) {
-                $("#message").html($("#message").html()+
-                    "<p>Information sur le fichier : <strong>" + f.name +
-                    "</strong> type: <strong>" + f.type +
-                    "</strong> taille: <strong>" + f.size*(Math.pow(10, -6)) +
-                    "</strong> MB</p>"
-                )
-            }
-        });
-
         $("#{{ add_form.if_groupes.vars.id }}").on("change", function(){
             if($(this).is(":checked"))
             {
-                $("#{{ add_form.nb_min_etudiant.vars.id }}").val("");
-                $("#{{ add_form.nb_max_etudiant.vars.id }}").val("");
                 $("#bloc_nb_etudiant").show();
             }
             else
@@ -63,6 +47,8 @@
                 $("#bloc_nb_etudiant").hide();
             }
         });
+
+        $("#{{ add_form.if_groupes.vars.id }}").trigger("change");
 
     </script>
 {% endblock %}
@@ -76,19 +62,7 @@
             </div>
 
             {{ form_start(add_form) }}
-            {% if errors is defined %}
-                <div class="row">
-                    <div class="col-xs-12">
-                        <ul class="text-danger">
-                            {% for error in errors %}
-                                {% if error != '' %}
-                                    <li>{{ error }}</li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            {% endif %}
+
             <div class="row">
                 <div class="col-xs-12">
                     <div class="item">
@@ -157,16 +131,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="item">
-                        <h3>Consignes et documents</h3>
-                        <div class="form-group">
-                            {{ form_row(add_form.fichiers, { 'attr': {'accept': '.pdf, .zip, .doc, .docx'} }) }}
-                        </div>
-                        <div id="message">
-
-                        </div>
-                    </div>
                 </div>
 
                 <div class="col-xs-7 col-right">
@@ -175,6 +139,16 @@
                         <div class="form-group">
                             {{ form_widget(add_form.intitule) }}
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-left">
+                    <div class="item">
+                        <h3>Consignes et documents</h3>
+                        {{ form_row(add_form.fichier) }}
+
                     </div>
                 </div>
             </div>
