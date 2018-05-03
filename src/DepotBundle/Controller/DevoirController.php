@@ -278,6 +278,11 @@ class DevoirController extends Controller
         return $errors;
     }
 
+    /**
+     * @param Request $request
+     * @param Devoir $devoir
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
     public function editAction(Request $request, Devoir $devoir)
     {
         $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
@@ -299,26 +304,124 @@ class DevoirController extends Controller
         }
 
         if ($devoir->getFichier() != null) {
+            //Sauvegarder le nom du fichier
+            $temp_filename = $devoir->getFichier();
+
             $devoir->setFichier(new File($this->getParameter("documents_devoirs_directory") . "/" . $devoir->getFichier()));
         }
-
-        //Sauvegarder le nom du fichier
-        $file =
 
         $deleteForm = $this->createDeleteForm($devoir);
         $editForm = $this->createForm('DepotBundle\Form\Type\DevoirEditType', $devoir, array('ues' => $user->getUEs(), 'gd' => $gd));
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            // Récupération des données concernant les groupes
+            $data = $request->request->get('groupes');
+
+            for ($i = 0; $i < count($data); $i++) {
+                // Si le groupe est coché
+                if (isset($data[$i]['id'])) {
+                    // Récupération de l'identifiant du groupe
+                    $id = key($data[$i]['id']);
+                    // Récupération de la date de rendu saisie
+                    $date_rendu = new \DateTime($data[$i]["date"]);
+
+                    // Hydratation de l'objet Devoir
+                    $groupe_devoir = new Groupe_Devoir();
+                    $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($id);
+                    $groupe_devoir->setGroupe($groupe[0]);
+                    $groupe_devoir->setDevoir($devoir);
+                    $groupe_devoir->setDateARendre($date_rendu);
+                    $groupe_devoir->setDateBloquante($editForm->get("date_bloquante")->getData());
+                    $groupe_devoir->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
+                    $groupe_devoir->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
+
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($groupe_devoir);
+
+                    $devoir->addGroupeDevoir($groupe_devoir);
+                }
+            }
+
+            // Si aucun groupe n'a été coché
+            if (count($devoir->getGroupeDevoir()) == 0) {
+                $errors[] = "Aucun groupe n'a été coché";
+
+                return $this->render('DepotBundle:Devoir:new.html.twig', array(
+                    'devoir' => $devoir,
+                    'user' => $user,
+                    'add_form' => $editForm->createView(),
+                    'errors' => $errors
+                ));
+            }
+
+            if ($devoir->getFichier() != null) {
+                $f = new File($devoir->getFichier());
+                $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
+                $f->move($this->getParameter("documents_devoirs_directory"), $fname);
+                $devoir->setFichier($fname);
+
+                if (isset($temp_filename)) {
+                    $fileSystem = new Filesystem();
+                    $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
+                }
+            } else {
+                if ($editForm->get("conserve_file")->getData()) {
+                    $devoir->setFichier($temp_filename);
+                } else {
+                    if (isset($temp_filename)) {
+                        $fileSystem = new Filesystem();
+                        $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
+                    }
+                }
+            }
+
+
             $this->getDoctrine()->getManager()->flush();
+
             return $this->redirectToRoute('edit_devoir', array('id' => $devoir->getId()));
         }
         return $this->render('DepotBundle:Devoir:edit.html.twig', array(
             'devoir' => $devoir,
             'edit_form' => $editForm->createView(),
             'groupes' => $groupes,
-            //'delete_form' => $deleteForm->createView(),
+            'delete_form' => $deleteForm->createView(),
         ));
+    }
+
+    /**
+     * @param Request $request
+     * @param Devoir $devoir
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public
+    function deleteAction(Request $request, Devoir $devoir)
+    {
+        $form = $this->createDeleteForm($devoir);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            //Supprimer les Groupes Devoirs
+            foreach ($devoir->getGroupeDevoir() as $gd) {
+                $devoir->removeGroupeDevoir($gd);
+                $em->remove($gd);
+
+            }
+            $em->flush();
+
+            //Supprimer le fichier
+            if ($devoir->getFichier() != null) {
+                $fileSystem = new Filesystem();
+                $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $devoir->getFichier()));
+            }
+
+            //Supprimer le devoir
+            $em->remove($devoir);
+            $em->flush();
+        }
+        return $this->redirectToRoute('depot_homepage');
     }
 
     /**
@@ -328,7 +431,8 @@ class DevoirController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Devoir $devoir)
+    private
+    function createDeleteForm(Devoir $devoir)
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('delete_devoir', array('id' => $devoir->getId())))

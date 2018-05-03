@@ -58,6 +58,13 @@
 
         $("#{{ edit_form.if_groupes.vars.id }}").trigger("change");
 
+        {% if edit_form.fichier.vars.data.filename is defined %}
+            $("#{{ edit_form.conserve_file.vars.id }}").parent().show();
+        {% else %}
+            $("#{{ edit_form.conserve_file.vars.id }}").prop("checked", false);
+            $("#{{ edit_form.conserve_file.vars.id }}").parent().hide();
+        {% endif %}
+
     </script>
 {% endblock %}
 
@@ -159,10 +166,10 @@
                         <strong>{{ form_label(edit_form.fichier) }}</strong>
                         {{ form_widget(edit_form.fichier) }}
                     </div>
+                    <div>
+                        {{ form_row(edit_form.conserve_file) }}
+                    </div>
                     {% if edit_form.fichier.vars.data.filename is defined %}
-                        <div>
-                            {{ form_row(edit_form.conserve_file) }}
-                        </div>
                         <p><strong>Fichier importé : </strong>{{ edit_form.fichier.vars.data.filename }}</p>
                         <p><strong>Sélectionner un fichier pour le remplacer</strong></p>
                     {% endif %}
@@ -172,11 +179,15 @@
         <div class="row">
             <div class="col-xs-12">
                 {{ form_widget(edit_form.save, { 'attr': {'class': 'pull-right'} }) }}
+        {{ form_end(edit_form) }}
+        {{ form_start(delete_form, { 'attr': {'class': 'pull-right'} }) }}
+                <button class="btn pull-right" style="margin-right: 15px" type="submit">Supprimer</button>
+        {{ form_end(delete_form) }}
             </div>
         </div>
 
 
-        {{ form_end(edit_form) }}
+
 
     </div>
 
