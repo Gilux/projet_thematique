@@ -6,12 +6,19 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Mgilet\NotificationBundle\Annotation\Notifiable;
+use Mgilet\NotificationBundle\NotifiableInterface;
 
 /**
  * @UniqueEntity(fields="email", message="Cette adresse e-mail est déjà utilisée")
  */
-class User extends BaseUser
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="groupe_devoir")
+ * @Notifiable(name="groupe_devoir")
+ */
+class User extends BaseUser implements NotifiableInterface
 {
     /**
      * @var int
@@ -211,46 +218,6 @@ class User extends BaseUser
     public function getGroupesProjet()
     {
         return $this->groupes_projet;
-    }
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $notifications;
-
-
-    /**
-     * Add notification
-     *
-     * @param \DepotBundle\Entity\Notification $notification
-     *
-     * @return User
-     */
-    public function addNotification(\DepotBundle\Entity\Notification $notification)
-    {
-        $this->notifications[] = $notification;
-
-        return $this;
-    }
-
-    /**
-     * Remove notification
-     *
-     * @param \DepotBundle\Entity\Notification $notification
-     */
-    public function removeNotification(\DepotBundle\Entity\Notification $notification)
-    {
-        $this->notifications->removeElement($notification);
-    }
-
-    /**
-     * Get notifications
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getNotifications()
-    {
-        return $this->notifications;
     }
 
     /**

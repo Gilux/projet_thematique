@@ -22,9 +22,6 @@ UserBundle\Entity\User:
         commentaires:
             targetEntity: DepotBundle\Entity\Commentaire
             mappedBy: user
-        notifications:
-            targetEntity: DepotBundle\Entity\Notification
-            mappedBy: user
 
     manyToMany:
         groupes:

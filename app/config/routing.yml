@@ -24,3 +24,10 @@ fos_user_profile_show:
 user:
     resource: "@UserBundle/Resources/config/routing.yml"
     prefix:   /
+
+mgilet_notifications:
+    resource: "@DepotBundle/Controller/NotificationController.php"
+    prefix: /notifications
+    type: annotation
+
+

@@ -30,7 +30,7 @@ DepotBundle\Entity\Devoir:
 
         groupe_devoir:
             targetEntity: Groupe_Devoir
-            mappedBy: groupe
+            mappedBy: devoir
 
     manyToOne:
          UE:

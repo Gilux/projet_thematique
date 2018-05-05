@@ -1,0 +1,30 @@
+<details>
+    {% set notification_unseen = mgilet_notification_unseen_count(notifiableInterface) %}
+    <summary>Notifications ({{ notification_unseen }})</summary>
+    {% if (notification_unseen != 0) %}
+        <form action="{{ mgilet_notification_generate_path('notification_mark_all_as_seen', notifiableNotifications|first.notifiableEntity) }}"
+              method="post">
+            <button type="submit">Tout marquer comme lu</button>
+        </form>
+    {% endif %}
+    <ul>
+        {% for notifiableNotification in notifiableNotifications %}
+            <li>
+                {% if notifiableNotification.seen %}
+                    {{ notifiableNotification.notification }}
+                    <form action="{{ mgilet_notification_generate_path('notification_mark_as_unseen', notifiableNotification.notifiableEntity, notifiableNotification.notification) }}"
+                          method="post">
+                        <button type="submit">Marquer comme non lu</button>
+                    </form>
+                {% else %}
+                    <b>{{ notifiableNotification.notification }}</b>
+                    <form action="{{ mgilet_notification_generate_path('notification_mark_as_seen', notifiableNotification.notifiableEntity, notifiableNotification.notification) }}"
+                          method="post">
+                        <button type="submit">Marquer comme lu</button>
+                    </form>
+                {% endif %}
+
+            </li>
+        {% endfor %}
+    </ul>
+</details>

@@ -9,18 +9,52 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\DateTime;
+use UserBundle\Entity\User;
 
 class DevoirController extends Controller
 {
-    public function indexAction() {
+    public function indexAction()
+    {
         return $this->render('DepotBundle:Devoir:index.html.twig');
     }
 
-    public function newAction(Request $request) {
+    public function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
+    {
+        $ueName = $groupeDevoir->getGroupe()->getUE();
+        $groupeName = $groupeDevoir->getGroupe()->getName();
+        $message = (new \Swift_Message('[MIAGE] Vous avez un nouveau devoir concernant : ' . $ueName . '/' . $groupeName . ''))
+            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+            ->setTo($user->getEmail())
+            ->setBody(
+                $this->renderView(
+                    'Emails/nouveau_devoir.html.twig',
+                    array(
+                        'first_name' => $user->getFirstName(),
+                        'last_name' => $user->getLastName(),
+                        'groupe' => $groupeName,
+                        'ue' => $ueName,
+                        'devoir' => [
+                            'titre' => $groupeDevoir->getDevoir()->getTitre(),
+                            'date_a_rendre' => $groupeDevoir->getDateARendre(),
+                        ]
+                    )
+                ),
+                'text/html'
+            );
+        $this->get('mailer')->send($message);
+
+        //notifications
+        $manager = $this->get('mgilet.notification');
+        $notif = $manager->createNotification('Nouveau devoir');
+        $notif->setMessage($ueName . '/' . $groupeName . ' : ' . $groupeDevoir->getDevoir()->getTitre() . '');
+        $notif->setLink('http://symfony.com/');
+        $manager->addNotification(array($user), $notif, true);
+    }
+
+    public function newAction(Request $request)
+    {
 
         $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
 
@@ -30,7 +64,7 @@ class DevoirController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if(count($form->get("fichiers")->getData()) != 0) {
+            if (count($form->get("fichiers")->getData()) != 0) {
                 /**
                  * Upload des fichiers
                  */
@@ -99,10 +133,11 @@ class DevoirController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($devoir);
 
-            for($i=0;$i<count($data);$i++)
-            {
+            $groupes = [];
+
+            for ($i = 0; $i < count($data); $i++) {
                 // Si le groupe est coché
-                if(isset($data[$i]['id'])){
+                if (isset($data[$i]['id'])) {
                     // Récupération de l'identifiant du groupe
                     $id = key($data[$i]['id']);
                     // Récupération de la date de rendu saisie
@@ -111,12 +146,18 @@ class DevoirController extends Controller
                     // Hydratation de l'objet Devoir
                     $groupe_devoir = new Groupe_Devoir();
                     $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($id);
+                    $groupes[] = $groupe;
                     $groupe_devoir->setGroupe($groupe[0]);
                     $groupe_devoir->setDevoir($devoir);
                     $groupe_devoir->setDateARendre($date_rendu);
                     $groupe_devoir->setDateBloquante($form->get("date_bloquante")->getData());
                     $groupe_devoir->setNbMaxEtudiant($form->get("nb_max_etudiant")->getData());
                     $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
+
+                    //récupérer les données des utilisateurs de tous les groupes set une notification + envoyer un mail
+                    foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                        $this->sendNotification($user, $groupe_devoir);
+                    }
 
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($groupe_devoir);
@@ -125,15 +166,12 @@ class DevoirController extends Controller
                 }
             }
 
-
             // Insertion en base de données
             $em->flush();
 
 
             return $this->redirectToRoute('depot_homepage');
-        }
-        else if($form->isSubmitted() && !$form->isValid())
-        {
+        } else if ($form->isSubmitted() && !$form->isValid()) {
             $errors = $this->getErrorMessages($form);
 
             return $this->render('DepotBundle:Devoir:new.html.twig', array(
@@ -161,12 +199,11 @@ class DevoirController extends Controller
 
     public function getGroupeAction(Request $request)
     {
-        if($request->request->get('ue_id')){
+        if ($request->request->get('ue_id')) {
             $groupes = $this->getDoctrine()->getRepository(Groupe::class)->findBy(["UE" => $request->request->get('ue_id')]);
 
             $data = "";
-            for($i=0;$i<count($groupes);$i++)
-            {
+            for ($i = 0; $i < count($groupes); $i++) {
                 $data .= $this->render('DepotBundle:Devoir:groupes.html.twig', array(
                     "id" => $groupes[$i]->getId(),
                     "name" => $groupes[$i]->getName(),
