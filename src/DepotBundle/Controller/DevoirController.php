@@ -286,6 +286,7 @@ class DevoirController extends Controller
     public function editAction(Request $request, Devoir $devoir)
     {
         $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
+        $temp_devoir = $devoir;
 
         $gd = array();
         $groupes = array();
@@ -302,6 +303,8 @@ class DevoirController extends Controller
 
             $devoir->addGroupeDevoir($groupe_devoir);
         }
+        $temp_groupes_devoirs = $devoir->getGroupeDevoir();
+
 
         if ($devoir->getFichier() != null) {
             //Sauvegarder le nom du fichier
@@ -318,6 +321,14 @@ class DevoirController extends Controller
             // Récupération des données concernant les groupes
             $data = $request->request->get('groupes');
 
+
+            //Supprimer les Groupes Devoirs
+            foreach ($devoir->getGroupeDevoir() as $gd) {
+                $devoir->removeGroupeDevoir($gd);
+                $this->getDoctrine()->getManager()->remove($gd);
+            }
+
+            //Ajouter
             for ($i = 0; $i < count($data); $i++) {
                 // Si le groupe est coché
                 if (isset($data[$i]['id'])) {
@@ -344,15 +355,25 @@ class DevoirController extends Controller
             }
 
             // Si aucun groupe n'a été coché
-            if (count($devoir->getGroupeDevoir()) == 0) {
-                $errors[] = "Aucun groupe n'a été coché";
 
-                return $this->render('DepotBundle:Devoir:new.html.twig', array(
+            if (count($devoir->getGroupeDevoir()) == 0) {
+                $errors["groupes_error"] = "Aucun groupe n'a été coché";
+
+                foreach ($devoir->getGroupeDevoir() as $gd) {
+                    $devoir->removeGroupeDevoir($gd);
+                }
+                foreach ($temp_groupes_devoirs as $gd) {
+                    $devoir->addGroupeDevoir($gd);
+                }
+
+                return $this->redirectToRoute('edit_devoir', array("id" => $devoir->getId()));
+                /*return $this->render('DepotBundle:Devoir:edit.html.twig', array(
                     'devoir' => $devoir,
                     'user' => $user,
-                    'add_form' => $editForm->createView(),
-                    'errors' => $errors
-                ));
+                    'edit_form' => $editForm->createView(),
+                    'errors' => $errors,
+                    'delete_form' => $deleteForm->createView(),
+                ));*/
             }
 
             if ($devoir->getFichier() != null) {

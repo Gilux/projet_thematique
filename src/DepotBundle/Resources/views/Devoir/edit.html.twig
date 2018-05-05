@@ -18,9 +18,11 @@
         $("#{{ edit_form.UE.vars.id }}").on("change", function () {
             var groupes = [];
             var groupes_checked = [];
-            {% for groupe in groupes %}
-                groupes.push({"groupe": {{ groupe["groupe"].id }}, "date": "{{ groupe["date_a_rendre"] }}"});
-            {% endfor %}
+            {% if groupes is defined %}
+                {% for groupe in groupes %}
+                    groupes.push({"groupe": {{ groupe["groupe"].id }}, "date": "{{ groupe["date_a_rendre"] }}"});
+                {% endfor %}
+            {% endif %}
 
             $.ajax({
                 url:'{{ (path('get_groupe')) }}',
@@ -35,6 +37,9 @@
                 {
                     $("#bloc_groupes").html("");
                     $("#bloc_groupes").append(data);
+                    {% if errors is defined %}
+                        $("#bloc_groupes").append("{{ errors.groupes_error }}");
+                    {% endif %}
                 }
             });
         });
