@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
 
+
 class DevoirController extends Controller
 {
     public function indexAction()
@@ -166,6 +167,26 @@ class DevoirController extends Controller
                 }
             }
 
+
+            // Si aucun groupe n'a été coché
+            if (count($devoir->getGroupeDevoir()) == 0) {
+                $errors[] = "Aucun groupe n'a été coché";
+
+                return $this->render('DepotBundle:Devoir:new.html.twig', array(
+                    'devoir' => $devoir,
+                    'user' => $user,
+                    'add_form' => $form->createView(),
+                    'errors' => $errors
+                ));
+            }
+
+            if ($devoir->getFichier() != null) {
+                $f = new File($devoir->getFichier());
+                $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
+                $f->move($this->getParameter("documents_devoirs_directory"), $fname);
+                $devoir->setFichier($fname);
+            }
+
             // Insertion en base de données
             $em->flush();
 
@@ -202,12 +223,30 @@ class DevoirController extends Controller
         if ($request->request->get('ue_id')) {
             $groupes = $this->getDoctrine()->getRepository(Groupe::class)->findBy(["UE" => $request->request->get('ue_id')]);
 
+            if ($request->request->get('groupes_checked')) {
+                $temp_groupes = $request->request->get('groupes_checked');
+            }
+
             $data = "";
+
             for ($i = 0; $i < count($groupes); $i++) {
+                $checked = false;
+                $date_a_rendre = false;
+                if (isset($temp_groupes)) {
+                    for ($j = 0; $j < count($temp_groupes); $j++) {
+                        if ($temp_groupes[$j]["groupe"] == $groupes[$i]->getId()) {
+                            $checked = true;
+                            $date_a_rendre = $temp_groupes[$j]["date"];
+                        }
+                    }
+                }
+
                 $data .= $this->render('DepotBundle:Devoir:groupes.html.twig', array(
                     "id" => $groupes[$i]->getId(),
                     "name" => $groupes[$i]->getName(),
-                    "it" => $i
+                    "it" => $i,
+                    "checked" => $checked,
+                    "date_a_rendre" => $date_a_rendre
                 ))->getContent();
             }
 
@@ -237,5 +276,188 @@ class DevoirController extends Controller
         }
 
         return $errors;
+    }
+
+    /**
+     * @param Request $request
+     * @param Devoir $devoir
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function editAction(Request $request, Devoir $devoir)
+    {
+        $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
+        $temp_devoir = $devoir;
+
+        $gd = array();
+        $groupes = array();
+        foreach ($devoir->getGroupeDevoir() as $groupe_devoir) {
+            $gd['nb_max_etudiant'] = $groupe_devoir->getNbMaxEtudiant();
+            $gd['nb_min_etudiant'] = $groupe_devoir->getNbMinEtudiant();
+            $gd['if_groupe'] = true;
+            $d = $groupe_devoir->getDateARendre();
+            array_push($groupes, array("groupe" => $groupe_devoir->getGroupe(), "date_a_rendre" => $d->format('Y-m-d H:i:s')));
+            if ($groupe_devoir->getNbMaxEtudiant() == 1 && $groupe_devoir->getNbMinEtudiant() == 1) {
+                $gd['if_groupe'] = false;
+            }
+            $gd["date_bloquante"] = $groupe_devoir->getDateBloquante();
+
+            $devoir->addGroupeDevoir($groupe_devoir);
+        }
+        $temp_groupes_devoirs = $devoir->getGroupeDevoir();
+
+
+        if ($devoir->getFichier() != null) {
+            //Sauvegarder le nom du fichier
+            $temp_filename = $devoir->getFichier();
+
+            $devoir->setFichier(new File($this->getParameter("documents_devoirs_directory") . "/" . $devoir->getFichier()));
+        }
+
+        $deleteForm = $this->createDeleteForm($devoir);
+        $editForm = $this->createForm('DepotBundle\Form\Type\DevoirEditType', $devoir, array('ues' => $user->getUEs(), 'gd' => $gd));
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            // Récupération des données concernant les groupes
+            $data = $request->request->get('groupes');
+
+
+            //Supprimer les Groupes Devoirs
+            foreach ($devoir->getGroupeDevoir() as $gd) {
+                $devoir->removeGroupeDevoir($gd);
+                $this->getDoctrine()->getManager()->remove($gd);
+            }
+
+            //Ajouter
+            for ($i = 0; $i < count($data); $i++) {
+                // Si le groupe est coché
+                if (isset($data[$i]['id'])) {
+                    // Récupération de l'identifiant du groupe
+                    $id = key($data[$i]['id']);
+                    // Récupération de la date de rendu saisie
+                    $date_rendu = new \DateTime($data[$i]["date"]);
+
+                    // Hydratation de l'objet Devoir
+                    $groupe_devoir = new Groupe_Devoir();
+                    $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($id);
+                    $groupe_devoir->setGroupe($groupe[0]);
+                    $groupe_devoir->setDevoir($devoir);
+                    $groupe_devoir->setDateARendre($date_rendu);
+                    $groupe_devoir->setDateBloquante($editForm->get("date_bloquante")->getData());
+                    $groupe_devoir->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
+                    $groupe_devoir->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
+
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($groupe_devoir);
+
+                    $devoir->addGroupeDevoir($groupe_devoir);
+                }
+            }
+
+            // Si aucun groupe n'a été coché
+
+            if (count($devoir->getGroupeDevoir()) == 0) {
+                $errors["groupes_error"] = "Aucun groupe n'a été coché";
+
+                foreach ($devoir->getGroupeDevoir() as $gd) {
+                    $devoir->removeGroupeDevoir($gd);
+                }
+                foreach ($temp_groupes_devoirs as $gd) {
+                    $devoir->addGroupeDevoir($gd);
+                }
+
+                return $this->redirectToRoute('edit_devoir', array("id" => $devoir->getId()));
+                /*return $this->render('DepotBundle:Devoir:edit.html.twig', array(
+                    'devoir' => $devoir,
+                    'user' => $user,
+                    'edit_form' => $editForm->createView(),
+                    'errors' => $errors,
+                    'delete_form' => $deleteForm->createView(),
+                ));*/
+            }
+
+            if ($devoir->getFichier() != null) {
+                $f = new File($devoir->getFichier());
+                $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
+                $f->move($this->getParameter("documents_devoirs_directory"), $fname);
+                $devoir->setFichier($fname);
+
+                if (isset($temp_filename)) {
+                    $fileSystem = new Filesystem();
+                    $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
+                }
+            } else {
+                if ($editForm->get("conserve_file")->getData()) {
+                    $devoir->setFichier($temp_filename);
+                } else {
+                    if (isset($temp_filename)) {
+                        $fileSystem = new Filesystem();
+                        $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
+                    }
+                }
+            }
+
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('edit_devoir', array('id' => $devoir->getId()));
+        }
+        return $this->render('DepotBundle:Devoir:edit.html.twig', array(
+            'devoir' => $devoir,
+            'edit_form' => $editForm->createView(),
+            'groupes' => $groupes,
+            'delete_form' => $deleteForm->createView(),
+        ));
+    }
+
+    /**
+     * @param Request $request
+     * @param Devoir $devoir
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public
+    function deleteAction(Request $request, Devoir $devoir)
+    {
+        $form = $this->createDeleteForm($devoir);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            //Supprimer les Groupes Devoirs
+            foreach ($devoir->getGroupeDevoir() as $gd) {
+                $devoir->removeGroupeDevoir($gd);
+                $em->remove($gd);
+
+            }
+            $em->flush();
+
+            //Supprimer le fichier
+            if ($devoir->getFichier() != null) {
+                $fileSystem = new Filesystem();
+                $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $devoir->getFichier()));
+            }
+
+            //Supprimer le devoir
+            $em->remove($devoir);
+            $em->flush();
+        }
+        return $this->redirectToRoute('depot_homepage');
+    }
+
+    /**
+     * Creates a form to delete a devoir entity.
+     *
+     * @param Devoir $devoir The devoir entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private
+    function createDeleteForm(Devoir $devoir)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('delete_devoir', array('id' => $devoir->getId())))
+            ->setMethod('DELETE')
+            ->getForm();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace DepotBundle\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * Devoir
  */
@@ -14,16 +16,23 @@ class Devoir
 
     /**
      * @var string
+     * @Assert\NotNull()
      */
     private $intitule;
 
     /**
      * @var string
+     * @Assert\NotNull()
      */
     private $titre;
 
     /**
      * @var string
+     * @Assert\File(
+     *     maxSize = "10M",
+     *     mimeTypes = {"application/zip"},
+     *     mimeTypesMessage = "Veuillez téléverser un fichier du type .zip"
+     * )
      */
     private $fichier;
 
