@@ -19,6 +19,10 @@ delete_devoir:
     defaults: { _controller: DepotBundle:Devoir:delete }
     methods: DELETE
 
+download_file_devoir:
+    path:     /devoir/download/{filename}
+    defaults: { _controller: DepotBundle:Devoir:download }
+
 get_groupe:
     path: /groupe
     defaults: { _controller: DepotBundle:Devoir:getgroupe }

@@ -28,12 +28,16 @@
                 {% block rendu %}{% endblock %} {# Rendu de l'étudiant #}
                 {% block rendus %}{% endblock %} {# Liste des rendus de l'enseignant #}
 
+                {% if devoir.fichier is not null %}
                 <div class="item">
                     <h3>Document fourni par l'enseignant</h3>
                     <p>
-                        {{ devoir.fichier }}
+                        <a href="{{ path("download_file_devoir", {'filename': devoir.fichier} ) }}">
+                            Documents.zip
+                        </a>
                     </p>
                 </div>
+                {% endif %}
 
                 <div class="item">
                     <h3>Discussion autour du sujet</h3>

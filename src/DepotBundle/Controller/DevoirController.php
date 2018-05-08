@@ -81,70 +81,12 @@ class DevoirController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if (count($form->get("fichiers")->getData()) != 0) {
-                /**
-                 * Upload des fichiers
-                 */
-                // Création d'une archive ZIP
-                $zip = new \ZipArchive();
-                // Nom de l'archive ZIP
-                $filename = $this->getParameter("documents_devoirs_directory") . "/" . $this->generateUniqueFileName() . ".zip";
-
-                // Ouverture de l'archive
-                if ($zip->open($filename, \ZipArchive::CREATE) !== TRUE) {
-                    exit("Impossible d'ouvrir le fichier <$filename>\n");
-                }
-
-                // Tableau des types MIME autorisées
-                $extension_autorisee = array(
-                    "application/pdf",
-                    "application/x-pdf",
-                    "application/zip",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    "application/msword"
-                );
-                $files = $form->get("fichiers")->getData();
-                $filesToRemove = array();
-                foreach ($files as $file) {
-                    $f = new File($file);
-
-                    // Si le type MIME est bon
-                    if (in_array($f->getMimeType(), $extension_autorisee)) {
-                        // Générer un nom pour le fichier
-                        $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
-                        // Move le fichier dans le bon dossier
-                        $f->move($this->getParameter("documents_devoirs_directory"), $fname);
-
-                        // Ajouter le fichier à l'archive ZIP
-                        $zip->addFile($this->getParameter("documents_devoirs_directory") . "/" . $fname, $fname);
-
-                        // Alimenter le tableau des fichiers à supprimer après la création de l'archive
-                        array_push($filesToRemove, $this->getParameter("documents_devoirs_directory") . "/" . $fname);
-                    } else // Si le type MIME n'est pas bon, renvoie une erreur
-                    {
-                        $errors[] = "Votre fichier n'est pas conforme aux attentes";
-
-                        return $this->render('DepotBundle:Devoir:new.html.twig', array(
-                            'devoir' => $devoir,
-                            'user' => $user,
-                            'add_form' => $form->createView(),
-                            'errors' => $errors
-                        ));
-                    }
-                }
-                // Fermer l'archive
-                $zip->close();
-
-                // Supprimer les fichiers du dossier
-                $fileSystem = new Filesystem();
-                $fileSystem->remove($filesToRemove);
-
-                // Ajouter le chemin du fichier crée à l'objet Devoir.
-                $devoir->setFichier($filename);
-            }
-
             // Récupération des données concernant les groupes
             $data = $request->request->get('groupes');
+
+            // Ajouter le créateur et la date de création
+            $devoir->setUser($user);
+            $devoir->setCreated(new \DateTime("now"));
 
             // Persister l'objet Devoir
             $em = $this->getDoctrine()->getManager();
@@ -474,5 +416,12 @@ class DevoirController extends Controller
             ->setAction($this->generateUrl('delete_devoir', array('id' => $devoir->getId())))
             ->setMethod('DELETE')
             ->getForm();
+    }
+
+    public function downloadAction($filename)
+    {
+        $file = $this->getParameter('documents_devoirs_directory').'/'.$filename;
+
+        return $this->file($file, "Documents.zip");
     }
 }
