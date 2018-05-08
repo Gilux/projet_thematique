@@ -29,7 +29,8 @@
             [[TODO]]
         </td>
         <td>
-            <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a>
+            <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a> /
+            <a href="{{ path("edit_devoir", {'id': devoir.id} ) }}">Éditer</a>
         </td>
     </tr>
     {% endfor %}
