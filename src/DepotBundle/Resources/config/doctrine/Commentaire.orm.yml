@@ -15,7 +15,7 @@ DepotBundle\Entity\Commentaire:
             length: 60
 
         date:
-            type: date
+            type: datetime
 
         commentaire_parent_id:
             type: string
@@ -25,5 +25,9 @@ DepotBundle\Entity\Commentaire:
         user:
             targetEntity: UserBundle\Entity\User
             inversedBy: commentaires
+
+        devoir:
+            targetEntity: DepotBundle\Entity\Devoir
+            inversedBy: devoirs
 
     lifecycleCallbacks: {  }

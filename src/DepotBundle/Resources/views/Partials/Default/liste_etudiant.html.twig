@@ -1,0 +1,41 @@
+<table>
+    <thead>
+    <tr>
+        <th>UE</th>
+        <th>Enseignant</th>
+        <th>Nom du devoir</th>
+        <th>Groupe</th>
+        <th>Date de rendu</th>
+        <th>Statut</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for devoir in data %}
+    <tr>
+        <td>
+            {{ devoir.ue.nom }}
+        </td>
+        <td>
+            {{ devoir.user.firstName }} {{ devoir.user.lastName }}
+        </td>
+        <td>
+            {{ devoir.titre }}
+        </td>
+        <td>
+            Robert U, John Die, Willy Dho
+        </td>
+        <td>
+            {{ devoir.created|date("d/m/Y") }}
+        </td>
+        <td>
+            <span class="badge success">Rendu le 20/02/2018</span>
+        </td>
+        <td>
+            <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

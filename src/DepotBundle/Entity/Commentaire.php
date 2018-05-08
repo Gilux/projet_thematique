@@ -32,6 +32,11 @@ class Commentaire
      */
     private $user;
 
+    /**
+     * @var Devoir
+     */
+    private $devoir;
+
 
     /**
      * Get id
@@ -138,4 +143,22 @@ class Commentaire
     {
         return $this->user;
     }
+
+    /**
+     * @return Devoir
+     */
+    public function getDevoir()
+    {
+        return $this->devoir;
+    }
+
+    /**
+     * @param Devoir $devoir
+     */
+    public function setDevoir($devoir)
+    {
+        $this->devoir = $devoir;
+    }
+
+
 }

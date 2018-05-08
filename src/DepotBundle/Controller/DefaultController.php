@@ -8,8 +8,38 @@ class DefaultController extends Controller
 {
     public function indexAction()
     {
-        $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
-        return $this->render('DepotBundle:Default:index.html.twig', array('user' => $user));
+        if($this->get('security.authorization_checker')->isGranted('ROLE_ETUDIANT')) {
+            return $this->forward('DepotBundle:Default:getEtudiantDevoirs');
+        }
+        else if($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
+            return $this->forward('DepotBundle:Default:getEnseignantDevoirs');
+        }
+        else {
+            throw $this->createNotFoundException();
+        }
+    }
+
+    public function getEtudiantDevoirsAction() {
+        $data = [];
+        $user = $this->getUser();
+        foreach($user->getUes() as $ue) {
+            foreach($ue->getDevoirs() as $devoir) {
+                $data[] = $devoir;
+            }
+        }
+
+        return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data ));
+    }
+
+    public function getEnseignantDevoirsAction() {
+        $data = [];
+        $user = $this->getUser();
+        foreach($user->getUes() as $ue) {
+            foreach($ue->getDevoirs() as $devoir) {
+                $data[] = $devoir;
+            }
+        }
+        return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data ));
     }
 
     public function getNotifications()

@@ -2,7 +2,9 @@
 
 namespace DepotBundle\Entity;
 
+use DepotBundle\DepotBundle;
 use Symfony\Component\Validator\Constraints as Assert;
+use UserBundle\Entity\User;
 
 /**
  * Devoir
@@ -52,9 +54,24 @@ class Devoir
     private $UE;
 
     /**
+     * @var User
+     */
+    private $user;
+
+    /**
+     * @var \DateTime
+     */
+    private $created;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $extensions;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $commentaires;
 
     /**
      * Constructor
@@ -64,6 +81,7 @@ class Devoir
         $this->groupes_projets = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groupe_devoir = new \Doctrine\Common\Collections\ArrayCollection();
         $this->extensions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->commentaires = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -273,4 +291,55 @@ class Devoir
     {
         return $this->extensions;
     }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param \DateTime $created
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCommentaires()
+    {
+        return $this->commentaires;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $commentaires
+     */
+    public function setCommentaires($commentaires)
+    {
+        $this->commentaires = $commentaires;
+    }
+
+
+
 }

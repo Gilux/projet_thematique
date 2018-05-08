@@ -22,6 +22,11 @@ DepotBundle\Entity\Devoir:
             length: 255
             nullable: true
 
+        created:
+            type: datetime
+            nullable: true
+            default:
+
 
     oneToMany:
         groupes_projets:
@@ -32,9 +37,16 @@ DepotBundle\Entity\Devoir:
             targetEntity: Groupe_Devoir
             mappedBy: devoir
 
+        commentaires:
+            targetEntity: DepotBundle\Entity\Commentaire
+            mappedBy: devoir
+
     manyToOne:
          UE:
              targetEntity: UE
+             inversedBy: devoirs
+         user:
+             targetEntity: UserBundle\Entity\User
              inversedBy: devoirs
 
     manyToMany:

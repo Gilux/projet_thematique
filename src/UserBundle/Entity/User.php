@@ -51,6 +51,11 @@ class User extends BaseUser implements NotifiableInterface
      */
     private $last_name;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $devoirs;
+
 
     /**
      * Set firstName
@@ -282,5 +287,38 @@ class User extends BaseUser implements NotifiableInterface
     public function removeUe(\DepotBundle\Entity\UE $ue)
     {
         $this->ues->removeElement($ue);
+    }
+
+    /**
+     * Add devoir
+     *
+     * @param \DepotBundle\Entity\Devoir $devoir
+     *
+     * @return User
+     */
+    public function addDevoir(\DepotBundle\Entity\Devoir $devoir)
+    {
+        $this->devoirs[] = $devoir;
+        return $this;
+    }
+
+    /**
+     * Remove devoir
+     *
+     * @param \DepotBundle\Entity\Devoir $devoir
+     */
+    public function removeDevoir(\DepotBundle\Entity\Devoir $devoir)
+    {
+        $this->devoirs->removeElement($devoir);
+    }
+
+    /**
+     * Get devoirs
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDevoirs()
+    {
+        return $this->devoirs;
     }
 }

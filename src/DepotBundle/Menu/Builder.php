@@ -25,7 +25,7 @@ class Builder implements ContainerAwareInterface
         $menu->addChild('Mes Devoirs', array('route' => 'depot_homepage'));
 
         if($user->hasRole('ROLE_ETUDIANT')) {
-            $menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
+            //$menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
         }
 
         $menu->addChild('Mon Profil', array('route' => 'fos_user_profile_show'));

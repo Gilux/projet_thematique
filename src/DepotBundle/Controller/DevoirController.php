@@ -16,9 +16,26 @@ use UserBundle\Entity\User;
 
 class DevoirController extends Controller
 {
-    public function indexAction()
+    public function showAction(Devoir $devoir)
     {
-        return $this->render('DepotBundle:Devoir:index.html.twig');
+        if($this->get('security.authorization_checker')->isGranted('ROLE_ETUDIANT')) {
+            return $this->forward('DepotBundle:Devoir:showEtudiant', ["devoir" => $devoir]);
+        }
+        else if($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
+            return $this->forward('DepotBundle:Devoir:showEnseignant', ["devoir" => $devoir]);
+        }
+        else {
+            throw $this->createNotFoundException();
+        }
+
+    }
+
+    public function showEtudiantAction(Devoir $devoir) {
+        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', ["devoir" => $devoir]);
+    }
+
+    public function showEnseignantAction(Devoir $devoir) {
+        return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', ["devoir" => $devoir]);
     }
 
     public function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
@@ -56,7 +73,6 @@ class DevoirController extends Controller
 
     public function newAction(Request $request)
     {
-
         $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
 
         $devoir = new Devoir();
@@ -415,8 +431,7 @@ class DevoirController extends Controller
      * @param Devoir $devoir
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public
-    function deleteAction(Request $request, Devoir $devoir)
+    public function deleteAction(Request $request, Devoir $devoir)
     {
         $form = $this->createDeleteForm($devoir);
         $form->handleRequest($request);

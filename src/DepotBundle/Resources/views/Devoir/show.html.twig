@@ -1,0 +1,78 @@
+{% extends "base.html.twig" %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Visualisation du devoir {{ devoir.titre }}</h1>
+                <h2><small>{{ devoir.user.firstName }} {{ devoir.user.lastName }} - {{ devoir.ue.nom }}</small></h2>
+            </div>
+        </div>
+
+        <div class="row">
+            {% block groupes %}{% endblock %}
+        </div>
+
+        <div class="row">
+            <div class="col-xs-4 col-left">
+                {% block groupechoisi %}{% endblock %}
+                {% block daterendus %}{% endblock %}
+
+                <div class="item">
+                    <h3>Description</h3>
+                    {{  devoir.intitule|raw }}
+                </div>
+            </div>
+
+            <div class="col-xs-8 col-right">
+                {% block rendu %}{% endblock %} {# Rendu de l'étudiant #}
+                {% block rendus %}{% endblock %} {# Liste des rendus de l'enseignant #}
+
+                <div class="item">
+                    <h3>Document fourni par l'enseignant</h3>
+                    <p>
+                        {{ devoir.fichier }}
+                    </p>
+                </div>
+
+                <div class="item">
+                    <h3>Discussion autour du sujet</h3>
+                    {% if(devoir.commentaires|length != 0) %}
+                    <ul class="media-list">
+                        {% for c in devoir.commentaires %}
+                        <li class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" src="http://via.placeholder.com/50x50" alt="avatar">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading"> {{ c.user.firstName }} {{ c.user.lastName }} <small>{{ c.date|date("d/m/Y H:i:s") }}</small></h4>
+                                <p>{{ c.texte }}</p>
+                                {#<div class="media">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img alt="64x64" class="media-object" data-src="holder.js/64x64" src="http://via.placeholder.com/50x50" data-holder-rendered="true">
+                                        </a></div>
+                                    <div class="media-body"><h4 class="media-heading">Test2 <small>02/01/2018 03:01</small></h4>
+                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
+                                        ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at,
+                                        tempus viverra turpis.
+                                    </div>
+                                </div>
+                                #}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                        {% else %}
+                        <p>Aucun commentaire pour le moment.</p>
+                    {% endif %}
+                    <textarea name="comment" id="comment" style="width:100%;"></textarea>
+                    <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />.
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

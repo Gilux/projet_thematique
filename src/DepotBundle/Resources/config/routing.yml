@@ -3,8 +3,8 @@ depot_homepage:
     defaults: { _controller: DepotBundle:Default:index }
 
 show_devoir:
-    path:     /devoir/view
-    defaults: { _controller: DepotBundle:Devoir:index }
+    path:     /devoir/show/{devoir}
+    defaults: { _controller: DepotBundle:Devoir:show }
 
 new_devoir:
     path:     /devoir/new

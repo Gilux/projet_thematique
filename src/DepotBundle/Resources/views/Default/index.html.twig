@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <h1>Affichage des devoirs </h1>
-                {% if "ROLE_ENSEIGNANT" in user.roles %}
+                {% if "ROLE_ENSEIGNANT" in app.user.roles %}
                 <h2><small>Pour les UEs : M2.34 - ASI, M1.69 - Green IT</small></h2>
                 {% endif %}
             </div>
@@ -14,125 +14,10 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="item">
-                    {% if "ROLE_ENSEIGNANT" in user.roles %}
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>UE</th>
-                            <th>Enseignant</th>
-                            <th>Nom du devoir</th>
-                            <th>Date de rendu</th>
-                            <th>Rendus</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>
-                                    M2.34 - ASI
-                                </td>
-                                <td>
-                                    Anne LAPUJADE
-                                </td>
-                                <td>
-                                    Projet HOKEY
-                                </td>
-                                <td>
-                                    13/03/2018
-                                </td>
-                                <td>
-                                    3/15
-                                </td>
-                                <td>
-                                    <a href="#">Détails</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    M1.69 - Green IT
-                                </td>
-                                <td>
-                                    Alain COURNIER
-                                </td>
-                                <td>
-                                    Projet Vert
-                                </td>
-                                <td>
-                                    14/06/2018
-                                </td>
-                                <td>
-                                    0/50
-                                </td>
-                                <td>
-                                    <a href="{{ path("show_devoir") }}">Détails</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    {% if "ROLE_ENSEIGNANT" in app.user.roles %}
+                        {% include "DepotBundle:Partials/Default:liste_enseignant.html.twig" with {'data': data} %}
                     {% else %}
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>UE</th>
-                            <th>Enseignant</th>
-                            <th>Nom du devoir</th>
-                            <th>Groupe</th>
-                            <th>Date de rendu</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr>
-                            <td>
-                                M2.34 - ASI
-                            </td>
-                            <td>
-                                Anne LAPUJADE
-                            </td>
-                            <td>
-                                Projet HOKEY
-                            </td>
-                            <td>
-                                Robert U, John Die, Willy Dho
-                            </td>
-                            <td>
-                                13/03/2018
-                            </td>
-                            <td>
-                                <span class="badge success">Rendu le 20/02/2018</span>
-                            </td>
-                            <td>
-                                <a href="#">Détails</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                M2.46 - Gestion de production
-                            </td>
-                            <td>
-                                Jean-Kevin BROUTILLIER
-                            </td>
-                            <td>
-                                Projet JUSTINTEMPS
-                            </td>
-                            <td>
-                                Patricia QCASS, Eva MOCHE, Angelina PASMAL
-                            </td>
-                            <td>
-                                13/03/2018
-                            </td>
-                            <td>
-                                <span class="badge danger">Rendu le 15/03/2018</span>
-                            </td>
-                            <td>
-                                <a href="#">Détails</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                        {% include "DepotBundle:Partials/Default:liste_etudiant.html.twig" with {'data': data} %}
                     {% endif %}
                 </div>
             </div>

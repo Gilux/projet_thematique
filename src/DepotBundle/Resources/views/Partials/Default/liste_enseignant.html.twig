@@ -1,0 +1,37 @@
+<table>
+    <thead>
+    <tr>
+        <th>UE</th>
+        <th>Enseignant</th>
+        <th>Nom du devoir</th>
+        <th>Date de rendu</th>
+        <th>Rendus</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for devoir in data %}
+    <tr>
+        <td>
+            {{ devoir.ue.nom }}
+        </td>
+        <td>
+            {{ devoir.user.firstName }} {{ devoir.user.lastName }}
+        </td>
+        <td>
+            {{ devoir.titre }}
+        </td>
+        <td>
+            {{ devoir.created|date("d/m/Y") }}
+        </td>
+        <td>
+            [[TODO]]
+        </td>
+        <td>
+            <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
