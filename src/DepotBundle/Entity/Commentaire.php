@@ -23,11 +23,6 @@ class Commentaire
     private $date;
 
     /**
-     * @var string
-     */
-    private $commentaire_parent_id;
-
-    /**
      * @var \UserBundle\Entity\User
      */
     private $user;
@@ -37,6 +32,21 @@ class Commentaire
      */
     private $devoir;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $commentaires_fils;
+
+    /**
+     * @var \DepotBundle\Entity\Commentaire
+     */
+    private $commentaire_parent;
+
+
+    public function __construct()
+    {
+        $this->commentaires_fils = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -97,30 +107,6 @@ class Commentaire
     }
 
     /**
-     * Set commentaireParentId
-     *
-     * @param string $commentaireParentId
-     *
-     * @return Commentaire
-     */
-    public function setCommentaireParentId($commentaireParentId)
-    {
-        $this->commentaire_parent_id = $commentaireParentId;
-
-        return $this;
-    }
-
-    /**
-     * Get commentaireParentId
-     *
-     * @return string
-     */
-    public function getCommentaireParentId()
-    {
-        return $this->commentaire_parent_id;
-    }
-
-    /**
      * Set user
      *
      * @param \UserBundle\Entity\User $user
@@ -160,5 +146,61 @@ class Commentaire
         $this->devoir = $devoir;
     }
 
+    /**
+     * Add commentaires_fils
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentaires_fils
+     *
+     * @return Commentaire
+     */
+    public function addCommentaireFils(\DepotBundle\Entity\Commentaire $commentaires_fils)
+    {
+        $this->commentaires_fils[] = $commentaires_fils;
 
+        return $this;
+    }
+
+    /**
+     * Remove commentaires_fils
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentaires_fils
+     */
+    public function removeCommentaireFils(\DepotBundle\Entity\Commentaire $commentaires_fils)
+    {
+        $this->commentaires_fils->removeElement($commentaires_fils);
+    }
+
+    /**
+     * Get commentaires_fils
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCommentairesFils()
+    {
+        return $this->commentaires_fils;
+    }
+
+    /**
+     * Set commentaire_parent
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentaire_parent
+     *
+     * @return Commentaire
+     */
+    public function setCommentaireParent(\DepotBundle\Entity\Commentaire $commentaire_parent = null)
+    {
+        $this->commentaire_parent = $commentaire_parent;
+
+        return $this;
+    }
+
+    /**
+     * Get commentaire_parent
+     *
+     * @return Commentaire
+     */
+    public function getCommentaireParent()
+    {
+        return $this->commentaire_parent;
+    }
 }

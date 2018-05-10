@@ -17,10 +17,6 @@ DepotBundle\Entity\Commentaire:
         date:
             type: datetime
 
-        commentaire_parent_id:
-            type: string
-            length: 60
-
     manyToOne:
         user:
             targetEntity: UserBundle\Entity\User
@@ -28,6 +24,15 @@ DepotBundle\Entity\Commentaire:
 
         devoir:
             targetEntity: DepotBundle\Entity\Devoir
-            inversedBy: devoirs
+            inversedBy: commentaires
+
+        commentaire_parent:
+            targetEntity: DepotBundle\Entity\Commentaire
+            inversedBy: commentaires_fils
+
+    oneToMany:
+        commentaires_fils:
+            targetEntity: DepotBundle\Entity\Commentaire
+            mappedBy: commentaire_parent
 
     lifecycleCallbacks: {  }
