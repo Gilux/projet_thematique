@@ -1,5 +1,39 @@
 {% extends "base.html.twig" %}
 
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script>
+        $("form[id^='form_commentaire']").on('submit', function(){
+            $(this).append("<input type='hidden' name='devoir' value='{{ devoir.id }}' />")
+            var form = $(this).serializeArray();
+
+            for(var i = 0;i<form.length;i++)
+            {
+                if(form[i].value != "" && (form[i].name.startsWith("comment_nochild") || form[i].name.startsWith("comment_withchild")))
+                {
+                    return true;
+                }
+
+                if(form[i].value == "")
+                    return false;
+            }
+        });
+
+        $("button[id^='commenter']").on("click", function(){
+
+            $("button[id^='commenter']").each(function () {
+                $(this).show();
+                $(this).parent().find("div").hide()
+            });
+
+            $(this).parent().find("div").show()
+            $(this).hide();
+        })
+    </script>
+{% endblock %}
+
 {% block main %}
     <div class="container">
         <div class="row">
@@ -41,39 +75,58 @@
 
                 <div class="item">
                     <h3>Discussion autour du sujet</h3>
-                    {% if(devoir.commentaires|length != 0) %}
-                    <ul class="media-list">
-                        {% for c in devoir.commentaires %}
-                        <li class="media">
-                            <div class="media-left">
-                                <a href="#">
-                                    <img class="media-object" src="http://via.placeholder.com/50x50" alt="avatar">
-                                </a>
-                            </div>
-                            <div class="media-body">
-                                <h4 class="media-heading"> {{ c.user.firstName }} {{ c.user.lastName }} <small>{{ c.date|date("d/m/Y H:i:s") }}</small></h4>
-                                <p>{{ c.texte }}</p>
-                                {#<div class="media">
+
+                        {% if(devoir.commentaires|length != 0) %}
+                        <ul class="media-list">
+
+                            {% for c in devoir.commentaires %}
+                                {% if c.commentaireParent is null %}
+                                <li class="media">
                                     <div class="media-left">
                                         <a href="#">
-                                            <img alt="64x64" class="media-object" data-src="holder.js/64x64" src="http://via.placeholder.com/50x50" data-holder-rendered="true">
-                                        </a></div>
-                                    <div class="media-body"><h4 class="media-heading">Test2 <small>02/01/2018 03:01</small></h4>
-                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                        ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at,
-                                        tempus viverra turpis.
+                                            <img class="media-object" src="http://via.placeholder.com/50x50" alt="avatar">
+                                        </a>
                                     </div>
-                                </div>
-                                #}
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                        {% else %}
-                        <p>Aucun commentaire pour le moment.</p>
-                    {% endif %}
-                    <textarea name="comment" id="comment" style="width:100%;"></textarea>
-                    <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />.
+                                    <div class="media-body">
+                                        <h4 class="media-heading"> {{ c.user.firstName }} {{ c.user.lastName }} <small>{{ c.date|date("d/m/Y H:i:s") }}</small></h4>
+                                        <p>{{ c.texte }}</p>
+
+                                        {% for cf in c.commentairesFils %}
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <a href="#">
+                                                        <img alt="64x64" class="media-object" data-src="holder.js/64x64" src="http://via.placeholder.com/50x50" data-holder-rendered="true">
+                                                    </a></div>
+                                                <div class="media-body">
+                                                    <h4 class="media-heading"> {{ cf.user.firstName }} {{ cf.user.lastName }} <small>{{ cf.date|date("d/m/Y H:i:s") }}</small></h4>
+                                                    <p>{{ cf.texte }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        <div id="block_rep[{{ loop.index }}]">
+                                            <button role="button" id="commenter[{{ loop.index }}]">Répondre</button>
+                                            <div id="block_commenter[{{ loop.index }}]" style="display: none">
+                                                <form id="form_commentaire[{{ loop.index }}]" action="{{ (path('new_commentaire')) }}" method="POST">
+                                                    <textarea class="comment_nochild" name="comment_nochild[{{ loop.index }}]" style="width: 100%"></textarea>
+                                                    <input type="hidden" name="input[{{ loop.index }}]" value="{{ c.id }}" />
+                                                    <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                            {% else %}
+                            <p>Aucun commentaire pour le moment.</p>
+                        {% endif %}
+                    <form id="form_commentaire" action="{{ (path('new_commentaire')) }}" method="POST">
+
+                        <textarea id="comment_withchild" name="comment_withchild" style="width: 100%"></textarea>
+                        <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />
+
+                    </form>
                 </div>
             </div>
         </div>

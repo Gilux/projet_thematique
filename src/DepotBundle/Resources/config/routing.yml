@@ -27,3 +27,8 @@ get_groupe:
     path: /groupe
     defaults: { _controller: DepotBundle:Devoir:getgroupe }
 
+new_commentaire:
+    path: /commentaire/new
+    defaults: { _controller: DepotBundle:Commentaire:new }
+    methods: POST
+
