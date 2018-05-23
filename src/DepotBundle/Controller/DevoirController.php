@@ -6,6 +6,7 @@ use DepotBundle\Entity\Commentaire;
 use DepotBundle\Entity\Devoir;
 use DepotBundle\Entity\Groupe;
 use DepotBundle\Entity\Groupe_Devoir;
+use Mgilet\NotificationBundle\Entity\Notification;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
@@ -19,22 +20,22 @@ class DevoirController extends Controller
 {
     public function showAction(Devoir $devoir)
     {
-        if($this->get('security.authorization_checker')->isGranted('ROLE_ETUDIANT')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ETUDIANT')) {
             return $this->forward('DepotBundle:Devoir:showEtudiant', ["devoir" => $devoir]);
-        }
-        else if($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
+        } else if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             return $this->forward('DepotBundle:Devoir:showEnseignant', ["devoir" => $devoir]);
-        }
-        else {
+        } else {
             throw $this->createNotFoundException();
         }
     }
 
-    public function showEtudiantAction(Devoir $devoir) {
+    public function showEtudiantAction(Devoir $devoir)
+    {
         return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', ["devoir" => $devoir]);
     }
 
-    public function showEnseignantAction(Devoir $devoir) {
+    public function showEnseignantAction(Devoir $devoir)
+    {
         return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', ["devoir" => $devoir]);
     }
 
@@ -54,6 +55,7 @@ class DevoirController extends Controller
                         'groupe' => $groupeName,
                         'ue' => $ueName,
                         'devoir' => [
+                            'id' => $groupeDevoir->getDevoir()->getId(),
                             'titre' => $groupeDevoir->getDevoir()->getTitre(),
                             'date_a_rendre' => $groupeDevoir->getDateARendre(),
                         ]
@@ -69,11 +71,13 @@ class DevoirController extends Controller
         $notif->setMessage($ueName . '/' . $groupeName . ' : ' . $groupeDevoir->getDevoir()->getTitre() . '');
         $notif->setLink('http://symfony.com/');
         $manager->addNotification(array($user), $notif, true);
+
+
     }
 
     public function newAction(Request $request)
     {
-        if($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
 
             $devoir = new Devoir();
@@ -89,9 +93,12 @@ class DevoirController extends Controller
                 $devoir->setUser($user);
                 $devoir->setCreated(new \DateTime("now"));
 
+
                 // Persister l'objet Devoir
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($devoir);
+                $em->flush();
+
 
                 $groupes = [];
 
@@ -167,8 +174,7 @@ class DevoirController extends Controller
                 'user' => $user,
                 'add_form' => $form->createView()
             ));
-        }
-        else {
+        } else {
             throw $this->createNotFoundException();
         }
     }
@@ -248,7 +254,7 @@ class DevoirController extends Controller
      */
     public function editAction(Request $request, Devoir $devoir)
     {
-        if($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
             $temp_devoir = $devoir;
 
@@ -372,8 +378,7 @@ class DevoirController extends Controller
                 'groupes' => $groupes,
                 'delete_form' => $deleteForm->createView(),
             ));
-        }
-        else {
+        } else {
             throw $this->createNotFoundException();
         }
     }
@@ -385,7 +390,7 @@ class DevoirController extends Controller
      */
     public function deleteAction(Request $request, Devoir $devoir)
     {
-        if($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $form = $this->createDeleteForm($devoir);
             $form->handleRequest($request);
 
@@ -411,8 +416,7 @@ class DevoirController extends Controller
                 $em->flush();
             }
             return $this->redirectToRoute('depot_homepage');
-        }
-        else {
+        } else {
             throw $this->createNotFoundException();
         }
     }
@@ -434,7 +438,7 @@ class DevoirController extends Controller
 
     public function downloadAction($filename)
     {
-        $file = $this->getParameter('documents_devoirs_directory').'/'.$filename;
+        $file = $this->getParameter('documents_devoirs_directory') . '/' . $filename;
 
         return $this->file($file, "Documents.zip");
     }
