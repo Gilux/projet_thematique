@@ -6,7 +6,9 @@
 
     <p>Tu as un nouveau devoir : {{ devoir.titre }} pour le {{ ue }} / {{ groupe }}</p>
 
-    <p>Tu peux retrouver toutes les informations de ce devoir via <a href={{ url('show_devoir') }}>ce lien</a>.</p>
+    <p>Tu peux retrouver toutes les informations de ce devoir via <a
+                href={{ url('show_devoir', {'devoir': devoir.id}) }}>ce
+            lien</a>.</p>
 
     <p> A rendre pour le : {{ devoir.date_a_rendre|date('Y-m-d') }}</p>
 {% endblock %}
