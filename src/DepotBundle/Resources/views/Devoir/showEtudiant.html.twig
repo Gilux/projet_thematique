@@ -5,76 +5,31 @@
         <div class="item">
             <h3>Choisir un groupe de projet</h3>
             <p>Vous n'avez pas encore choisi votre groupe de projet. Veuillez vous positionner dans un groupe ouvert, ou en créer un nouveau.<br>
-                Ce projet étant ouvert à 25 étudiants en groupes de 3 à 5, de <strong>5</strong> à <strong>8</strong> groupes sont ouverts.
+                Ce devoir étant ouvert à {{ groupe_devoir.groupe.users|length }} étudiants en groupes de <strong>{{ groupe_devoir.nbMinEtudiant }}</strong> à <strong>{{ groupe_devoir.nbMaxEtudiant }}</strong>, de {{ minmax_groups.min }} à {{ minmax_groups.max }} groupes sont ouverts.
             </p>
 
             <div class="groupesProjet">
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 1</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                    <button disabled>Groupe complet</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 2</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                    <button>Demander à rejoindre</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 3</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                    <button>Demander à rejoindre</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 4</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                    <button>Demander à rejoindre</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 5</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                    <button>Demander à rejoindre</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 6</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                    <button>Demande envoyée</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 7</h4>
-                    <button>Rejoindre</button>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 8</h4>
-                    <button>Rejoindre</button>
-                </div>
+                {% set nbgroupes = groupes_projet|length %}
+                {% set remaining_groups = minmax_groups.max - nbgroupes %}
+
+                {% for gp in groupes_projet %}
+                    <div class="groupe">
+                        <h4 class="text-center">Groupe {{ gp.name }}</h4>
+                        <ul>
+                            {% for ugp in gp.usersgroupesprojets %}
+                                <li>{{ ugp.user.username }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button>Demander à rejoindre</button>
+                    </div>
+                {% endfor %}
+
+                {% if remaining_groups >= 1 %}
+                    <div class="groupe">
+                        <h4 class="text-center">Nouveau groupe</h4>
+                        <button>Créer un groupe</button>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

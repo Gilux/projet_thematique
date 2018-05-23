@@ -31,7 +31,42 @@ class DevoirController extends Controller
     }
 
     public function showEtudiantAction(Devoir $devoir) {
-        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', ["devoir" => $devoir]);
+        $user = $this->getUser();
+        $groupes_devoirs = $this->getDoctrine()->getRepository("DepotBundle:Groupe_Devoir")->findBy([
+            "devoir" => $devoir,
+        ]);
+
+        $groupes = [];
+
+        $userDansGroupe = false;
+        $groupeDevoirUser = null;
+
+        // Tourner parmi les groupes de l'ue concernée par le devoir
+        foreach ($groupes_devoirs as $gd) {
+
+            $g = $gd->getGroupe();
+            foreach($g->getUsers() as $u) {
+                if(!$userDansGroupe) {
+                    if($u->getId() == $user->getId()) {
+                        $userDansGroupe = true;
+                        $groupeDevoirUser = $gd;
+                    }
+                }
+            }
+        }
+
+        $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        $usersInGroupeDevoir = $groupeDevoirUser->getGroupe()->getUsers()->count();
+        $groupeRenduUtility = $this->get("utility.grouperendu");
+        $minmax_groups = $groupeRenduUtility->getMinMaxGroups(
+            $groupeDevoirUser->getNbMinEtudiant(),
+            $groupeDevoirUser->getNbMaxEtudiant(),
+            $usersInGroupeDevoir
+        );
+
+
+        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', ["devoir" => $devoir, "groupe_devoir" => $groupeDevoirUser, "minmax_groups" => $minmax_groups, "groupes_projet" => $groupes_projet]);
     }
 
     public function showEnseignantAction(Devoir $devoir) {
