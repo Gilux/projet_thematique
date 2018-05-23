@@ -1,0 +1,20 @@
+{% extends "admin.html.twig" %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Édition d'une UE</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    {{ form_start(edit_form) }}
+                        {{ form_widget(edit_form) }}
+                    {{ form_end(edit_form) }}
+                </div>
+            </div>
+        </div>
+{% endblock %}

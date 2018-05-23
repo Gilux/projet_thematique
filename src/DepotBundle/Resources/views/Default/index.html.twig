@@ -6,7 +6,13 @@
             <div class="col-xs-12">
                 <h1>Affichage des devoirs </h1>
                 {% if "ROLE_ENSEIGNANT" in app.user.roles %}
-                <h2><small>Pour les UEs : M2.34 - ASI, M1.69 - Green IT</small></h2>
+                <h2>
+                    <small>
+                        {% for ue in app.user.ues %}
+                            {{ ue.code ~ '-' ~ ue.nom }}<br/>
+                        {% endfor %}
+                    </small>
+                </h2>
                 {% endif %}
             </div>
         </div>
