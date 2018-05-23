@@ -28,6 +28,7 @@ class User extends BaseUser implements NotifiableInterface
     public function __construct()
     {
         parent::__construct();
+        $this->users_groupes_projets = new \Doctrine\Common\Collections\ArrayCollection();
         // your own logic
     }
 
@@ -55,6 +56,11 @@ class User extends BaseUser implements NotifiableInterface
      * @var \Doctrine\Common\Collections\Collection
      */
     private $devoirs;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $users_groupes_projets;
 
 
     /**
@@ -321,4 +327,22 @@ class User extends BaseUser implements NotifiableInterface
     {
         return $this->devoirs;
     }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsersGroupesProjets()
+    {
+        return $this->users_groupes_projets;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $users_groupes_projets
+     */
+    public function setUsersGroupesProjets($users_groupes_projets)
+    {
+        $this->users_groupes_projets = $users_groupes_projets;
+    }
+
+
 }

@@ -20,13 +20,14 @@ DepotBundle\Entity\Groupe_projet:
             type: date
             nullable: true
 
+    oneToMany:
+        users_groupes_projets:
+            targetEntity: DepotBundle\Entity\UserGroupeProjet
+            mappedBy: groupe_projet
+
     manyToOne:
         devoir:
             targetEntity: Devoir
             inversedBy: groupes_projets
-    manyToMany:
-          users:
-              targetEntity: UserBundle\Entity\User
-              mappedBy: groupes_projet
 
     lifecycleCallbacks: {  }

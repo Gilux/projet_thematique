@@ -15,7 +15,7 @@
     {% for devoir in data %}
     <tr>
         <td>
-            {{ devoir.ue.nom }}
+            {{ devoir.ue }}
         </td>
         <td>
             {{ devoir.user.firstName }} {{ devoir.user.lastName }}
@@ -24,10 +24,10 @@
             {{ devoir.titre }}
         </td>
         <td>
-            Robert U, John Die, Willy Dho
+            {{ dump(devoir.groupe) }}
         </td>
         <td>
-            {{ devoir.created|date("d/m/Y") }}
+            {{ devoir.date_rendu|date("d/m/Y H:i") }}
         </td>
         <td>
             <span class="badge success">Rendu le 20/02/2018</span>
