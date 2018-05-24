@@ -6,6 +6,8 @@ use DepotBundle\Entity\Commentaire;
 use DepotBundle\Entity\Devoir;
 use DepotBundle\Entity\Groupe;
 use DepotBundle\Entity\Groupe_Devoir;
+use DepotBundle\Entity\Groupe_projet;
+use DepotBundle\Entity\UserGroupeProjet;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
@@ -65,8 +67,28 @@ class DevoirController extends Controller
             $usersInGroupeDevoir
         );
 
+        //Algo permettant de savoir si l'utilisateur appartient déjà à un groupe
+        $uAppartientGroupe = false;
+        $ogroupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $devoir]);
+        foreach ($ogroupes_projets as $ogroupes_projet) {
+            $ousers_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $ogroupes_projet]);
+            foreach ($ousers_groupes_projets as $ousers_groupes_projet)
+            {
+                if($this->getUser()->getId() == $ousers_groupes_projet->getUser()->getId())
+                {
+                    $uAppartientGroupe = true;
+                }
+            }
+        }
 
-        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', ["devoir" => $devoir, "groupe_devoir" => $groupeDevoirUser, "minmax_groups" => $minmax_groups, "groupes_projet" => $groupes_projet]);
+
+        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
+            "devoir" => $devoir,
+            "groupe_devoir" => $groupeDevoirUser,
+            "minmax_groups" => $minmax_groups,
+            "groupes_projet" => $groupes_projet,
+            "u_appartient_groupe" => $uAppartientGroupe
+        ]);
     }
 
     public function showEnseignantAction(Devoir $devoir) {

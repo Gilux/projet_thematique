@@ -1,5 +1,19 @@
 {% extends "DepotBundle:Devoir:show.html.twig" %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        {% for message in app.flashes('error') %}
+            toastr.error("{{ message }}", "Une erreur s'est produite");
+        {% endfor %}
+    </script>
+{% endblock %}
+
 {% block groupes %}
     <div class="col-xs-12">
         <div class="item">
@@ -12,23 +26,41 @@
                 {% set nbgroupes = groupes_projet|length %}
                 {% set remaining_groups = minmax_groups.max - nbgroupes %}
 
+
                 {% for gp in groupes_projet %}
                     <div class="groupe">
                         <h4 class="text-center">Groupe {{ gp.name }}</h4>
                         <ul>
+                            {% set in_groupe = false %}
+                            {% set leader = false %}
                             {% for ugp in gp.usersgroupesprojets %}
+                                {% if ugp.user.username == app.user.username %}
+                                    {% set in_groupe = true %}
+                                    {% if ugp.leader == 1 %}
+                                        {% set leader = true %}
+                                    {% endif %}
+                                {% endif %}
                                 <li>{{ ugp.user.username }}</li>
                             {% endfor %}
                         </ul>
-                        <button>Demander à rejoindre</button>
+                        {% if u_appartient_groupe == false and gp.usersgroupesprojets|length < groupe_devoir.nbMaxEtudiant and date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                            <button>Demander à rejoindre</button>
+                        {% elseif (in_groupe == true and leader == false) or (in_groupe == true and leader == true and gp.usersgroupesprojets|length == 1) %}
+                            {% if date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                                <a href="{{ path("leave_groupe_projet", {groupe_projet:gp.id}) }}" class="btn btn-primary">Quitter le groupe</a>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 {% endfor %}
 
-                {% if remaining_groups >= 1 %}
-                    <div class="groupe">
-                        <h4 class="text-center">Nouveau groupe</h4>
-                        <button>Créer un groupe</button>
-                    </div>
+
+                {% if u_appartient_groupe == false and date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                    {% if remaining_groups >= 1 %}
+                        <div class="groupe">
+                            <h4 class="text-center">Nouveau groupe</h4>
+                            <a href="{{ path("new_groupe_projet", {devoir:devoir.id}) }}" class="btn btn-primary">Créer un groupe</a>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

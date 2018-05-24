@@ -32,3 +32,13 @@ new_commentaire:
     defaults: { _controller: DepotBundle:Commentaire:new }
     methods: POST
 
+
+
+new_groupe_projet:
+    path: /groupe_projet/new/{devoir}
+    defaults: { _controller: DepotBundle:GroupeProjet:new }
+
+leave_groupe_projet:
+    path: /groupe_projet/leave/{groupe_projet}
+    defaults: { _controller: DepotBundle:GroupeProjet:leave }
+

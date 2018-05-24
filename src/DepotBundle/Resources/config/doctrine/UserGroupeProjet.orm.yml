@@ -12,6 +12,9 @@ DepotBundle\Entity\UserGroupeProjet:
         status:
             type: integer
 
+        leader:
+            type: integer
+
     manyToOne:
         groupe_projet:
             targetEntity: Groupe_projet

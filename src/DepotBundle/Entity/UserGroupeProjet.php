@@ -31,6 +31,11 @@ class UserGroupeProjet
     private $user;
 
     /**
+     * @var int
+     */
+    private $leader;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -101,6 +106,20 @@ class UserGroupeProjet
         $this->user = $user;
     }
 
+    /**
+     * @return int
+     */
+    public function getLeader()
+    {
+        return $this->leader;
+    }
 
+    /**
+     * @param int $leader
+     */
+    public function setLeader($leader)
+    {
+        $this->leader = $leader;
+    }
 
 }
