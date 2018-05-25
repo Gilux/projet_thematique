@@ -171,6 +171,25 @@ class DevoirController extends Controller
                         $groupe_devoir->setNbMaxEtudiant($form->get("nb_max_etudiant")->getData());
                         $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
 
+                        //Si le devoir est individuel
+                        if($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1)
+                        {
+                            //Créer les groupe_projets
+                            foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                                $groupe_projet = new Groupe_projet();
+                                $groupe_projet->setDevoir($devoir);
+                                $groupe_projet->setName($user->getLastName());
+                                $em->persist($groupe_projet);
+
+                                $user_groupe_projet = new UserGroupeProjet();
+                                $user_groupe_projet->setUser($user);
+                                $user_groupe_projet->setGroupeProjet($groupe_projet);
+                                $user_groupe_projet->setStatus(1);
+                                $user_groupe_projet->setLeader(1);
+                                $em->persist($user_groupe_projet);
+                            }
+                        }
+
                         //récupérer les données des utilisateurs de tous les groupes set une notification + envoyer un mail
                         foreach ($groupe[0]->getUsers()->getValues() as $user) {
                             $this->sendNotification($user, $groupe_devoir);
