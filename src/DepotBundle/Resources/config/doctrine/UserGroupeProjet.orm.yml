@@ -14,6 +14,8 @@ DepotBundle\Entity\UserGroupeProjet:
 
         leader:
             type: integer
+            options:
+                default: 0
 
     manyToOne:
         groupe_projet:
