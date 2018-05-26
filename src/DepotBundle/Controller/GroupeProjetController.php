@@ -63,9 +63,11 @@ class GroupeProjetController extends Controller
         $user_groupe_projet = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findOneBy(["groupe_projet" => $groupe_projet, "user" => $this->getUser()]);
         $devoir = $groupe_projet->getDevoir();
 
+        $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet, "leader" => 1])[0]->getUser();
+
         $em = $this->getDoctrine()->getManager();
 
-        if ($user_groupe_projet->getLeader() == true) {
+        if ($leader == true) {
             if (count($users_groupes_projets) != 1) {
                 $this->addFlash("error", "Vous ne pouvez pas quitter le groupe, des personnes y sont présente.");
             } else {
@@ -91,7 +93,7 @@ class GroupeProjetController extends Controller
 
         //todo récupérer le groupe devoir correspondant pour avoir le groupeName et la date à rendre
 
-        $message = (new \Swift_Message('[MIAGE] Vous avez une nouvelle demande de ' . $user->getUsername() . ' pour rejoindre votre groupe du devoir: ' . $devoir->getTitre() . ''))
+        $message = (new \Swift_Message('[MIAGE] Vous avez une nouvelle demande de  ' . $user->getUsername() . '  pour rejoindre votre groupe du devoir: ' . $devoir->getTitre() . ''))
             ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
             ->setTo($leader->getEmail())
             ->setBody(
@@ -142,8 +144,7 @@ class GroupeProjetController extends Controller
         $em->flush();
 
         //On récupère le leader du groupe
-        $users_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet]);
-        $leader = $this->getDoctrine()->getRepository(User::class)->find($users_groupes_projets[0]->getLeader());
+        $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet, "leader" => 1])[0]->getUser();
 
         //Envoie d'une notification au leader
         $this->sendNotification($leader, $this->getUser(), $groupe_projet);
@@ -176,6 +177,7 @@ class GroupeProjetController extends Controller
     {
         //On récupère le leader du groupe
         $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet, "leader" => 1])[0]->getUser();
+
         if ($decision == 'accept') {
             $title = '[MIAGE] Votre demande a été accepté par ' . $leader->getUsername() . ' pour rejoindre le groupe du devoir : ' . $groupe_projet->getDevoir()->getTitre();
             $messageNotification = 'Votre demande a été accepté par ' . $leader->getUsername();
