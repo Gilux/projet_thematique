@@ -1,0 +1,18 @@
+{% extends "::Emails/base.html.twig" %}
+
+{% block body %}
+
+    <p>Bonjour {{ first_name }} {{ last_name }} !</p>
+
+    <p>Tu as une nouvelle demande de {{ user_request.first_name }} {{ user_request.last_name }}
+        ( {{ user_request.username }} )</p>
+
+    <p>Pour rejoindre le devoir {{ devoir.titre }}</p>
+
+    {#todo get le groupe pour avoir la date de rendu#}
+    <p>A rendre pour le : </p>
+
+    {#todo mettre le lien vers le devoir#}
+    <p>Pour accepter ou décliner sa demande tu peux te rendre sur la page du devoir : [TODO]</p>
+
+{% endblock %}
