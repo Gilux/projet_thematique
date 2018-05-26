@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
@@ -79,7 +80,6 @@ class DevoirController extends Controller
                 }
             }
         }
-
 
         return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
             "devoir" => $devoir,
@@ -494,6 +494,38 @@ class DevoirController extends Controller
         } else {
             throw $this->createNotFoundException();
         }
+    }
+
+    /**
+     * Allows to drop a file
+     * POST only / User must be authenticated
+     *
+     * @param Devoir $devoir
+     */
+    public function depotAction(Request $request, Devoir $devoir)
+    {
+        $file = $request->files->get("file");
+        $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
+
+        // moves the file to the directory where brochures are stored
+        $file->move(
+            $this->getParameter('depots_devoirs_directory'),
+            $fileName
+        );
+
+        $groupesProjetRepository = $this->getDoctrine()
+            ->getRepository("DepotBundle:Groupe_projet");
+
+        $groupeProjet = $groupesProjetRepository->findByDevoirAndUser($devoir, $this->getUser());
+
+        $groupeProjet->setFichier($fileName);
+        $groupeProjet->setDate(new \DateTime());
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($groupeProjet);
+        $em->flush();
+
+        return new JsonResponse(array("status" => "ok"));
     }
 
     /**
