@@ -17,7 +17,7 @@ DepotBundle\Entity\Groupe_projet:
             length: 60
             nullable: true
         date:
-            type: date
+            type: datetime
             nullable: true
 
     oneToMany:
