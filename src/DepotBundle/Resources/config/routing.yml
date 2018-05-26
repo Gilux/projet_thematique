@@ -32,13 +32,26 @@ new_commentaire:
     defaults: { _controller: DepotBundle:Commentaire:new }
     methods: POST
 
-
-
 new_groupe_projet:
     path: /groupe_projet/new/{devoir}
     defaults: { _controller: DepotBundle:GroupeProjet:new }
+
+join_groupe_projet:
+    path: /groupe_projet/join/{groupe_projet}
+    defaults: { _controller: DepotBundle:GroupeProjet:join}
 
 leave_groupe_projet:
     path: /groupe_projet/leave/{groupe_projet}
     defaults: { _controller: DepotBundle:GroupeProjet:leave }
 
+join_groupe_projet:
+    path: /groupe_projet/join/{groupe_projet}
+    defaults: { _controller: DepotBundle:GroupeProjet:join}
+
+accept_groupe_projet:
+    path: /groupe_projet/accept/{groupe_projet}/user_groupe_projet/{user_groupe_projet}
+    defaults: { _controller: DepotBundle:GroupeProjet:accept}
+
+decline_groupe_projet:
+    path: /groupe_projet/decline/{groupe_projet}/user_groupe_projet/{user_groupe_projet}
+    defaults: { _controller: DepotBundle:GroupeProjet:decline}
