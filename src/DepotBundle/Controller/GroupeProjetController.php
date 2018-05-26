@@ -158,7 +158,7 @@ class GroupeProjetController extends Controller
         $em = $this->getDoctrine()->getManager();
         $user_groupe_projet->setStatus(1);
         $em->persist($user_groupe_projet);
-//        $em->flush();
+        $em->flush();
         $this->sendNotificationToUser($user_groupe_projet->getUser(), $groupe_projet, 'accept');
         return $this->redirectToRoute("show_devoir", ["devoir" => $groupe_projet->getDevoir()->getId()]);
     }
