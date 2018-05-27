@@ -32,7 +32,6 @@
                 {% set nbgroupes = groupes_projet|length %}
                 {% set remaining_groups = minmax_groups.max - nbgroupes %}
 
-
                 {% for gp in groupes_projet %}
                     <div class="groupe">
                         <h4 class="text-center">Groupe {{ gp.name }}</h4>
@@ -99,22 +98,31 @@
 
 {% block daterendus %}
     <div class="item">
-        <h3>Rendu</h3>
-        <p>25 Mai 2018, 20:00</p>
+        <h3>Date théorique de rendu</h3>
+        <p>{{ date(groupe_devoir.datearendre)|date("Y-m-d H:m:s") }}</p>
     </div>
+    {% if fichier_rendu  and date_rendu %}
+        <div class="item">
+            <h3>Rendu</h3>
+            {#fixme un étudiant peut télécharger son rendu ?#}
+            <p><a href="#">{{ fichier_rendu }}</a></p>
+            <p>{{ date(date_rendu)|date("Y-m-d H:m:s") }}</p>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block rendu %}
     <div class="item">
         <h3>Effectuer votre rendu</h3>
         <p>
-            <form class="dropzone" id="depot-devoir"></form>
+        <form class="dropzone" id="depot-devoir"></form>
         </p>
     </div>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         {% for message in app.flashes('error') %}
@@ -125,8 +133,9 @@
     <script>
         var drop = new Dropzone("#depot-devoir",
             {
-                url: "{{ path('depot_devoir', {devoir: devoir.id}) }}"
+                url: "{{ path('depot_devoir', {devoir: devoir.id}) }}",
+                maxFiles: 1,
             }
-            );
+        );
     </script>
 {% endblock %}

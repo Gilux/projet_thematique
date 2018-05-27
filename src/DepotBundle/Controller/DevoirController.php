@@ -32,7 +32,8 @@ class DevoirController extends Controller
         }
     }
 
-    public function showEtudiantAction(Devoir $devoir) {
+    public function showEtudiantAction(Devoir $devoir)
+    {
         $user = $this->getUser();
         $groupes_devoirs = $this->getDoctrine()->getRepository("DepotBundle:Groupe_Devoir")->findBy([
             "devoir" => $devoir,
@@ -47,9 +48,9 @@ class DevoirController extends Controller
         foreach ($groupes_devoirs as $gd) {
 
             $g = $gd->getGroupe();
-            foreach($g->getUsers() as $u) {
-                if(!$userDansGroupe) {
-                    if($u->getId() == $user->getId()) {
+            foreach ($g->getUsers() as $u) {
+                if (!$userDansGroupe) {
+                    if ($u->getId() == $user->getId()) {
                         $userDansGroupe = true;
                         $groupeDevoirUser = $gd;
                     }
@@ -72,21 +73,24 @@ class DevoirController extends Controller
         $ogroupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $devoir]);
         foreach ($ogroupes_projets as $ogroupes_projet) {
             $ousers_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $ogroupes_projet]);
-            foreach ($ousers_groupes_projets as $ousers_groupes_projet)
-            {
-                if($this->getUser()->getId() == $ousers_groupes_projet->getUser()->getId())
-                {
+            foreach ($ousers_groupes_projets as $ousers_groupes_projet) {
+                if ($this->getUser()->getId() == $ousers_groupes_projet->getUser()->getId()) {
                     $uAppartientGroupe = true;
                 }
             }
         }
+
+        //Récupère la date de Rendu et le fichier
+        $gp = $this->getDoctrine()->getRepository(Groupe_projet::class)->findByDevoirAndUser($devoir, $user);
 
         return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
             "devoir" => $devoir,
             "groupe_devoir" => $groupeDevoirUser,
             "minmax_groups" => $minmax_groups,
             "groupes_projet" => $groupes_projet,
-            "u_appartient_groupe" => $uAppartientGroupe
+            "u_appartient_groupe" => $uAppartientGroupe,
+            "date_rendu" => $gp ? $gp->getDate():false,
+            "fichier_rendu" => $gp ? $gp->getFilename():false,
         ]);
     }
 
@@ -178,8 +182,7 @@ class DevoirController extends Controller
                         $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
 
                         //Si le devoir est individuel
-                        if($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1)
-                        {
+                        if ($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1) {
                             //Créer les groupe_projets
                             foreach ($groupe[0]->getUsers()->getValues() as $user) {
                                 $groupe_projet = new Groupe_projet();
@@ -505,7 +508,7 @@ class DevoirController extends Controller
     public function depotAction(Request $request, Devoir $devoir)
     {
         $file = $request->files->get("file");
-        $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
+        $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
 
         // moves the file to the directory where brochures are stored
         $file->move(
@@ -518,6 +521,7 @@ class DevoirController extends Controller
 
         $groupeProjet = $groupesProjetRepository->findByDevoirAndUser($devoir, $this->getUser());
 
+        $groupeProjet->setFileName($file->getClientOriginalName());
         $groupeProjet->setFichier($fileName);
         $groupeProjet->setDate(new \DateTime());
 
