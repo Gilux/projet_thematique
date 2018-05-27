@@ -89,8 +89,8 @@ class DevoirController extends Controller
             "minmax_groups" => $minmax_groups,
             "groupes_projet" => $groupes_projet,
             "u_appartient_groupe" => $uAppartientGroupe,
-            "date_rendu" => $gp ? $gp->getDate():false,
-            "fichier_rendu" => $gp ? $gp->getFilename():false,
+            "date_rendu" => $gp ? $gp->getDate() : false,
+            "fichier_rendu" => $gp ? $gp->getFilename() : false,
         ]);
     }
 
@@ -507,6 +507,9 @@ class DevoirController extends Controller
      */
     public function depotAction(Request $request, Devoir $devoir)
     {
+        // todo verifier la date d'upload si elle est valide
+        // todo récupérer pour cela le groupe_devoir avec la date a rendre
+
         $file = $request->files->get("file");
         $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
 
