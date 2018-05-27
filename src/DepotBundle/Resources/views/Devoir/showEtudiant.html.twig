@@ -94,7 +94,11 @@
     <div class="item">
         <h3>Effectuer votre rendu</h3>
         <p>
+            {% if "now"|date_modify("+7 day")|date('Y-m-d H:m:s') > date(groupe_devoir.datearendre)|date('Y-m-d H:m:s') %}
+            Vous ne pouvez plus déposer de rendu
+            {% else %}
         <form class="dropzone" id="depot-devoir"></form>
+        {% endif %}
         </p>
     </div>
 {% endblock %}
