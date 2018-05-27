@@ -16,6 +16,10 @@ DepotBundle\Entity\Groupe_projet:
             type: string
             length: 60
             nullable: true
+        filename:
+            type: string
+            length: 60
+            nullable: true
         date:
             type: datetime
             nullable: true

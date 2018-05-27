@@ -13,29 +13,33 @@
 
     <tbody>
     {% for devoir in data %}
-    <tr>
-        <td>
-            {{ devoir.ue }}
-        </td>
-        <td>
-            {{ devoir.user.firstName }} {{ devoir.user.lastName }}
-        </td>
-        <td>
-            {{ devoir.titre }}
-        </td>
-        <td>
-            {{ dump(devoir.groupe) }}
-        </td>
-        <td>
-            {{ devoir.date_rendu|date("d/m/Y H:i") }}
-        </td>
-        <td>
-            <span class="badge success">Rendu le 20/02/2018</span>
-        </td>
-        <td>
-            <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a>
-        </td>
-    </tr>
+        <tr>
+            <td>
+                {{ devoir.ue }}
+            </td>
+            <td>
+                {{ devoir.user.firstName }} {{ devoir.user.lastName }}
+            </td>
+            <td>
+                {{ devoir.titre }}
+            </td>
+            <td>
+                {# fixme get groupe projet of user #}
+            </td>
+            <td>
+                {{ devoir.date_rendu|date("d/m/Y H:i") }}
+            </td>
+            <td>
+                {% if devoir.date_rendu_file %}
+                    <span class="badge success">Rendu le {{ devoir.date_rendu_file|date("d/m/Y H:i") }}</span>
+                {% else %}
+                    Non rendu
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a>
+            </td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
