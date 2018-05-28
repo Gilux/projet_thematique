@@ -6,43 +6,29 @@
             <h3>Groupes de projet</h3>
 
             <div class="groupesProjet">
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 1</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 2</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 3</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                </div>
-                <div class="groupe">
-                    <h4 class="text-center">Groupe 4</h4>
-                    <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                    </ul>
-                </div>
+                {% set nbgroupes = groupes_projets|length %}
+                {% for gp in groupes_projets %}
+                    <div class="groupe">
+                        <h4 class="text-center">Groupe {{ gp.name }}</h4>
+                        <ul>
+                            {% set in_groupe = false %}
+                            {% set leader = false %}
+                            {% for ugp in gp.usersgroupesprojets %}
+                                {% if ugp.user.username == app.user.username %}
+                                    {% set in_groupe = true %}
+                                    {% if ugp.leader == 1 %}
+                                        {% set leader = true %}
+                                    {% endif %}
+                                {% endif %}
+                                <li>{{ ugp.user.username }}
+                                    {% if ugp.status == 0 %}
+                                        <i>(en attente d'approbation)</i>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -52,8 +38,13 @@
     <div class="item">
         <h3>Rendus</h3>
         <ul>
-            <li><strong>Groupe 1 :</strong> 25 Mai 2018 23:00</li>
-            <li><strong>Groupe 2 :</strong> 25 Mai 2018 23:00</li>
+            {% for gp in groupes_projets %}
+                <li><strong>Groupe {{ gp.name }} :</strong>
+                    {% if gp.date is defined %}
+                        {{ gp.date|date("d/m/Y - H:m:s") }}
+                    {% endif %}
+                </li>
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}
@@ -61,188 +52,14 @@
 {% block rendus %}
     <div class="item">
         <h3>Liste des rendus</h3>
-        ...
+        {% for gp in groupes_projets %}
+            <strong>Groupe {{ gp.name }} :</strong>:
+            {% if gp.filename is defined %}
+                {# todo mettre link #}
+                <a href="#">{{ gp.filename }}</a>
+            {% else %}
+                Non rendu
+            {% endif %}
+        {% endfor %}
     </div>
 {% endblock %}
-{#
-{% block main %}
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1>Visualisation du devoir {{ devoir.titre }}</h1>
-                <h2><small>{{ devoir.user.firstName }} {{ devoir.user.lastName }} - {{ devoir.ue.nom }}</small></h2>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="item">
-                    <h3>Choisir votre groupe de projet</h3>
-                    <p>Vous n'avez pas encore choisi votre groupe de projet. Veuillez vous positionner dans un groupe ouvert, ou en créer un nouveau.<br>
-                        Ce projet étant ouvert à 25 étudiants en groupes de 3 à 5, de <strong>5</strong> à <strong>8</strong> groupes sont ouverts.
-                    </p>
-
-                    <div class="groupesProjet">
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 1</h4>
-                            <ul>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                            </ul>
-                            <button disabled>Groupe complet</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 2</h4>
-                            <ul>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                            </ul>
-                            <button>Demander à rejoindre</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 3</h4>
-                            <ul>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                            </ul>
-                            <button>Demander à rejoindre</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 4</h4>
-                            <ul>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                            </ul>
-                            <button>Demander à rejoindre</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 5</h4>
-                            <ul>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                            </ul>
-                            <button>Demander à rejoindre</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 6</h4>
-                            <ul>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                                <li>Lorem ipsum</li>
-                            </ul>
-                            <button>Demande envoyée</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 7</h4>
-                            <button>Rejoindre</button>
-                        </div>
-                        <div class="groupe">
-                            <h4 class="text-center">Groupe 8</h4>
-                            <button>Rejoindre</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-4 col-left">
-                <div class="item">
-                    <h3>Votre groupe de projet</h3>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at atque consequatur,
-                        debitis deserunt dolor doloremque, ipsum obcaecati officia quis repellat veritatis vitae. Eaque
-                        illum nesciunt pariatur quaerat unde.
-                    </p>
-
-                </div>
-                <div class="item">
-                    <h3>Rendu</h3>
-                    <p>30 Janvier 2018, 17:00</p>
-                </div>
-                <div class="item">
-                    <h3>Description</h3>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at atque consequatur,
-                        debitis deserunt dolor doloremque, ipsum obcaecati officia quis repellat veritatis vitae. Eaque
-                        illum nesciunt pariatur quaerat unde.
-                    </p>
-
-                </div>
-            </div>
-
-            <div class="col-xs-8 col-right">
-                <div class="item">
-                    <h3>Effectuer votre rendu</h3>
-                    <p id="dropzone">
-                        Déposer votre fichier ici
-                    </p>
-                </div>
-                <div class="item">
-                    <h3>Documents fournis par l'enseignant</h3>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at atque consequatur,
-                        debitis deserunt dolor doloremque, ipsum obcaecati officia quis repellat veritatis vitae. Eaque
-                        illum nesciunt pariatur quaerat unde.
-                    </p>
-
-                </div>
-                <div class="item">
-                    <h3>Discussion autour du sujet</h3>
-                    <ul class="media-list">
-                        <li class="media">
-                            <div class="media-left">
-                                <a href="#">
-                                    <img class="media-object" src="http://via.placeholder.com/50x50" alt="avatar">
-                                </a>
-                            </div>
-                            <div class="media-body">
-                                <h4 class="media-heading">Jean Dupont <small>02/01/2018 01:01</small></h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam atque blanditiis
-                                    dignissimos doloremque ea earum eius eos, inventore iusto maxime molestiae molestias
-                                    quidem ratione saepe tempore totam ut veritatis voluptate?</p>
-                                <div class="media">
-                                    <div class="media-left">
-                                        <a href="#">
-                                            <img alt="64x64" class="media-object" data-src="holder.js/64x64" src="http://via.placeholder.com/50x50" data-holder-rendered="true">
-                                        </a></div>
-                                    <div class="media-body"><h4 class="media-heading">Test2 <small>02/01/2018 03:01</small></h4>
-                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                        ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at,
-                                        tempus viverra turpis.
-                                    </div>
-                                </div>
-                                <div class="media">
-                                    <div class="media-left">
-                                        <a href="#">
-                                            <img alt="64x64" class="media-object" data-src="holder.js/64x64" src="http://via.placeholder.com/50x50" data-holder-rendered="true">
-                                        </a></div>
-                                    <div class="media-body"><h4 class="media-heading">Test3 <small>02/01/2018 04:01</small></h4>
-                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                        ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at,
-                                        tempus viverra turpis.
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <textarea name="comment" id="comment" style="width:100%;"></textarea>
-                    <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />.
-                </div>
-            </div>
-        </div>
-    </div>
-
-{% endblock %}
-
-#}

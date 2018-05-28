@@ -98,7 +98,12 @@ class DevoirController extends Controller
 
     public function showEnseignantAction(Devoir $devoir)
     {
-        return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', ["devoir" => $devoir]);
+        $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', [
+            "devoir" => $devoir,
+            "groupes_projets" => $groupes_projet,
+        ]);
     }
 
     public function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
@@ -275,14 +280,13 @@ class DevoirController extends Controller
                     $noms[] = $u->getUser()->getLastName();
                 }
 
-                if(!is_null($rendu->getFichier())) {
+                if (!is_null($rendu->getFichier())) {
                     $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $rendu->getFichier();
                     $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
 
-                    if(file_exists($filepath)) {
+                    if (file_exists($filepath)) {
                         $zip->addFile($filepath, $filename);
-                    }
-                    else {
+                    } else {
                         die("fatal");
                     }
                 }
