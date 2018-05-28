@@ -5,18 +5,6 @@
     <link rel="stylesheet" href="{{ asset("vendor/dropzone/dropzone.css") }}">
 {% endblock %}
 
-{% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script>
-        {% for message in app.flashes('error') %}
-        toastr.error("{{ message }}", "Une erreur s'est produite");
-        {% endfor %}
-    </script>
-{% endblock %}
-
-
 {% block groupes %}
     <div class="col-xs-12">
         <div class="item">
@@ -115,7 +103,7 @@
     <div class="item">
         <h3>Effectuer votre rendu</h3>
         <p>
-            {% if "now"|date_modify("+7 day")|date('Y-m-d H:m:s') > date(groupe_devoir.datearendre)|date('Y-m-d H:m:s') %}
+            {% if date(groupe_devoir.datearendre)|date_modify("+7 day")|date('Y-m-d H:m:s') < "now"|date('Y-m-d H:m:s') %}
             Vous ne pouvez plus déposer de rendu
             {% else %}
         <form class="dropzone" id="depot-devoir"></form>
