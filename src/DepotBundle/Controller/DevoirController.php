@@ -12,10 +12,12 @@ use Mgilet\NotificationBundle\Entity\Notification;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use UserBundle\Entity\User;
 
 
@@ -254,6 +256,47 @@ class DevoirController extends Controller
             ));
         } else {
             throw $this->createNotFoundException();
+        }
+    }
+
+    public function rendusAction(Devoir $devoir)
+    {
+        $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
+        $zip = new \ZipArchive();
+
+        if ($zip->open($fileName, \ZipArchive::CREATE) === true) {
+            $rendus = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findBy(["devoir" => $devoir]);
+
+            foreach ($rendus as $rendu) {
+                $noms = [];
+
+                $users = $rendu->getUsersGroupesProjets();
+                foreach ($users as $u) {
+                    $noms[] = $u->getUser()->getLastName();
+                }
+
+                if(!is_null($rendu->getFichier())) {
+                    $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $rendu->getFichier();
+                    $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
+
+                    echo $filepath;
+                    echo $filename;
+
+                    if(file_exists($filepath)) {
+                        $zip->addFile($filepath, $filename);
+                    }
+                    else {
+                        die("fatal");
+                    }
+                }
+            }
+            $zip->close();
+            //$response = new BinaryFileResponse($fileName);
+            //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            //return $response;
+        } else {
+            echo "Erreur";
+            die();
         }
     }
 

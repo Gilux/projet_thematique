@@ -57,3 +57,7 @@ depot_devoir:
     defaults: { _controller: DepotBundle:Devoir:depot }
     methods: POST
 
+download_devoir_rendus:
+    path: /devoir/{devoir}/rendus
+    defaults: { _controller: DepotBundle:Devoir:rendus }
+    methods: GET
