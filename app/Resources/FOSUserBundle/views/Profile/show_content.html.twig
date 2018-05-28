@@ -22,6 +22,26 @@
                     <p><strong>Nom :</strong> {{user.lastname}}</p>
                     <p><strong>Prénom :</strong> {{user.firstname}}</p>
                     <p><strong>{{ 'profile.show.email'|trans }} :</strong> {{user.email}}</p>
+                    <p>
+                        <strong>Rôles :</strong>
+                        {% for role in user.roles %}
+                            {% if role == "ROLE_ENSEIGNANT" %}
+                                Enseignant
+                            {% elseif role == "ROLE_ETUDIANT"  %}
+                                Étudiant
+                            {% elseif role == "ROLE_ADMIN"  %}
+                                Administrateur
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    {% if "ROLE_ENSEIGNANT" in user.roles %}
+                        <p>
+                            <strong>Vos UEs :</strong><br/>
+                            {% for ue in user.ues %}
+                                {{ ue.code ~' - '~ ue.nom }}<br/>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
                 </div>
             </div>
         </div>

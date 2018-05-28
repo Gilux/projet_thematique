@@ -23,11 +23,17 @@ class Groupe_projet
     private $users;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $users_groupes_projets;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->users_groupes_projets = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -182,4 +188,22 @@ class Groupe_projet
     {
         return $this->date;
     }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsersGroupesProjets()
+    {
+        return $this->users_groupes_projets;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $users_groupes_projets
+     */
+    public function setUsersGroupesProjets($users_groupes_projets)
+    {
+        $this->users_groupes_projets = $users_groupes_projets;
+    }
+
+
 }

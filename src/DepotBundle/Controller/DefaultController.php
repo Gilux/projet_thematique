@@ -22,12 +22,36 @@ class DefaultController extends Controller
     public function getEtudiantDevoirsAction() {
         $data = [];
         $user = $this->getUser();
+        $groupes = $user->getGroupes();
+
+        foreach($groupes as $g) {
+            $groupes_devoir = $g->getGroupeDevoir();
+            foreach ($groupes_devoir as $gd) {
+                $gpRepo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet");
+                $groupes_rendus = $gpRepo->findByDevoir($gd->getDevoir());
+
+
+
+                $data[] = [
+                    "id" => $gd->getDevoir()->getId(),
+                    "ue" => $gd->getDevoir()->getUe()->getNom(),
+                    "user" => $gd->getDevoir()->getUser(),
+                    "titre" => $gd->getDevoir()->getTitre(),
+                    "groupe" => $groupes_rendus,
+                    "date_rendu" => $gd->getDateARendre()
+                ];
+            }
+            echo "<hr>";
+        }
+
+        /*
         foreach($user->getUes() as $ue) {
+            dump($ue);
             foreach($ue->getDevoirs() as $devoir) {
                 $data[] = $devoir;
             }
         }
-
+        */
         return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data ));
     }
 

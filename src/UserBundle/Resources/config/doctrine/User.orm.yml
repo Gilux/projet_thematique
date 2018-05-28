@@ -23,12 +23,13 @@ UserBundle\Entity\User:
             targetEntity: DepotBundle\Entity\Commentaire
             mappedBy: user
 
+        users_groupes_projets:
+            targetEntity: DepotBundle\Entity\UserGroupeProjet
+            mappedBy: user
+
     manyToMany:
         groupes:
             targetEntity: DepotBundle\Entity\Groupe
-            inversedBy: users
-        groupes_projet:
-            targetEntity: DepotBundle\Entity\Groupe_projet
             inversedBy: users
         ues:
             targetEntity: DepotBundle\Entity\UE

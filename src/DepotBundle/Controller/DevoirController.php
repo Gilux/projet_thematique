@@ -6,6 +6,8 @@ use DepotBundle\Entity\Commentaire;
 use DepotBundle\Entity\Devoir;
 use DepotBundle\Entity\Groupe;
 use DepotBundle\Entity\Groupe_Devoir;
+use DepotBundle\Entity\Groupe_projet;
+use DepotBundle\Entity\UserGroupeProjet;
 use Mgilet\NotificationBundle\Entity\Notification;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
@@ -29,9 +31,63 @@ class DevoirController extends Controller
         }
     }
 
-    public function showEtudiantAction(Devoir $devoir)
-    {
-        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', ["devoir" => $devoir]);
+    public function showEtudiantAction(Devoir $devoir) {
+        $user = $this->getUser();
+        $groupes_devoirs = $this->getDoctrine()->getRepository("DepotBundle:Groupe_Devoir")->findBy([
+            "devoir" => $devoir,
+        ]);
+
+        $groupes = [];
+
+        $userDansGroupe = false;
+        $groupeDevoirUser = null;
+
+        // Tourner parmi les groupes de l'ue concernée par le devoir
+        foreach ($groupes_devoirs as $gd) {
+
+            $g = $gd->getGroupe();
+            foreach($g->getUsers() as $u) {
+                if(!$userDansGroupe) {
+                    if($u->getId() == $user->getId()) {
+                        $userDansGroupe = true;
+                        $groupeDevoirUser = $gd;
+                    }
+                }
+            }
+        }
+
+        $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        $usersInGroupeDevoir = $groupeDevoirUser->getGroupe()->getUsers()->count();
+        $groupeRenduUtility = $this->get("utility.grouperendu");
+        $minmax_groups = $groupeRenduUtility->getMinMaxGroups(
+            $groupeDevoirUser->getNbMinEtudiant(),
+            $groupeDevoirUser->getNbMaxEtudiant(),
+            $usersInGroupeDevoir
+        );
+
+        //Algo permettant de savoir si l'utilisateur appartient déjà à un groupe
+        $uAppartientGroupe = false;
+        $ogroupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $devoir]);
+        foreach ($ogroupes_projets as $ogroupes_projet) {
+            $ousers_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $ogroupes_projet]);
+            foreach ($ousers_groupes_projets as $ousers_groupes_projet)
+            {
+                if($this->getUser()->getId() == $ousers_groupes_projet->getUser()->getId())
+                {
+                    $uAppartientGroupe = true;
+                }
+            }
+        }
+
+
+        return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
+            "devoir" => $devoir,
+            "groupe_devoir" => $groupeDevoirUser,
+            "minmax_groups" => $minmax_groups,
+            "groupes_projet" => $groupes_projet,
+            "u_appartient_groupe" => $uAppartientGroupe
+        ]);
     }
 
     public function showEnseignantAction(Devoir $devoir)
@@ -120,6 +176,25 @@ class DevoirController extends Controller
                         $groupe_devoir->setDateBloquante($form->get("date_bloquante")->getData());
                         $groupe_devoir->setNbMaxEtudiant($form->get("nb_max_etudiant")->getData());
                         $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
+
+                        //Si le devoir est individuel
+                        if($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1)
+                        {
+                            //Créer les groupe_projets
+                            foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                                $groupe_projet = new Groupe_projet();
+                                $groupe_projet->setDevoir($devoir);
+                                $groupe_projet->setName($user->getLastName());
+                                $em->persist($groupe_projet);
+
+                                $user_groupe_projet = new UserGroupeProjet();
+                                $user_groupe_projet->setUser($user);
+                                $user_groupe_projet->setGroupeProjet($groupe_projet);
+                                $user_groupe_projet->setStatus(1);
+                                $user_groupe_projet->setLeader(1);
+                                $em->persist($user_groupe_projet);
+                            }
+                        }
 
                         //récupérer les données des utilisateurs de tous les groupes set une notification + envoyer un mail
                         foreach ($groupe[0]->getUsers()->getValues() as $user) {

@@ -2,6 +2,7 @@
 
 namespace DepotBundle\Controller\Admin;
 
+use DepotBundle\Form\Type\Admin\UserCreateType;
 use DepotBundle\Form\Type\Admin\UserEditType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +24,17 @@ class UserAdminController extends Controller
 
     public function deleteAction(Request $request, User $user)
     {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($user);
-        $em->flush();
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($user);
+            $em->flush();
+
+            $this->addFlash("success", "L'utilisateur a été supprimé avec succès.");
+        } catch(\Doctrine\DBAL\DBALException $e)
+        {
+            $this->addFlash("error", "Impossible de supprimer cette utilisateur car il est lié à d'autres composants.");
+        }
+
         return $this->redirectToRoute('users_admin');
 
     }
@@ -73,7 +82,7 @@ class UserAdminController extends Controller
 
     public function editAction(Request $request, User $user)
     {
-        $form = $this->get('form.factory')->create(UserEditType::class, $user);
+        $form = $this->get('form.factory')->create(UserEditType::class, $user, ["user"=>$user]);
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -94,23 +103,32 @@ class UserAdminController extends Controller
     {
         $user = new User();
 
-        $form = $this->get('form.factory')->create(UserEditType::class, $user);
+        $form = $this->get('form.factory')->create(UserCreateType::class, $user);
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
-            $user->setUsername($user->getEmail());
-            $randomFirstPassword = uniqid();
+            $if_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(["email" => $user->getEmail()]);
+            if(count($if_exist) == 0) {
+                $user->setUsername($user->getEmail());
+                $randomFirstPassword = uniqid();
 
-            $user->setPlainPassword($randomFirstPassword);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
+                $user->setPlainPassword($randomFirstPassword);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
 
-            $this->sendCredentials($user, $randomFirstPassword);
+                $this->sendCredentials($user, $randomFirstPassword);
 
 
-            $request->getSession()->getFlashBag()->add('notice', 'Utilisateur bien enregistré.');
+                $request->getSession()->getFlashBag()->add('notice', 'Utilisateur bien enregistré.');
 
-            return $this->redirectToRoute('users_admin', array('id' => $user->getId()));
+                return $this->redirectToRoute('users_admin');
+            }
+            else{
+                $this->addFlash("error", "Un utilisateur avec la même adresse email existe déjà.");
+                return $this->render('DepotBundle:Admin/Users:new.html.twig', array(
+                    'form' => $form->createView(),
+                ));
+            }
         }
 
         return $this->render('DepotBundle:Admin/Users:new.html.twig', array(

@@ -1,5 +1,42 @@
 {% extends "admin.html.twig" %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        var users = $('#users').DataTable();
+
+        yadcf.init(users, [
+            {column_number : 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
+        ]);
+
+        {% if users_pending is not empty %}
+            var v_users = $('#v_users').DataTable();
+
+            yadcf.init(v_users, [
+                {column_number : 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
+            ]);
+        {% endif %}
+        $(".yadcf-filter-wrapper").attr("style", "color:black");
+
+        {% for message in app.flashes('success') %}
+            toastr.success("{{ message }}", "Succès");
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            toastr.error("{{ message }}", "Une erreur s'est produite");
+        {% endfor %}
+
+    </script>
+{% endblock %}
+
 {% block main %}
     <div class="container">
         <div class="row">
@@ -12,7 +49,7 @@
                 <div class="col-xs-12">
                     <div class="item">
                         <h3>Liste des utilisateurs en attente de modération</h3>
-                        <table>
+                        <table id="v_users">
                             <thead>
                             <tr>
                                 <th>Nom</th>
@@ -65,7 +102,7 @@
                 <div class="item">
                     <h3>Liste des utilisateurs</h3>
                     <a class="btn btn-primary pull-right" href="{{ path("users_admin_new") }}">Nouvel utilisateur</a>
-                    <table>
+                    <table id="users">
                         <thead>
                         <tr>
                             <th>Nom</th>
