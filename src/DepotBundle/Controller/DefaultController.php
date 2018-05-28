@@ -46,15 +46,46 @@ class DefaultController extends Controller
         return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data));
     }
 
+
     public function getEnseignantDevoirsAction()
     {
+
+        $repo_groupe_projet = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_projet");
+        $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_devoir");
         $data = [];
         $user = $this->getUser();
+        $nombre_rendus = 0;
+        $groupes_devoir = 0;
         foreach ($user->getUes() as $ue) {
             foreach ($ue->getDevoirs() as $devoir) {
+                //pour chaque devoir compter le nombre de groupe_projet
+                $gps = $repo_groupe_projet->findByDevoir($devoir);
+                foreach ($gps as $gp) {
+                    if ($gp->getFichier() != null) {
+                        $nombre_rendus++;
+                    }
+                    $groupes_devoir++;
+                }
+                //obtenir toutes les dates à rendre pour tout les groupe devoirs
+                $groupes_devoirs = $repo_groupe_devoir->findByDevoir($devoir);
+                foreach ($groupes_devoirs as $groupe_devoir) {
+                    $dates_a_rendre[] = $groupe_devoir->getDateARendre();
+                }
+                if (count($dates_a_rendre) >= 2) {
+                    $devoir->min_date_a_rendre = min($dates_a_rendre);
+                    $devoir->max_date_a_rendre = max($dates_a_rendre);
+                } else {
+                    $devoir->unique_date_a_rendre = $dates_a_rendre[0];
+                }
+                $devoir->nombre_rendus = $nombre_rendus;
+                $devoir->groupes_devoir = $groupes_devoir;
+
                 $data[] = $devoir;
             }
         }
+
+//        dump($data);
+//        exit();
         return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data));
     }
 
