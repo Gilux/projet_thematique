@@ -279,9 +279,6 @@ class DevoirController extends Controller
                     $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $rendu->getFichier();
                     $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
 
-                    echo $filepath;
-                    echo $filename;
-
                     if(file_exists($filepath)) {
                         $zip->addFile($filepath, $filename);
                     }
@@ -291,9 +288,11 @@ class DevoirController extends Controller
                 }
             }
             $zip->close();
-            //$response = new BinaryFileResponse($fileName);
-            //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-            //return $response;
+
+            $response = new BinaryFileResponse($fileName);
+
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            return $response;
         } else {
             echo "Erreur";
             die();
