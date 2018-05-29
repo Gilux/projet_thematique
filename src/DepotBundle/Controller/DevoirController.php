@@ -553,6 +553,30 @@ class DevoirController extends Controller
         // todo récupérer pour cela le groupe_devoir avec la date a rendre
 
         $file = $request->files->get("file");
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        $allowed_extensions_raw = $devoir->getExtensions()->toArray();
+
+        $allowed_extensions = [];
+
+        foreach($allowed_extensions_raw as $ae) {
+            $allowed_extensions[] = $ae->getExtension();
+        }
+
+        dump($extension);
+        dump($allowed_extensions);
+
+        $valid_extension = false;
+
+        if(in_array($extension, $allowed_extensions)) {
+            $valid_extension = true;
+        }
+
+        if(!$valid_extension) {
+            return new JsonResponse(array("status" => "mauvaise extension"), 400);
+        }
+
+
         $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
 
         // moves the file to the directory where brochures are stored
@@ -575,6 +599,8 @@ class DevoirController extends Controller
         $em->flush();
 
         return new JsonResponse(array("status" => "ok"));
+
+
     }
 
     /**
