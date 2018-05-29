@@ -279,28 +279,39 @@ class DevoirController extends Controller
         $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
         $zip = new \ZipArchive();
 
-        $users = $groupe_projet->getUsersGroupesProjets();
-        foreach ($users as $u) {
-            $noms[] = $u->getUser()->getLastName();
-        }
-
-        if (!is_null($groupe_projet->getFichier())) {
-            $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $groupe_projet->getFichier();
-            $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
-            if (file_exists($filepath)) {
-                 $zip->addFile($filepath, $filename);
-            } else {
-                die("fatal");
+        if ($zip->open($fileName, \ZipArchive::CREATE) === true) {
+            $users = $groupe_projet->getUsersGroupesProjets();
+            foreach ($users as $u) {
+                $noms[] = $u->getUser()->getLastName();
             }
+
+            if (!is_null($groupe_projet->getFichier())) {
+                $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $groupe_projet->getFichier();
+                $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
+                $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
+                if (file_exists($filepath)) {
+
+                    $zip->addFile($filepath, $filename);
+                } else {
+                    die("fatal");
+                }
+            }
+            $zip->close();
+
+            $response = new BinaryFileResponse($fileName);
+
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            return $response;
+
+        } else {
+            echo "Erreur";
+            die();
         }
-        $zip->close();
-
-        $response = new BinaryFileResponse($fileName);
-
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
     }
 
-    public function rendusAction(Devoir $devoir)
+
+    public
+    function rendusAction(Devoir $devoir)
     {
         $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
         $zip = new \ZipArchive();
@@ -342,12 +353,14 @@ class DevoirController extends Controller
     /**
      * @return string
      */
-    private function generateUniqueFileName()
+    private
+    function generateUniqueFileName()
     {
         return md5(uniqid());
     }
 
-    public function getGroupeAction(Request $request)
+    public
+    function getGroupeAction(Request $request)
     {
         if ($request->request->get('ue_id')) {
             $groupes = $this->getDoctrine()->getRepository(Groupe::class)->findBy(["UE" => $request->request->get('ue_id')]);
@@ -385,7 +398,8 @@ class DevoirController extends Controller
         return $this->render('DepotBundle:Devoir:new.html.twig');
     }
 
-    private function getErrorMessages(FormInterface $form)
+    private
+    function getErrorMessages(FormInterface $form)
     {
         $errors = array();
 
@@ -412,7 +426,8 @@ class DevoirController extends Controller
      * @param Devoir $devoir
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function editAction(Request $request, Devoir $devoir)
+    public
+    function editAction(Request $request, Devoir $devoir)
     {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
@@ -548,7 +563,8 @@ class DevoirController extends Controller
      * @param Devoir $devoir
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(Request $request, Devoir $devoir)
+    public
+    function deleteAction(Request $request, Devoir $devoir)
     {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $form = $this->createDeleteForm($devoir);
@@ -587,7 +603,8 @@ class DevoirController extends Controller
      *
      * @param Devoir $devoir
      */
-    public function depotAction(Request $request, Devoir $devoir)
+    public
+    function depotAction(Request $request, Devoir $devoir)
     {
         // todo verifier la date d'upload si elle est valide
         // todo récupérer pour cela le groupe_devoir avec la date a rendre
@@ -650,7 +667,8 @@ class DevoirController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Devoir $devoir)
+    private
+    function createDeleteForm(Devoir $devoir)
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('delete_devoir', array('id' => $devoir->getId())))
@@ -658,7 +676,8 @@ class DevoirController extends Controller
             ->getForm();
     }
 
-    public function downloadAction($filename)
+    public
+    function downloadAction($filename)
     {
         $file = $this->getParameter('documents_devoirs_directory') . '/' . $filename;
 
