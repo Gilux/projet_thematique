@@ -36,4 +36,9 @@ DepotBundle\Entity\Groupe_Devoir:
             targetEntity: Devoir
             inversedBy: groupe_devoir
 
+    oneToMany:
+        groupes_projets:
+            targetEntity: Groupe_Projet
+            mappedBy: groupe_devoir
+
     lifecycleCallbacks: {  }

@@ -55,8 +55,6 @@ class DefaultController extends Controller
         $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_devoir");
         $data = $dates_a_rendre = [];
         $user = $this->getUser();
-        $nombre_rendus = 0;
-        $nombre_groupes_devoir = 0;
 
         foreach ($user->getUes() as $ue) {
             foreach ($ue->getDevoirs() as $devoir) {

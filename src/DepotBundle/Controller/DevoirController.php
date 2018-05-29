@@ -100,6 +100,16 @@ class DevoirController extends Controller
     {
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
 
+        foreach ($groupes_projet as $key => $gp) {
+            $date_theorique = $gp->getGroupeDevoir()->getDateARendre();
+
+            $groupes_projet[$key]->date_theorique = $date_theorique;
+
+            if ($gp->getDate()) {
+                $groupes_projet[$key]->diff = date_diff($date_theorique, $gp->getDate());
+            }
+        }
+
         return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', [
             "devoir" => $devoir,
             "groupes_projets" => $groupes_projet,
@@ -262,6 +272,32 @@ class DevoirController extends Controller
         } else {
             throw $this->createNotFoundException();
         }
+    }
+
+    public function renduAction(Devoir $devoir, Groupe_projet $groupe_projet)
+    {
+        $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
+        $zip = new \ZipArchive();
+
+        $users = $groupe_projet->getUsersGroupesProjets();
+        foreach ($users as $u) {
+            $noms[] = $u->getUser()->getLastName();
+        }
+
+        if (!is_null($groupe_projet->getFichier())) {
+            $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $groupe_projet->getFichier();
+            $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
+            if (file_exists($filepath)) {
+                 $zip->addFile($filepath, $filename);
+            } else {
+                die("fatal");
+            }
+        }
+        $zip->close();
+
+        $response = new BinaryFileResponse($fileName);
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
     }
 
     public function rendusAction(Devoir $devoir)
@@ -563,7 +599,7 @@ class DevoirController extends Controller
 
         $allowed_extensions = [];
 
-        foreach($allowed_extensions_raw as $ae) {
+        foreach ($allowed_extensions_raw as $ae) {
             $allowed_extensions[] = $ae->getExtension();
         }
 
@@ -572,11 +608,11 @@ class DevoirController extends Controller
 
         $valid_extension = false;
 
-        if(in_array($extension, $allowed_extensions)) {
+        if (in_array($extension, $allowed_extensions)) {
             $valid_extension = true;
         }
 
-        if(!$valid_extension) {
+        if (!$valid_extension) {
             return new JsonResponse(array("status" => "mauvaise extension"), 400);
         }
 

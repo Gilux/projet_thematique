@@ -57,7 +57,12 @@ depot_devoir:
     defaults: { _controller: DepotBundle:Devoir:depot }
     methods: POST
 
-download_devoir_rendus:
+download_devoirs_rendus:
     path: /devoir/{devoir}/rendus
     defaults: { _controller: DepotBundle:Devoir:rendus }
+    methods: GET
+
+download_devoir_rendu:
+    path: /devoir/{devoir}/groupe_projet/{groupe_projet}/rendus
+    defaults: { _controller: DepotBundle:Devoir:rendu }
     methods: GET
