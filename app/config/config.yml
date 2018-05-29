@@ -9,6 +9,7 @@ imports:
 parameters:
     locale: fr
     documents_devoirs_directory: '%kernel.project_dir%/web/uploads/documents/devoirs'
+    depots_devoirs_directory: '%kernel.project_dir%/web/uploads/documents/depots_devoirs'
 
 framework:
     #esi: ~

@@ -44,10 +44,6 @@ leave_groupe_projet:
     path: /groupe_projet/leave/{groupe_projet}
     defaults: { _controller: DepotBundle:GroupeProjet:leave }
 
-join_groupe_projet:
-    path: /groupe_projet/join/{groupe_projet}
-    defaults: { _controller: DepotBundle:GroupeProjet:join}
-
 accept_groupe_projet:
     path: /groupe_projet/accept/{groupe_projet}/user_groupe_projet/{user_groupe_projet}
     defaults: { _controller: DepotBundle:GroupeProjet:accept}
@@ -55,3 +51,13 @@ accept_groupe_projet:
 decline_groupe_projet:
     path: /groupe_projet/decline/{groupe_projet}/user_groupe_projet/{user_groupe_projet}
     defaults: { _controller: DepotBundle:GroupeProjet:decline}
+
+depot_devoir:
+    path: /devoir/{devoir}/depot
+    defaults: { _controller: DepotBundle:Devoir:depot }
+    methods: POST
+
+download_devoir_rendus:
+    path: /devoir/{devoir}/rendus
+    defaults: { _controller: DepotBundle:Devoir:rendus }
+    methods: GET

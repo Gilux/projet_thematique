@@ -19,7 +19,6 @@
 
         <div class="row">
             <div class="col-xs-12">
-                {{ dump(data) }}
                 <div class="item">
                     {% if "ROLE_ENSEIGNANT" in app.user.roles %}
                         {% include "DepotBundle:Partials/Default:liste_enseignant.html.twig" with {'data': data} %}

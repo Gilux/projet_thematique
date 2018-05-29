@@ -13,6 +13,27 @@ use UserBundle\Entity\User;
 class Groupe_projetRepository extends \Doctrine\ORM\EntityRepository
 {
     function findByDevoirAndUser(Devoir $devoir, User $user){
+        $qb = $this->createQueryBuilder('gp');
 
+        $qb
+            ->where('gp.devoir = :devoir')
+            ->setParameter('devoir', $devoir)
+        ;
+
+        $groupes = $qb
+            ->getQuery()
+            ->getResult()
+            ;
+
+        if(is_null($groupes)) return false;
+
+        foreach($groupes as $gp) {
+            foreach($gp->getUsersGroupesProjets() as $ugp) {
+                if($ugp->getUser()->getId() === $user->getId()) {
+                    return $gp;
+                }
+            }
+        }
+        return false;
     }
 }
