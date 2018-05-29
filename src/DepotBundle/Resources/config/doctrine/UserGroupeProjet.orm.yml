@@ -1,0 +1,30 @@
+DepotBundle\Entity\UserGroupeProjet:
+    type: entity
+    table: null
+    repositoryClass: DepotBundle\Repository\Groupe_projetRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        status:
+            type: integer
+
+        leader:
+            type: integer
+            options:
+                default: 0
+
+    manyToOne:
+        groupe_projet:
+            targetEntity: Groupe_projet
+            inversedBy: users_groupes_projets
+
+        user:
+            targetEntity: UserBundle\Entity\User
+            inversedBy: users_groupes_projets
+
+
+    lifecycleCallbacks: {  }

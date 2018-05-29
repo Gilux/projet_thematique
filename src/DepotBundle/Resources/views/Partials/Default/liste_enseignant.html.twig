@@ -4,6 +4,7 @@
         <th>UE</th>
         <th>Enseignant</th>
         <th>Nom du devoir</th>
+        <th>Date de création</th>
         <th>Date de rendu</th>
         <th>Rendus</th>
         <th>Actions</th>
@@ -12,27 +13,35 @@
 
     <tbody>
     {% for devoir in data %}
-    <tr>
-        <td>
-            {{ devoir.ue.nom }}
-        </td>
-        <td>
-            {{ devoir.user.firstName }} {{ devoir.user.lastName }}
-        </td>
-        <td>
-            {{ devoir.titre }}
-        </td>
-        <td>
-            {{ devoir.created|date("d/m/Y") }}
-        </td>
-        <td>
-            [[TODO]]
-        </td>
-        <td>
-            <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a> /
-            <a href="{{ path("edit_devoir", {'id': devoir.id} ) }}">Éditer</a>
-        </td>
-    </tr>
+        <tr>
+            <td>
+                {{ devoir.ue.nom }}
+            </td>
+            <td>
+                {{ devoir.user.firstName }} {{ devoir.user.lastName }} ( {{ devoir.user.username }} )
+            </td>
+            <td>
+                {{ devoir.titre }}
+            </td>
+            <td>
+                {{ devoir.created|date("d/m/Y") }}
+            </td>
+            <td>
+                {% if devoir.min_date_a_rendre is defined %}
+                    {{ devoir.min_date_a_rendre|date("d/m/Y") }} - {{ devoir.max_date_a_rendre|date("d/m/Y") }}
+                {% elseif devoir.unique_date_a_rendre is defined %}
+                    {{ devoir.unique_date_a_rendre|date("d/m/Y") }}
+                {% endif %}
+            </td>
+            <td>
+                {{ devoir.nombre_rendus }} / {{ devoir.nombre_groupes_devoir }}
+
+            </td>
+            <td>
+                <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a> /
+                <a href="{{ path("edit_devoir", {'id': devoir.id} ) }}">Éditer</a>
+            </td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>

@@ -1,0 +1,16 @@
+{% extends "::Emails/base.html.twig" %}
+
+{% block body %}
+
+    <p>Bonjour {{ first_name }} {{ last_name }} !</p>
+
+    <p>Le devoir <strong>{{ devoir.titre }}</strong> est à rendre le  : {{ devoir.date_a_rendre|date('Y-m-d') }}</p>
+
+    {% if appartient_groupe is defined %}
+        {% if appartient_groupe == true %}
+            <p>Vous ne faites parti actuellement d'aucun groupe.</p>
+        {% endif %}
+    {% endif %}
+
+    <p>Vous pouvez le déposer <a href={{ url('show_devoir', {devoir: devoir.id}) }}>ici</a></p>
+{% endblock %}

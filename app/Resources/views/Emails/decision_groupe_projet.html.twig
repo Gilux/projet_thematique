@@ -1,0 +1,16 @@
+{% extends "::Emails/base.html.twig" %}
+
+{% block body %}
+
+    <p>Bonjour {{ first_name }} {{ last_name }},</p>
+
+    <p>Votre demande pour rejoindre le groupe de {{ leader.first_name }}  {{ leader.last_name }} ( {{ leader.username }}
+        ) pour
+        le devoir {{ devoir.titre }} a
+        été {% if decision == 'accept' %} acceptée {% else %} refusée {% endif %}</p>
+
+    <p>Pour voir la fiche du devoir : </p>
+
+    {# todo mettre le lien vers le devoir #}
+
+{% endblock %}

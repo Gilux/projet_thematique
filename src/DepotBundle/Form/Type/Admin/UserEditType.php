@@ -2,12 +2,14 @@
 
 namespace DepotBundle\Form\Type\Admin;
 
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,6 +20,8 @@ class UserEditType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $user = $options['user'];
+
         $builder
             ->add('first_name',      TextType::class, array("label" => "Prénom"))
             ->add('last_name',     TextType::class, array("label" => "Nom"))
@@ -31,8 +35,28 @@ class UserEditType extends AbstractType
                     'Étudiant' => 'ROLE_ETUDIANT'
                 )
             ))
-            ->add('enabled',    CheckboxType::class, array("label" => "Compte activé", "required" => false ))
-            ->add('save',      SubmitType::class, array("label" => "Sauvegarder"));
+            ->add('enabled',    CheckboxType::class, array("label" => "Compte activé", "required" => false ));
+
+        $flag = false;
+        foreach ($user->getRoles() as $role) {
+            if($role == "ROLE_ENSEIGNANT")
+            {
+                $flag = true;
+            }
+        }
+        if($flag)
+        {
+            $builder->add('ues', EntityType::class, array(
+                'class' => 'DepotBundle:UE',
+                'label' => 'Vos UEs : ',
+                'choice_label' => function ($category) {
+                    return $category->getCode() . ' ' . $category->getNom();
+                },
+                'multiple' => true
+            ));
+        }
+
+        $builder->add('save',      SubmitType::class, array("label" => "Sauvegarder"));
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -40,5 +64,6 @@ class UserEditType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'UserBundle\Entity\User'
         ));
+        $resolver->setRequired('user');
     }
 }

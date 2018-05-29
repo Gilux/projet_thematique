@@ -30,7 +30,7 @@ class UserProfileController extends Controller
 
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('user_profil');
+            return $this->redirectToRoute('fos_user_profile_show');
         }
 
         return $this->render('UserBundle:UserProfile:edit.html.twig', array(

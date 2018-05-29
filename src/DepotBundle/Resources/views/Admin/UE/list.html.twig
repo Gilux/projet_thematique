@@ -1,0 +1,57 @@
+{% extends "admin.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        {% for message in app.flashes('error') %}
+            toastr.error("{{ message }}", "Une erreur s'est produite");
+        {% endfor %}
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Administration des UEs</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>Liste des UEs enregistrée</h3>
+                    <a class="btn btn-primary" href="{{ path("ue_add") }}">Ajouter une UE</a>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>UE</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for ue in ues %}
+                                <tr>
+                                    <td>{{ ue.code }}</td>
+                                    <td>{{ ue.nom }}</td>
+                                    <td>
+                                        <a href="{{ path("ue_edit", {id:ue.id}) }}">Modifier</a>
+                                        /
+                                        <a href="{{ path("ue_delete", {id:ue.id}) }}">
+                                            Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+{% endblock %}

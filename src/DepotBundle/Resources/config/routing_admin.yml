@@ -21,3 +21,20 @@ users_admin_disable_account:
 users_admin_new:
     path:      /users/new
     defaults: { _controller: DepotBundle:Admin\UserAdmin:new }
+
+
+ue_list:
+    path:   /ues
+    defaults: { _controller: DepotBundle:Admin\UE:list }
+
+ue_add:
+    path:   /ues/new
+    defaults: { _controller: DepotBundle:Admin\UE:add }
+
+ue_delete:
+    path:   /ues/delete/{id}
+    defaults: { _controller: DepotBundle:Admin\UE:delete }
+
+ue_edit:
+    path:   /ues/edit/{id}
+    defaults: { _controller: DepotBundle:Admin\UE:edit }
