@@ -31,6 +31,7 @@ UserBundle\Entity\User:
         groupes:
             targetEntity: DepotBundle\Entity\Groupe
             inversedBy: users
+            cascade: ['persist']
         ues:
             targetEntity: DepotBundle\Entity\UE
             inversedBy: users

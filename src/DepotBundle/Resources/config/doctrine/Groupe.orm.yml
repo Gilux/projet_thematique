@@ -24,9 +24,11 @@ DepotBundle\Entity\Groupe:
         UE:
             targetEntity: UE
             inversedBy: groupes
+            cascade: ['persist']
     manyToMany:
         users:
             targetEntity: UserBundle\Entity\User
             mappedBy: groupes
+            cascade: ['persist']
 
     lifecycleCallbacks: {  }
