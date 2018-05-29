@@ -25,6 +25,11 @@ class Groupe
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
+    private $groupes_projets;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
     private $users;
 
     /**
@@ -33,6 +38,7 @@ class Groupe
     public function __construct()
     {
         $this->groupe_devoir = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groupes_projets = new \Doctrine\Common\Collections\ArrayCollection();
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -167,4 +173,22 @@ class Groupe
     {
         return $this->UE;
     }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroupesProjets()
+    {
+        return $this->groupes_projets;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $groupes_projets
+     */
+    public function setGroupesProjets($groupes_projets)
+    {
+        $this->groupes_projets = $groupes_projets;
+    }
+
+
 }
