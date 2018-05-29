@@ -29,12 +29,13 @@
             <td>
                 {% if devoir.min_date_a_rendre is defined %}
                     {{ devoir.min_date_a_rendre|date("d/m/Y") }} - {{ devoir.max_date_a_rendre|date("d/m/Y") }}
-                {% else %}
+                {% elseif devoir.unique_date_a_rendre is defined %}
                     {{ devoir.unique_date_a_rendre|date("d/m/Y") }}
                 {% endif %}
             </td>
             <td>
-                {{ devoir.nombre_rendus }} / {{ devoir.groupes_devoir }}
+                {{ devoir.nombre_rendus }} / {{ devoir.nombre_groupes_devoir }}
+
             </td>
             <td>
                 <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a> /

@@ -16,6 +16,10 @@ DepotBundle\Entity\Groupe:
         groupe_devoir:
             targetEntity: Groupe_Devoir
             mappedBy: groupe
+        groupes_projets:
+            targetEntity: Groupe_projet
+            mappedBy: groupe
+
     manyToOne:
         UE:
             targetEntity: UE

@@ -2,6 +2,7 @@
 
 namespace DepotBundle\Controller;
 
+use DepotBundle\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class DefaultController extends Controller
@@ -52,44 +53,46 @@ class DefaultController extends Controller
 
         $repo_groupe_projet = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_projet");
         $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_devoir");
-        $data = [];
+        $data = $dates_a_rendre = [];
         $user = $this->getUser();
         $nombre_rendus = 0;
-        $groupes_devoir = 0;
+        $nombre_groupes_devoir = 0;
+
         foreach ($user->getUes() as $ue) {
             foreach ($ue->getDevoirs() as $devoir) {
-                //pour chaque devoir compter le nombre de groupe_projet
+                $devoir->nombre_rendus = 0;
+                $devoir->nombre_groupes_devoir = 0;
+                //pour chaque devoir compter le nombre de rendus
                 $gps = $repo_groupe_projet->findByDevoir($devoir);
                 foreach ($gps as $gp) {
                     if ($gp->getFichier() != null) {
-                        $nombre_rendus++;
+                        $devoir->nombre_rendus++;
                     }
-                    $groupes_devoir++;
-                }
-                //obtenir toutes les dates à rendre pour tout les groupe devoirs
-                $groupes_devoirs = $repo_groupe_devoir->findByDevoir($devoir);
-                foreach ($groupes_devoirs as $groupe_devoir) {
-                    $dates_a_rendre[] = $groupe_devoir->getDateARendre();
-                }
-                if (count($dates_a_rendre) >= 2) {
-                    $devoir->min_date_a_rendre = min($dates_a_rendre);
-                    $devoir->max_date_a_rendre = max($dates_a_rendre);
-                } else {
-                    $devoir->unique_date_a_rendre = $dates_a_rendre[0];
-                }
-                $devoir->nombre_rendus = $nombre_rendus;
-                $devoir->groupes_devoir = $groupes_devoir;
+                    $devoir->nombre_groupes_devoir++;
 
+                    $groupe = $gp->getGroupe();
+
+                    //avec le $devoir et le $groupe get le groupe devoir
+                    $groupes_devoir = $repo_groupe_devoir->findBy(['devoir' => $devoir, 'groupe' => $groupe]);
+
+                    foreach ($groupes_devoir as $groupe_devoir) {
+                        $dates_a_rendre[] = $groupe_devoir->getDateARendre();
+                    }
+                    if (count($dates_a_rendre) >= 2) {
+                        $devoir->min_date_a_rendre = min($dates_a_rendre);
+                        $devoir->max_date_a_rendre = max($dates_a_rendre);
+                    } else {
+                        $devoir->unique_date_a_rendre = $dates_a_rendre[0];
+                    }
+                }
                 $data[] = $devoir;
             }
         }
-
-//        dump($data);
-//        exit();
         return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data));
     }
 
-    public function getNotifications()
+    public
+    function getNotifications()
     {
         $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
         $manager = $this->get('mgilet.notification');
