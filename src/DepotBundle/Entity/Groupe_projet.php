@@ -18,6 +18,11 @@ class Groupe_projet
     private $devoir;
 
     /**
+     * @var \DepotBundle\Entity\Groupe
+     */
+    private $groupe;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $users;
@@ -228,4 +233,21 @@ class Groupe_projet
     {
         $this->filename = $filename;
     }
+
+    /**
+     * @return Groupe
+     */
+    public function getGroupe()
+    {
+        return $this->groupe;
+    }
+
+    /**
+     * @param Groupe $groupe
+     */
+    public function setGroupe($groupe)
+    {
+        $this->groupe = $groupe;
+    }
+
 }
