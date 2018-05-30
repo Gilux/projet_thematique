@@ -1,5 +1,5 @@
 app_homepage:
-    path:     /
+    path:     /login
     defaults: { _controller: UserBundle:Default:index }
 
 user_demandecompte:
