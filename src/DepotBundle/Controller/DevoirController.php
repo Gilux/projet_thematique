@@ -441,10 +441,14 @@ class DevoirController extends Controller
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
             $temp_devoir = $devoir;
+            $temp_groupes_devoirs = array();
+            foreach ($devoir->getGroupeDevoir() as $gd) {
+                array_push($temp_groupes_devoirs, $gd);
+            }
 
             $gd = array();
             $groupes = array();
-            foreach ($devoir->getGroupeDevoir() as $groupe_devoir) {
+            foreach ($temp_groupes_devoirs as $groupe_devoir) {
                 $gd['nb_max_etudiant'] = $groupe_devoir->getNbMaxEtudiant();
                 $gd['nb_min_etudiant'] = $groupe_devoir->getNbMinEtudiant();
                 $gd['if_groupe'] = true;
@@ -457,8 +461,6 @@ class DevoirController extends Controller
 
                 $devoir->addGroupeDevoir($groupe_devoir);
             }
-            $temp_groupes_devoirs = $devoir->getGroupeDevoir();
-
 
             if ($devoir->getFichier() != null) {
                 //Sauvegarder le nom du fichier
@@ -475,6 +477,32 @@ class DevoirController extends Controller
                 // Récupération des données concernant les groupes
                 $data = $request->request->get('groupes');
 
+                var_dump($data);
+
+                //IF TRUE : Date à rendre inchangée.
+                //Autrement dit, si les dates ont été changé il faut supprimer tous les user_groupe_projet, tous les groupes_projet et tous les groupes_devoirs.
+                $flag = false;
+                for ($i = 0; $i < count($data); $i++) {
+                    // Si le groupe est coché
+                    if (isset($data[$i]['id'])) {
+                        // Récupération de l'identifiant du groupe
+                        $id = key($data[$i]['id']);
+                        // Récupération de la date de rendu saisie
+                        $date_rendu = new \DateTime($data[$i]["date"]);
+                        foreach ($temp_groupes_devoirs as $gd) {
+                            if($id == $gd->getGroupe()->getId() && $date_rendu == $gd->getDateARendre())
+                            {
+                                $flag = true;
+                            }
+                            else
+                            {
+                                $flag = false;
+                            }
+                        }
+                    }
+                }
+                var_dump($flag);
+                die();
 
                 //Supprimer les Groupes Devoirs
                 foreach ($devoir->getGroupeDevoir() as $gd) {
