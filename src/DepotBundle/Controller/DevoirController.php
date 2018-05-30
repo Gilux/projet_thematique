@@ -203,6 +203,7 @@ class DevoirController extends Controller
                         $groupe_devoir->setDateBloquante($form->get("date_bloquante")->getData());
                         $groupe_devoir->setNbMaxEtudiant($form->get("nb_max_etudiant")->getData());
                         $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
+                        $em->persist($groupe_devoir);
 
                         //Si le devoir est individuel
                         if ($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1) {
@@ -211,6 +212,8 @@ class DevoirController extends Controller
                                 $groupe_projet = new Groupe_projet();
                                 $groupe_projet->setDevoir($devoir);
                                 $groupe_projet->setName($user->getLastName());
+                                $groupe_projet->setGroupe($groupe[0]);
+                                $groupe_projet->setGroupeDevoir($groupe_devoir);
                                 $em->persist($groupe_projet);
 
                                 $user_groupe_projet = new UserGroupeProjet();
