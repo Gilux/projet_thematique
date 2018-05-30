@@ -41,7 +41,7 @@ class GroupeProjetController extends Controller
             $groupeProjet->setGroupeDevoir($groupe_devoir);
             $groupeProjet->setDevoir($devoir);
             $groupeProjet->setGroupe($groupe);
-            
+
             $groupeProjet->setName($this->getUser()->getLastName() . $devoir->getId());
 
             $em = $this->getDoctrine()->getManager();
@@ -63,6 +63,7 @@ class GroupeProjetController extends Controller
 
     public function leaveAction(Request $request, Groupe_projet $groupe_projet)
     {
+        //fixme un utilisateur non leader doit pouvoir quitter son groupe
         $users_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet]);
         $user_groupe_projet = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findOneBy(["groupe_projet" => $groupe_projet, "user" => $this->getUser()]);
         $devoir = $groupe_projet->getDevoir();
@@ -96,30 +97,33 @@ class GroupeProjetController extends Controller
         $ueName = $devoir->getUE()->getNom();
 
         //todo récupérer le groupe devoir correspondant pour avoir le groupeName et la date à rendre
-
-        $message = (new \Swift_Message('[MIAGE] Vous avez une nouvelle demande de  ' . $user->getUsername() . '  pour rejoindre votre groupe du devoir: ' . $devoir->getTitre() . ''))
-            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
-            ->setTo($leader->getEmail())
-            ->setBody(
-                $this->renderView(
-                    'Emails/demande_groupe_projet.html.twig',
-                    array(
-                        'first_name' => $leader->getFirstName(),
-                        'last_name' => $leader->getLastName(),
-                        'user_request' => [
-                            'first_name' => $user->getFirstName(),
-                            'last_name' => $user->getLastName(),
-                            'username' => $user->getUsername(),
-                        ],
-                        'ue' => $ueName,
-                        'devoir' => [
-                            'titre' => $devoir->getTitre(),
-                        ]
-                    )
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+        try {
+            $message = (new \Swift_Message('[MIAGE] Vous avez une nouvelle demande de  ' . $user->getUsername() . '  pour rejoindre votre groupe du devoir: ' . $devoir->getTitre() . ''))
+                ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+                ->setTo($leader->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'Emails/demande_groupe_projet.html.twig',
+                        array(
+                            'first_name' => $leader->getFirstName(),
+                            'last_name' => $leader->getLastName(),
+                            'user_request' => [
+                                'first_name' => $user->getFirstName(),
+                                'last_name' => $user->getLastName(),
+                                'username' => $user->getUsername(),
+                            ],
+                            'ue' => $ueName,
+                            'devoir' => [
+                                'titre' => $devoir->getTitre(),
+                            ]
+                        )
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($message);
+        } catch (\Exception $e) {
+            $this->addFlash("error", "Une erreur est survenue.");
+        }
 
         //notifications
         $manager = $this->get('mgilet.notification');
@@ -136,24 +140,39 @@ class GroupeProjetController extends Controller
 
         //todo regarder si l'utilisateur n'appartient pas déjà au groupe projet
 
+        $flag = false;
+        $groupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $groupe_projet->getDevoir()]);
+        foreach ($groupes_projets as $groupes_projet) {
+            $users_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupes_projet]);
+            foreach ($users_groupes_projets as $users_groupes_projet) {
+                if ($this->getUser()->getId() == $users_groupes_projet->getUser()->getId()) {
+                    $flag = true;
+                }
+            }
+        }
 
-        //On ajoute l'utilisateur au groupe projet
-        $userGroupeProjet = new UserGroupeProjet();
-        $userGroupeProjet->setUser($this->getUser());
-        $userGroupeProjet->setGroupeProjet($groupe_projet);
-        $userGroupeProjet->setStatus(0);
-        $userGroupeProjet->setLeader(0);
+        if ($flag == true) {
+            $this->addFlash("error", "L'utilisateur appartient déjà à un groupe");
+        } else {
+            //On ajoute l'utilisateur au groupe projet
+            $userGroupeProjet = new UserGroupeProjet();
+            $userGroupeProjet->setUser($this->getUser());
+            $userGroupeProjet->setGroupeProjet($groupe_projet);
+            $userGroupeProjet->setStatus(0);
+            $userGroupeProjet->setLeader(0);
 
-        $em->persist($userGroupeProjet);
-        $em->flush();
+            $em->persist($userGroupeProjet);
+            $em->flush();
 
-        //On récupère le leader du groupe
-        $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet, "leader" => 1])[0]->getUser();
+            //On récupère le leader du groupe
+            $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet, "leader" => 1])[0]->getUser();
 
-        //Envoie d'une notification au leader
-        $this->sendNotification($leader, $this->getUser(), $groupe_projet);
+            //Envoie d'une notification au leader
+            $this->sendNotification($leader, $this->getUser(), $groupe_projet);
+        }
 
         return $this->redirectToRoute("show_devoir", ["devoir" => $groupe_projet->getDevoir()->getId()]);
+
 
     }
 
@@ -193,30 +212,34 @@ class GroupeProjetController extends Controller
         $ueName = $devoir->getUE()->getNom();
 
         //mail
-        $message = (new \Swift_Message($title))
-            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
-            ->setTo($leader->getEmail())
-            ->setBody(
-                $this->renderView(
-                    'Emails/decision_groupe_projet.html.twig',
-                    array(
-                        'decision' => $decision,
-                        'first_name' => $user->getFirstName(),
-                        'last_name' => $user->getLastName(),
-                        'leader' => [
-                            'first_name' => $leader->getFirstName(),
-                            'last_name' => $leader->getLastName(),
-                            'username' => $leader->getUsername(),
-                        ],
-                        'ue' => $ueName,
-                        'devoir' => [
-                            'titre' => $devoir->getTitre(),
-                        ]
-                    )
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+        try {
+            $message = (new \Swift_Message($title))
+                ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+                ->setTo($leader->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'Emails/decision_groupe_projet.html.twig',
+                        array(
+                            'decision' => $decision,
+                            'first_name' => $user->getFirstName(),
+                            'last_name' => $user->getLastName(),
+                            'leader' => [
+                                'first_name' => $leader->getFirstName(),
+                                'last_name' => $leader->getLastName(),
+                                'username' => $leader->getUsername(),
+                            ],
+                            'ue' => $ueName,
+                            'devoir' => [
+                                'titre' => $devoir->getTitre(),
+                            ]
+                        )
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($message);
+        } catch (\Exception $e) {
+            $this->addFlash("error", "Une erreur est survenue.");
+        }
 
         //notifications
         $manager = $this->get('mgilet.notification');

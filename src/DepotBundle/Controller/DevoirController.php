@@ -120,27 +120,31 @@ class DevoirController extends Controller
     {
         $ueName = $groupeDevoir->getGroupe()->getUE();
         $groupeName = $groupeDevoir->getGroupe()->getName();
-        $message = (new \Swift_Message('[MIAGE] Vous avez un nouveau devoir concernant : ' . $ueName . '/' . $groupeName . ''))
-            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
-            ->setTo($user->getEmail())
-            ->setBody(
-                $this->renderView(
-                    'Emails/nouveau_devoir.html.twig',
-                    array(
-                        'first_name' => $user->getFirstName(),
-                        'last_name' => $user->getLastName(),
-                        'groupe' => $groupeName,
-                        'ue' => $ueName,
-                        'devoir' => [
-                            'id' => $groupeDevoir->getDevoir()->getId(),
-                            'titre' => $groupeDevoir->getDevoir()->getTitre(),
-                            'date_a_rendre' => $groupeDevoir->getDateARendre(),
-                        ]
-                    )
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+        try {
+            $message = (new \Swift_Message('[MIAGE] Vous avez un nouveau devoir concernant : ' . $ueName . '/' . $groupeName . ''))
+                ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'Emails/nouveau_devoir.html.twig',
+                        array(
+                            'first_name' => $user->getFirstName(),
+                            'last_name' => $user->getLastName(),
+                            'groupe' => $groupeName,
+                            'ue' => $ueName,
+                            'devoir' => [
+                                'id' => $groupeDevoir->getDevoir()->getId(),
+                                'titre' => $groupeDevoir->getDevoir()->getTitre(),
+                                'date_a_rendre' => $groupeDevoir->getDateARendre(),
+                            ]
+                        )
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($message);
+        } catch (\Exception $e) {
+            $this->addFlash("error", "Une erreur est survenue.");
+        }
 
         //notifications
         $manager = $this->get('mgilet.notification');

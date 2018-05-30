@@ -64,7 +64,6 @@
                         {% endif %}
                     </td>
                     <td>{% if gp.filename is defined %}
-                            {# todo mettre link de l'archive#}
                             <a href="{{ path("download_devoir_rendu",{devoir:devoir.id, groupe_projet:gp.id} ) }}">{{ gp.filename }}</a>
                         {% endif %}
                     </td>
