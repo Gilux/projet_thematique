@@ -1,6 +1,8 @@
 <?php
 
 namespace UserBundle\Repository;
+use UserBundle\Entity\User;
+use UserBundle\UserBundle;
 
 /**
  * UserRepository
@@ -10,4 +12,10 @@ namespace UserBundle\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByRole($role)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', "%$role%");
+    }
 }

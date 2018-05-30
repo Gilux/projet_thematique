@@ -13,6 +13,31 @@
                 <div class="item">
                     {{ form_start(edit_form) }}
                         {{ form_widget(edit_form) }}
+                        <a href="{{ path("groupe_add", {ue:ue.id}) }}" class="btn btn-primary">Ajouter un groupe</a>
+                        <table style="margin: 15px 0">
+                            <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for groupe in groupes %}
+                                <tr>
+                                    <td>{{ groupe.name }}</td>
+                                    <td>
+                                        <a href="{{ path("groupe_edit", {id:groupe.id}) }}">Modifier</a>
+                                        /
+                                        <a href="{{ path("groupe_delete", {id:groupe.id}) }}">
+                                            Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <button type="submit" class="btn btn-default">Sauvegarder</button>
                     {{ form_end(edit_form) }}
                 </div>
             </div>
