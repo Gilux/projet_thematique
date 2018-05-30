@@ -69,6 +69,7 @@ class DevoirController extends Controller
         );
 
         //Algo permettant de savoir si l'utilisateur appartient déjà à un groupe
+        //fixme remplacer lalgo par le findByDevoirAnduser groupe projet
         $uAppartientGroupe = false;
         $ogroupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $devoir]);
         foreach ($ogroupes_projets as $ogroupes_projet) {
@@ -85,6 +86,7 @@ class DevoirController extends Controller
         $gp = $this->getDoctrine()->getRepository(Groupe_projet::class)->findByDevoirAndUser($devoir, $user);
         return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
             "devoir" => $devoir,
+            "user" => $this->getUser(),
             "groupe_devoir" => $groupeDevoirUser,
             "minmax_groups" => $minmax_groups,
             "groupes_projet" => $groupes_projet,
@@ -92,7 +94,7 @@ class DevoirController extends Controller
             "u_appartient_groupe" => $uAppartientGroupe,
             "date_rendu" => $gp ? $gp->getDate() : false,
             "fichier_rendu" => $gp ? $gp->getFilename() : false,
-            "groupe" => $g,
+            "groupe" => $groupe,
         ]);
     }
 

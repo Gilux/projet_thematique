@@ -24,7 +24,9 @@
                 {{ devoir.titre }}
             </td>
             <td>
-                {# fixme get groupe projet of user #}
+                {% for groupe in devoir.groupe %}
+                    Groupe {{ groupe.name }}
+                {% endfor %}
             </td>
             <td>
                 {{ devoir.date_rendu|date("d/m/Y H:i") }}

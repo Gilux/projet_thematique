@@ -46,20 +46,18 @@
                                 </li>
                             {% endfor %}
                         </ul>
-                        {% if u_appartient_groupe == false and gp.usersgroupesprojets|length < groupe_devoir.nbMaxEtudiant and date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                        {% if u_appartient_groupe == false and gp.usersgroupesprojets|length < groupe_devoir.nbMaxEtudiant and date(groupe_devoir.dateARendre)|date_modify("+7 day")  >= "now" %}
                             <a href="{{ path("join_groupe_projet", {groupe_projet:gp.id}) }}" class="btn btn-primary">Demander
                                 à rejoindre</a>
                         {% elseif (in_groupe == true and leader == false) or (in_groupe == true and leader == true and gp.usersgroupesprojets|length == 1) %}
-                            {% if date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                            {% if date(groupe_devoir.dateARendre)|date_modify("+7 day") >= "now" %}
                                 <a href="{{ path("leave_groupe_projet", {groupe_projet:gp.id}) }}"
                                    class="btn btn-primary">Quitter le groupe</a>
                             {% endif %}
                         {% endif %}
                     </div>
                 {% endfor %}
-
-
-                {% if u_appartient_groupe == false and date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                {% if u_appartient_groupe == false and date(groupe_devoir.dateARendre)|date_modify("+7 day") >= "now" %}
                     {% if remaining_groups >= 1 %}
                         <div class="groupe">
                             <h4 class="text-center">Nouveau groupe</h4>
@@ -78,16 +76,14 @@
     <div class="item">
         <h3>Votre groupe de projet</h3>
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at atque consequatur,
-            debitis deserunt dolor doloremque, ipsum obcaecati officia quis repellat veritatis vitae. Eaque
-            illum nesciunt pariatur quaerat unde.
+            {#todo écrire quoi ?#}
         </p>
     </div>
 {% endblock %}
 
 {% block daterendus %}
     <div class="item">
-        <h3>Date théorique de rendu</h3>
+        <h3>Dates théoriques de rendu</h3>
         <p>
             {% if u_groupe_projet %}
                 {% if date(u_groupe_projet.groupedevoir.datearendre) < date() %}
@@ -99,11 +95,18 @@
             {{ date(groupe_devoir.datearendre)|date("d/m/Y - H:m:s") }}
             </span>
             {% else %}
-                <span>
-            Vous n'avez pas encore rejoint de groupe
-                </span>
+                {% for  gpd in devoir.groupedevoir %}
+                    {% for gp in app.user.groupes %}
+                        {% if gpd.groupe.id ==  gp.id %}
+                            <span>
+                        Groupe {{ gpd.groupe.name }}
+                                <br>
+                        Date de rendu : {{ gpd.datearendre|date("d/m/Y - H:m:s") }}
+                    </span>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
             {% endif %}
-
         </p>
     </div>
     {% if fichier_rendu  and date_rendu %}
@@ -123,8 +126,23 @@
     <div class="item">
         <h3>Effectuer votre rendu</h3>
         <p>
+            {% set in_groupe = false %}
+            {% set approbation = false %}
+            {% for gp in groupes_projet %}
+                {% for ugp in gp.usersgroupesprojets %}
+                    {% if ugp.user.username == app.user.username %}
+                        {% set in_groupe = true %}
+                        {% if ugp.status == 1 %}
+                            {% set approbation = true %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
             {% if date(groupe_devoir.datearendre)|date_modify("+7 day") < "now" %}
             Vous ne pouvez plus déposer de rendu
+            {% elseif not in_groupe or not approbation %}
+                Vous n'avez pas rejoint de groupe ou vous n'avez pas obtenu l'approbation du chef de groupe
             {% else %}
         <form class="dropzone" id="depot-devoir"></form>
         {% endif %}
