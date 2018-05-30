@@ -101,4 +101,3 @@ class FileExtension
         return $this->extension;
     }
 }
-

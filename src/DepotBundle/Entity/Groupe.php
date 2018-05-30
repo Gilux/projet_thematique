@@ -191,4 +191,28 @@ class Groupe
     }
 
 
+
+    /**
+     * Add groupesProjet
+     *
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
+     *
+     * @return Groupe
+     */
+    public function addGroupesProjet(\DepotBundle\Entity\Groupe_projet $groupesProjet)
+    {
+        $this->groupes_projets[] = $groupesProjet;
+
+        return $this;
+    }
+
+    /**
+     * Remove groupesProjet
+     *
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
+     */
+    public function removeGroupesProjet(\DepotBundle\Entity\Groupe_projet $groupesProjet)
+    {
+        $this->groupes_projets->removeElement($groupesProjet);
+    }
 }

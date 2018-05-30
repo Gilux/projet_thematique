@@ -39,7 +39,7 @@ DepotBundle\Entity\Groupe_projet:
             inversedBy: groupes_projets
 
         groupe_devoir:
-            targetEntity: Groupe_devoir
+            targetEntity: Groupe_Devoir
             inversedBy: groupes_projets
 
     lifecycleCallbacks: {  }

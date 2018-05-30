@@ -203,4 +203,28 @@ class Commentaire
     {
         return $this->commentaire_parent;
     }
+
+    /**
+     * Add commentairesFil
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentairesFil
+     *
+     * @return Commentaire
+     */
+    public function addCommentairesFil(\DepotBundle\Entity\Commentaire $commentairesFil)
+    {
+        $this->commentaires_fils[] = $commentairesFil;
+
+        return $this;
+    }
+
+    /**
+     * Remove commentairesFil
+     *
+     * @param \DepotBundle\Entity\Commentaire $commentairesFil
+     */
+    public function removeCommentairesFil(\DepotBundle\Entity\Commentaire $commentairesFil)
+    {
+        $this->commentaires_fils->removeElement($commentairesFil);
+    }
 }
