@@ -63,7 +63,8 @@
                     {% if remaining_groups >= 1 %}
                         <div class="groupe">
                             <h4 class="text-center">Nouveau groupe</h4>
-                            <a href="{{ path("new_groupe_projet", {devoir:devoir.id}) }}" class="btn btn-primary">Créer
+                            <a href="{{ path("new_groupe_projet", {groupe: groupe.id, devoir:devoir.id}) }}"
+                               class="btn btn-primary">Créer
                                 un groupe</a>
                         </div>
                     {% endif %}
@@ -87,14 +88,33 @@
 {% block daterendus %}
     <div class="item">
         <h3>Date théorique de rendu</h3>
-        <p>{{ date(groupe_devoir.datearendre)|date("Y-m-d H:m:s") }}</p>
+        <p>
+            {% if u_groupe_projet %}
+                {% if date(u_groupe_projet.groupedevoir.datearendre) < date() %}
+                    {% set colorDate = 'red' %}
+                {% else %}
+                    {% set colorDate = 'black' %}
+                {% endif %}
+                <span style="color:{{ colorDate }}">
+            {{ date(groupe_devoir.datearendre)|date("d/m/Y - H:m:s") }}
+            </span>
+            {% else %}
+                <span>
+            Vous n'avez pas encore rejoint de groupe
+                </span>
+            {% endif %}
+
+        </p>
     </div>
     {% if fichier_rendu  and date_rendu %}
         <div class="item">
             <h3>Rendu</h3>
-            {#fixme un étudiant peut télécharger son rendu ?#}
-            <p><a href="#">{{ fichier_rendu }}</a></p>
-            <p>{{ date(date_rendu)|date("Y-m-d H:m:s") }}</p>
+            <p>
+                <a href="{{ path("download_devoir_rendu",{devoir:devoir.id, groupe_projet:u_groupe_projet.id} ) }}">{{ fichier_rendu }}</a>
+            </p>
+            <p>
+                {{ date(date_rendu)|date("d/m/Y - H:m:s") }}
+            </p>
         </div>
     {% endif %}
 {% endblock %}
@@ -103,7 +123,7 @@
     <div class="item">
         <h3>Effectuer votre rendu</h3>
         <p>
-            {% if date(groupe_devoir.datearendre)|date_modify("+7 day")|date('Y-m-d H:m:s') < "now"|date('Y-m-d H:m:s') %}
+            {% if date(groupe_devoir.datearendre)|date_modify("+7 day") < "now" %}
             Vous ne pouvez plus déposer de rendu
             {% else %}
         <form class="dropzone" id="depot-devoir"></form>

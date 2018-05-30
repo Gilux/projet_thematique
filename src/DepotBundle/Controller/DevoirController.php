@@ -41,8 +41,6 @@ class DevoirController extends Controller
             "devoir" => $devoir,
         ]);
 
-        $groupes = [];
-
         $userDansGroupe = false;
         $groupeDevoirUser = null;
 
@@ -55,13 +53,13 @@ class DevoirController extends Controller
                     if ($u->getId() == $user->getId()) {
                         $userDansGroupe = true;
                         $groupeDevoirUser = $gd;
+                        $groupe = $g;
                     }
                 }
             }
         }
 
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
-
         $usersInGroupeDevoir = $groupeDevoirUser->getGroupe()->getUsers()->count();
         $groupeRenduUtility = $this->get("utility.grouperendu");
         $minmax_groups = $groupeRenduUtility->getMinMaxGroups(
@@ -78,21 +76,23 @@ class DevoirController extends Controller
             foreach ($ousers_groupes_projets as $ousers_groupes_projet) {
                 if ($this->getUser()->getId() == $ousers_groupes_projet->getUser()->getId()) {
                     $uAppartientGroupe = true;
+                    $u_groupe_projet = $ogroupes_projet;
                 }
             }
         }
 
         //Récupère la date de Rendu et le fichier
         $gp = $this->getDoctrine()->getRepository(Groupe_projet::class)->findByDevoirAndUser($devoir, $user);
-
         return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
             "devoir" => $devoir,
             "groupe_devoir" => $groupeDevoirUser,
             "minmax_groups" => $minmax_groups,
             "groupes_projet" => $groupes_projet,
+            "u_groupe_projet" => isset($u_groupe_projet) ? $u_groupe_projet : false,
             "u_appartient_groupe" => $uAppartientGroupe,
             "date_rendu" => $gp ? $gp->getDate() : false,
             "fichier_rendu" => $gp ? $gp->getFilename() : false,
+            "groupe" => $g,
         ]);
     }
 

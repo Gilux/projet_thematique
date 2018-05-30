@@ -33,7 +33,7 @@ new_commentaire:
     methods: POST
 
 new_groupe_projet:
-    path: /groupe_projet/new/{devoir}
+    path: /groupe_projet/groupe/{groupe}/new/{devoir}
     defaults: { _controller: DepotBundle:GroupeProjet:new }
 
 join_groupe_projet:

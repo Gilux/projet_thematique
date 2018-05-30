@@ -9,8 +9,8 @@
 namespace DepotBundle\Controller;
 
 
-use DepotBundle\Entity\Commentaire;
 use DepotBundle\Entity\Devoir;
+use DepotBundle\Entity\Groupe;
 use DepotBundle\Entity\Groupe_Devoir;
 use DepotBundle\Entity\Groupe_projet;
 use DepotBundle\Entity\UserGroupeProjet;
@@ -20,7 +20,7 @@ use UserBundle\Entity\User;
 
 class GroupeProjetController extends Controller
 {
-    public function newAction(Request $request, Devoir $devoir)
+    public function newAction(Request $request, Groupe $groupe, Devoir $devoir)
     {
         $flag = false;
         $groupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $devoir]);
@@ -37,7 +37,11 @@ class GroupeProjetController extends Controller
             $this->addFlash("error", "L'utilisateur appartient déjà à un groupe");
         } else {
             $groupeProjet = new Groupe_projet();
+            $groupe_devoir = $this->getDoctrine()->getRepository(Groupe_Devoir::class)->findOneBy(["groupe" => $groupe, "devoir" => $devoir]);
+            $groupeProjet->setGroupeDevoir($groupe_devoir);
             $groupeProjet->setDevoir($devoir);
+            $groupeProjet->setGroupe($groupe);
+            
             $groupeProjet->setName($this->getUser()->getLastName() . $devoir->getId());
 
             $em = $this->getDoctrine()->getManager();
