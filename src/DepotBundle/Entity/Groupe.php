@@ -143,7 +143,7 @@ class Groupe
     {
         return $this->users;
     }
-  
+
     /**
      * @var \DepotBundle\Entity\UE
      */

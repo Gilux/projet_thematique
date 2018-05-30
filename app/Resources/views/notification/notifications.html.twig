@@ -7,8 +7,8 @@
             <button type="submit">Tout marquer comme lu</button>
         </form>
     {% endif %}
-    <ul>
-        {% for notifiableNotification in notifiableNotifications %}
+    <ul class="notifications_list">
+        {% for notifiableNotification in notifiableNotifications|reverse %}
             <li>
                 {% if notifiableNotification.seen %}
                     {{ notifiableNotification.notification }}

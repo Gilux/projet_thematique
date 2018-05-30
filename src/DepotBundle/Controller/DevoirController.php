@@ -41,8 +41,6 @@ class DevoirController extends Controller
             "devoir" => $devoir,
         ]);
 
-        $groupes = [];
-
         $userDansGroupe = false;
         $groupeDevoirUser = null;
 
@@ -55,13 +53,13 @@ class DevoirController extends Controller
                     if ($u->getId() == $user->getId()) {
                         $userDansGroupe = true;
                         $groupeDevoirUser = $gd;
+                        $groupe = $g;
                     }
                 }
             }
         }
 
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
-
         $usersInGroupeDevoir = $groupeDevoirUser->getGroupe()->getUsers()->count();
         $groupeRenduUtility = $this->get("utility.grouperendu");
         $minmax_groups = $groupeRenduUtility->getMinMaxGroups(
@@ -71,6 +69,7 @@ class DevoirController extends Controller
         );
 
         //Algo permettant de savoir si l'utilisateur appartient déjà à un groupe
+        //fixme remplacer lalgo par le findByDevoirAnduser groupe projet
         $uAppartientGroupe = false;
         $ogroupes_projets = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["devoir" => $devoir]);
         foreach ($ogroupes_projets as $ogroupes_projet) {
@@ -78,27 +77,40 @@ class DevoirController extends Controller
             foreach ($ousers_groupes_projets as $ousers_groupes_projet) {
                 if ($this->getUser()->getId() == $ousers_groupes_projet->getUser()->getId()) {
                     $uAppartientGroupe = true;
+                    $u_groupe_projet = $ogroupes_projet;
                 }
             }
         }
 
         //Récupère la date de Rendu et le fichier
         $gp = $this->getDoctrine()->getRepository(Groupe_projet::class)->findByDevoirAndUser($devoir, $user);
-
         return $this->render('DepotBundle:Devoir:showEtudiant.html.twig', [
             "devoir" => $devoir,
+            "user" => $this->getUser(),
             "groupe_devoir" => $groupeDevoirUser,
             "minmax_groups" => $minmax_groups,
             "groupes_projet" => $groupes_projet,
+            "u_groupe_projet" => isset($u_groupe_projet) ? $u_groupe_projet : false,
             "u_appartient_groupe" => $uAppartientGroupe,
             "date_rendu" => $gp ? $gp->getDate() : false,
             "fichier_rendu" => $gp ? $gp->getFilename() : false,
+            "groupe" => $groupe,
         ]);
     }
 
     public function showEnseignantAction(Devoir $devoir)
     {
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        foreach ($groupes_projet as $key => $gp) {
+            $date_theorique = $gp->getGroupeDevoir()->getDateARendre();
+
+            $groupes_projet[$key]->date_theorique = $date_theorique;
+
+            if ($gp->getDate()) {
+                $groupes_projet[$key]->diff = date_diff($date_theorique, $gp->getDate());
+            }
+        }
 
         return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', [
             "devoir" => $devoir,
@@ -110,27 +122,31 @@ class DevoirController extends Controller
     {
         $ueName = $groupeDevoir->getGroupe()->getUE();
         $groupeName = $groupeDevoir->getGroupe()->getName();
-        $message = (new \Swift_Message('[MIAGE] Vous avez un nouveau devoir concernant : ' . $ueName . '/' . $groupeName . ''))
-            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
-            ->setTo($user->getEmail())
-            ->setBody(
-                $this->renderView(
-                    'Emails/nouveau_devoir.html.twig',
-                    array(
-                        'first_name' => $user->getFirstName(),
-                        'last_name' => $user->getLastName(),
-                        'groupe' => $groupeName,
-                        'ue' => $ueName,
-                        'devoir' => [
-                            'id' => $groupeDevoir->getDevoir()->getId(),
-                            'titre' => $groupeDevoir->getDevoir()->getTitre(),
-                            'date_a_rendre' => $groupeDevoir->getDateARendre(),
-                        ]
-                    )
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+        try {
+            $message = (new \Swift_Message('[MIAGE] Vous avez un nouveau devoir concernant : ' . $ueName . '/' . $groupeName . ''))
+                ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'Emails/nouveau_devoir.html.twig',
+                        array(
+                            'first_name' => $user->getFirstName(),
+                            'last_name' => $user->getLastName(),
+                            'groupe' => $groupeName,
+                            'ue' => $ueName,
+                            'devoir' => [
+                                'id' => $groupeDevoir->getDevoir()->getId(),
+                                'titre' => $groupeDevoir->getDevoir()->getTitre(),
+                                'date_a_rendre' => $groupeDevoir->getDateARendre(),
+                            ]
+                        )
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($message);
+        } catch (\Exception $e) {
+            $this->addFlash("error", "Une erreur est survenue.");
+        }
 
         //notifications
         $manager = $this->get('mgilet.notification');
@@ -264,7 +280,44 @@ class DevoirController extends Controller
         }
     }
 
-    public function rendusAction(Devoir $devoir)
+    public function renduAction(Devoir $devoir, Groupe_projet $groupe_projet)
+    {
+        $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
+        $zip = new \ZipArchive();
+
+        if ($zip->open($fileName, \ZipArchive::CREATE) === true) {
+            $users = $groupe_projet->getUsersGroupesProjets();
+            foreach ($users as $u) {
+                $noms[] = $u->getUser()->getLastName();
+            }
+
+            if (!is_null($groupe_projet->getFichier())) {
+                $filepath = $this->getParameter("depots_devoirs_directory") . "/" . $groupe_projet->getFichier();
+                $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
+                $filename = implode("_", $noms) . "." . pathinfo($filepath, PATHINFO_EXTENSION);
+                if (file_exists($filepath)) {
+
+                    $zip->addFile($filepath, $filename);
+                } else {
+                    die("fatal");
+                }
+            }
+            $zip->close();
+
+            $response = new BinaryFileResponse($fileName);
+
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            return $response;
+
+        } else {
+            echo "Erreur";
+            die();
+        }
+    }
+
+
+    public
+    function rendusAction(Devoir $devoir)
     {
         $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
         $zip = new \ZipArchive();
@@ -306,12 +359,14 @@ class DevoirController extends Controller
     /**
      * @return string
      */
-    private function generateUniqueFileName()
+    private
+    function generateUniqueFileName()
     {
         return md5(uniqid());
     }
 
-    public function getGroupeAction(Request $request)
+    public
+    function getGroupeAction(Request $request)
     {
         if ($request->request->get('ue_id')) {
             $groupes = $this->getDoctrine()->getRepository(Groupe::class)->findBy(["UE" => $request->request->get('ue_id')]);
@@ -349,7 +404,8 @@ class DevoirController extends Controller
         return $this->render('DepotBundle:Devoir:new.html.twig');
     }
 
-    private function getErrorMessages(FormInterface $form)
+    private
+    function getErrorMessages(FormInterface $form)
     {
         $errors = array();
 
@@ -376,7 +432,8 @@ class DevoirController extends Controller
      * @param Devoir $devoir
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function editAction(Request $request, Devoir $devoir)
+    public
+    function editAction(Request $request, Devoir $devoir)
     {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
@@ -512,7 +569,8 @@ class DevoirController extends Controller
      * @param Devoir $devoir
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(Request $request, Devoir $devoir)
+    public
+    function deleteAction(Request $request, Devoir $devoir)
     {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $form = $this->createDeleteForm($devoir);
@@ -551,7 +609,8 @@ class DevoirController extends Controller
      *
      * @param Devoir $devoir
      */
-    public function depotAction(Request $request, Devoir $devoir)
+    public
+    function depotAction(Request $request, Devoir $devoir)
     {
         // todo verifier la date d'upload si elle est valide
         // todo récupérer pour cela le groupe_devoir avec la date a rendre
@@ -563,7 +622,7 @@ class DevoirController extends Controller
 
         $allowed_extensions = [];
 
-        foreach($allowed_extensions_raw as $ae) {
+        foreach ($allowed_extensions_raw as $ae) {
             $allowed_extensions[] = $ae->getExtension();
         }
 
@@ -572,11 +631,11 @@ class DevoirController extends Controller
 
         $valid_extension = false;
 
-        if(in_array($extension, $allowed_extensions)) {
+        if (in_array($extension, $allowed_extensions)) {
             $valid_extension = true;
         }
 
-        if(!$valid_extension) {
+        if (!$valid_extension) {
             return new JsonResponse(array("status" => "mauvaise extension"), 400);
         }
 
@@ -614,7 +673,8 @@ class DevoirController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Devoir $devoir)
+    private
+    function createDeleteForm(Devoir $devoir)
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('delete_devoir', array('id' => $devoir->getId())))
@@ -622,7 +682,8 @@ class DevoirController extends Controller
             ->getForm();
     }
 
-    public function downloadAction($filename)
+    public
+    function downloadAction($filename)
     {
         $file = $this->getParameter('documents_devoirs_directory') . '/' . $filename;
 

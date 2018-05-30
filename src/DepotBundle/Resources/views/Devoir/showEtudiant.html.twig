@@ -46,24 +46,23 @@
                                 </li>
                             {% endfor %}
                         </ul>
-                        {% if u_appartient_groupe == false and gp.usersgroupesprojets|length < groupe_devoir.nbMaxEtudiant and date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                        {% if u_appartient_groupe == false and gp.usersgroupesprojets|length < groupe_devoir.nbMaxEtudiant and date(groupe_devoir.dateARendre)|date_modify("+7 day")  >= "now" %}
                             <a href="{{ path("join_groupe_projet", {groupe_projet:gp.id}) }}" class="btn btn-primary">Demander
                                 à rejoindre</a>
                         {% elseif (in_groupe == true and leader == false) or (in_groupe == true and leader == true and gp.usersgroupesprojets|length == 1) %}
-                            {% if date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                            {% if date(groupe_devoir.dateARendre)|date_modify("+7 day") >= "now" %}
                                 <a href="{{ path("leave_groupe_projet", {groupe_projet:gp.id}) }}"
                                    class="btn btn-primary">Quitter le groupe</a>
                             {% endif %}
                         {% endif %}
                     </div>
                 {% endfor %}
-
-
-                {% if u_appartient_groupe == false and date(groupe_devoir.dateARendre)|date("Y-m-d") >= date()|date("Y-m-d") %}
+                {% if u_appartient_groupe == false and date(groupe_devoir.dateARendre)|date_modify("+7 day") >= "now" %}
                     {% if remaining_groups >= 1 %}
                         <div class="groupe">
                             <h4 class="text-center">Nouveau groupe</h4>
-                            <a href="{{ path("new_groupe_projet", {devoir:devoir.id}) }}" class="btn btn-primary">Créer
+                            <a href="{{ path("new_groupe_projet", {groupe: groupe.id, devoir:devoir.id}) }}"
+                               class="btn btn-primary">Créer
                                 un groupe</a>
                         </div>
                     {% endif %}
@@ -77,24 +76,48 @@
     <div class="item">
         <h3>Votre groupe de projet</h3>
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at atque consequatur,
-            debitis deserunt dolor doloremque, ipsum obcaecati officia quis repellat veritatis vitae. Eaque
-            illum nesciunt pariatur quaerat unde.
+            {#todo écrire quoi ?#}
         </p>
     </div>
 {% endblock %}
 
 {% block daterendus %}
     <div class="item">
-        <h3>Date théorique de rendu</h3>
-        <p>{{ date(groupe_devoir.datearendre)|date("Y-m-d H:m:s") }}</p>
+        <h3>Dates théoriques de rendu</h3>
+        <p>
+            {% if u_groupe_projet %}
+                {% if date(u_groupe_projet.groupedevoir.datearendre) < date() %}
+                    {% set colorDate = 'red' %}
+                {% else %}
+                    {% set colorDate = 'black' %}
+                {% endif %}
+                <span style="color:{{ colorDate }}">
+            {{ date(groupe_devoir.datearendre)|date("d/m/Y - H:m:s") }}
+            </span>
+            {% else %}
+                {% for  gpd in devoir.groupedevoir %}
+                    {% for gp in app.user.groupes %}
+                        {% if gpd.groupe.id ==  gp.id %}
+                            <span>
+                        Groupe {{ gpd.groupe.name }}
+                                <br>
+                        Date de rendu : {{ gpd.datearendre|date("d/m/Y - H:m:s") }}
+                    </span>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        </p>
     </div>
     {% if fichier_rendu  and date_rendu %}
         <div class="item">
             <h3>Rendu</h3>
-            {#fixme un étudiant peut télécharger son rendu ?#}
-            <p><a href="#">{{ fichier_rendu }}</a></p>
-            <p>{{ date(date_rendu)|date("Y-m-d H:m:s") }}</p>
+            <p>
+                <a href="{{ path("download_devoir_rendu",{devoir:devoir.id, groupe_projet:u_groupe_projet.id} ) }}">{{ fichier_rendu }}</a>
+            </p>
+            <p>
+                {{ date(date_rendu)|date("d/m/Y - H:m:s") }}
+            </p>
         </div>
     {% endif %}
 {% endblock %}
@@ -103,8 +126,23 @@
     <div class="item">
         <h3>Effectuer votre rendu</h3>
         <p>
-            {% if date(groupe_devoir.datearendre)|date_modify("+7 day")|date('Y-m-d H:m:s') < "now"|date('Y-m-d H:m:s') %}
+            {% set in_groupe = false %}
+            {% set approbation = false %}
+            {% for gp in groupes_projet %}
+                {% for ugp in gp.usersgroupesprojets %}
+                    {% if ugp.user.username == app.user.username %}
+                        {% set in_groupe = true %}
+                        {% if ugp.status == 1 %}
+                            {% set approbation = true %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+            {% if date(groupe_devoir.datearendre)|date_modify("+7 day") < "now" %}
             Vous ne pouvez plus déposer de rendu
+            {% elseif not in_groupe or not approbation %}
+                Vous n'avez pas rejoint de groupe ou vous n'avez pas obtenu l'approbation du chef de groupe
             {% else %}
         <form class="dropzone" id="depot-devoir"></form>
         {% endif %}

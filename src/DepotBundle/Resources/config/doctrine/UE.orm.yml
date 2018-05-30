@@ -25,11 +25,13 @@ DepotBundle\Entity\UE:
         groupes:
             targetEntity: Groupe
             mappedBy: UE
+            cascade: ['persist']
 
     manyToMany:
         users:
             targetEntity: UserBundle\Entity\User
             mappedBy: ues
+            cascade: ['persist']
 
 
 

@@ -38,3 +38,7 @@ ue_delete:
 ue_edit:
     path:   /ues/edit/{id}
     defaults: { _controller: DepotBundle:Admin\UE:edit }
+
+import_admin:
+    path: /import
+    defaults: { _controller: DepotBundle:Admin\Import:import }

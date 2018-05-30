@@ -142,7 +142,6 @@ class Groupe_projet
     }
 
     /**
-
      * Get name
      *
      * @return string
@@ -151,7 +150,6 @@ class Groupe_projet
     {
         return $this->name;
     }
-
 
 
     /**
@@ -168,7 +166,6 @@ class Groupe_projet
     }
 
     /**
-
      * Get fichier
      *
      * @return string
@@ -250,4 +247,56 @@ class Groupe_projet
         $this->groupe = $groupe;
     }
 
+    /*
+    * Add usersGroupesProjet
+    *
+    * @param \DepotBundle\Entity\UserGroupeProjet $usersGroupesProjet
+    *
+    * @return Groupe_projet
+    */
+    public function addUsersGroupesProjet(\DepotBundle\Entity\UserGroupeProjet $usersGroupesProjet)
+    {
+        $this->users_groupes_projets[] = $usersGroupesProjet;
+
+        return $this;
+    }
+
+    /**
+     * Remove usersGroupesProjet
+     *
+     * @param \DepotBundle\Entity\UserGroupeProjet $usersGroupesProjet
+     */
+    public function removeUsersGroupesProjet(\DepotBundle\Entity\UserGroupeProjet $usersGroupesProjet)
+    {
+        $this->users_groupes_projets->removeElement($usersGroupesProjet);
+    }
+    /**
+     * @var \DepotBundle\Entity\Groupe_devoir
+     */
+    private $groupe_devoir;
+
+
+    /**
+     * Set groupeDevoir
+     *
+     * @param \DepotBundle\Entity\Groupe_devoir $groupeDevoir
+     *
+     * @return Groupe_projet
+     */
+    public function setGroupeDevoir(\DepotBundle\Entity\Groupe_devoir $groupeDevoir = null)
+    {
+        $this->groupe_devoir = $groupeDevoir;
+
+        return $this;
+    }
+
+    /**
+     * Get groupeDevoir
+     *
+     * @return \DepotBundle\Entity\Groupe_devoir
+     */
+    public function getGroupeDevoir()
+    {
+        return $this->groupe_devoir;
+    }
 }

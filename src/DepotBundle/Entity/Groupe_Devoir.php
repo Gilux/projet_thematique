@@ -198,4 +198,64 @@ class Groupe_Devoir
     {
         return $this->devoir;
     }
+    /**
+     * @var \DepotBundle\Entity\Groupe_Projet
+     */
+    private $groupes_projets;
+
+
+    /**
+     * Set groupesProjets
+     *
+     * @param \DepotBundle\Entity\Groupe_Projet $groupesProjets
+     *
+     * @return Groupe_Devoir
+     */
+    public function setGroupesProjets(\DepotBundle\Entity\Groupe_Projet $groupesProjets = null)
+    {
+        $this->groupes_projets = $groupesProjets;
+
+        return $this;
+    }
+
+    /**
+     * Get groupesProjets
+     *
+     * @return \DepotBundle\Entity\Groupe_Projet
+     */
+    public function getGroupesProjets()
+    {
+        return $this->groupes_projets;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->groupes_projets = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add groupesProjet
+     *
+     * @param \DepotBundle\Entity\Groupe_Projet $groupesProjet
+     *
+     * @return Groupe_Devoir
+     */
+    public function addGroupesProjet(\DepotBundle\Entity\Groupe_Projet $groupesProjet)
+    {
+        $this->groupes_projets[] = $groupesProjet;
+
+        return $this;
+    }
+
+    /**
+     * Remove groupesProjet
+     *
+     * @param \DepotBundle\Entity\Groupe_Projet $groupesProjet
+     */
+    public function removeGroupesProjet(\DepotBundle\Entity\Groupe_Projet $groupesProjet)
+    {
+        $this->groupes_projets->removeElement($groupesProjet);
+    }
 }

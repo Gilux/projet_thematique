@@ -34,32 +34,52 @@
     </div>
 {% endblock %}
 
-{% block daterendus %}
+{% block rendus %}
     <div class="item">
         <h3>Rendus</h3>
-        <ul>
+        <table>
+            <thead>
+            <tr>
+                <th>Groupe</th>
+                <th>Date de rendu théorique</th>
+                <th>Date de rendu</th>
+                <th>Retard</th>
+                <th>Archive</th>
+            </tr>
+            </thead>
+            <tbody>
             {% for gp in groupes_projets %}
-                <li><strong>Groupe {{ gp.name }} :</strong>
-                    {% if gp.date is defined %}
-                        {{ gp.date|date("d/m/Y - H:m:s") }}
-                    {% endif %}
-                </li>
+
+                <tr>
+                    <td>{{ gp.name }}</td>
+                    <td>{{ gp.date_theorique|date("d/m/Y - H:m:s") }}</td>
+                    <td>
+                        {% if gp.date is defined %}
+                            {{ gp.date|date("d/m/Y - H:m:s") }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if gp.diff is defined %}
+                            {{ gp.diff|date("%a jours, %h heures, %i minutes") }}
+                        {% endif %}
+                    </td>
+                    <td>{% if gp.filename is defined %}
+                            <a href="{{ path("download_devoir_rendu",{devoir:devoir.id, groupe_projet:gp.id} ) }}">{{ gp.filename }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
             {% endfor %}
-        </ul>
+            </tbody>
+        </table>
     </div>
 {% endblock %}
 
-{% block rendus %}
+{% block actions %}
     <div class="item">
-        <h3>Liste des rendus</h3>
-        {% for gp in groupes_projets %}
-            <strong>Groupe {{ gp.name }} :</strong>:
-            {% if gp.filename is defined %}
-                {# todo mettre link #}
-                <a href="#">{{ gp.filename }}</a>
-            {% else %}
-                Non rendu
-            {% endif %}
-        {% endfor %}
+        <h3>Actions</h3>
+        <br>
+        <a href="{{ path("download_devoirs_rendus",{devoir:devoir.id} ) }}"
+           class="btn btn-primary">Télécharger tous les rendus</a>
     </div>
 {% endblock %}
+
