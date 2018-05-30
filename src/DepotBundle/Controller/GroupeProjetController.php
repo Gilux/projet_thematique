@@ -63,12 +63,11 @@ class GroupeProjetController extends Controller
 
     public function leaveAction(Request $request, Groupe_projet $groupe_projet)
     {
-        //fixme un utilisateur non leader doit pouvoir quitter son groupe
         $users_groupes_projets = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet]);
         $user_groupe_projet = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findOneBy(["groupe_projet" => $groupe_projet, "user" => $this->getUser()]);
         $devoir = $groupe_projet->getDevoir();
 
-        $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $groupe_projet, "leader" => 1])[0]->getUser();
+        $leader = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findOneBy(["groupe_projet" => $groupe_projet, "user" => $this->getUser()])->getLeader();
 
         $em = $this->getDoctrine()->getManager();
 
