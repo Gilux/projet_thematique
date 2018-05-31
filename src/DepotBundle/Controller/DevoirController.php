@@ -143,7 +143,7 @@ class DevoirController extends Controller
                     ),
                     'text/html'
                 );
-            //$this->get('mailer')->send($message);
+            $this->get('mailer')->send($message);
         } catch (\Exception $e) {
             $this->addFlash("error", "Une erreur est survenue.");
         }
