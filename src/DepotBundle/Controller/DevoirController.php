@@ -742,9 +742,22 @@ class DevoirController extends Controller
             if ($form->isSubmitted() && $form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
 
-                //Supprimer les Groupes Devoirs
+                //Supprimer les Groupes Devoirs, Groupe Projets et Users Groupes Projets
                 foreach ($devoir->getGroupeDevoir() as $gd) {
+                    $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $gd->getGroupe()]);
+                    foreach($gps as $gp)
+                    {
+                        $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
+                        foreach($ugps as $ugp)
+                        {
+                            $em->remove($ugp);
+                        }
+
+                        $em->remove($gp);
+                    }
+                    
                     $devoir->removeGroupeDevoir($gd);
+                    
                     $em->remove($gd);
 
                 }
