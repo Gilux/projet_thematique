@@ -68,6 +68,29 @@
                     {% endif %}
                 {% endif %}
             </div>
+            <br>
+            <div>
+                Etudiant qui ont choisi leurs groupes de projet :
+                {{ users_in|length }}
+                {% if users_in|length > 0 %}
+                    <summary>
+                        <details>
+                            {% for user_in in users_in %} {{ user_in.firstname }} {{ user_in.lastname }} {% if user_in.firstname == '' %} {{ user_in.username }} {% endif %} {% if not loop.last %},{% endif %}{% endfor %}
+                        </details>
+                    </summary>
+                {% endif %}
+                <br>
+                Etudiant qui n'ont pas choisi leur groupe de projet
+                :
+                {{ users_out|length }}
+                {% if users_out|length > 0 %}
+                    <summary>
+                        <details>
+                            {% for user_out in users_out %} {{ user_out.firstname }} {{ user_out.lastname }} {% if user_out.firstname == '' %} {{ user_out.username }} {% endif %} {% if not loop.last %},{% endif %}{% endfor %}
+                        </details>
+                    </summary>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

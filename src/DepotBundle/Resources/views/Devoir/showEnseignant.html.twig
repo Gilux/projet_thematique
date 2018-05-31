@@ -4,32 +4,58 @@
     <div class="col-xs-12">
         <div class="item">
             <h3>Groupes de projet</h3>
-
             <div class="groupesProjet">
-                {% set nbgroupes = groupes_projets|length %}
-                {% for gp in groupes_projets %}
-                    <div class="groupe">
-                        <h4 class="text-center">Groupe {{ gp.name }}</h4>
-                        <ul>
-                            {% set in_groupe = false %}
-                            {% set leader = false %}
-                            {% for ugp in gp.usersgroupesprojets %}
-                                {% if ugp.user.username == app.user.username %}
-                                    {% set in_groupe = true %}
-                                    {% if ugp.leader == 1 %}
-                                        {% set leader = true %}
+                {% if groupes_projets|length > 0 %}
+                    {% for gp in groupes_projets %}
+                        <div class="groupe">
+                            <h4 class="text-center">Groupe {{ gp.name }}</h4>
+                            <ul>
+                                {% set in_groupe = false %}
+                                {% set leader = false %}
+                                {% for ugp in gp.usersgroupesprojets %}
+                                    {% if ugp.user.username == app.user.username %}
+                                        {% set in_groupe = true %}
+                                        {% if ugp.leader == 1 %}
+                                            {% set leader = true %}
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
-                                <li>{{ ugp.user.username }}
-                                    {% if ugp.status == 0 %}
-                                        <i>(en attente d'approbation)</i>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endfor %}
+                                    <li>{{ ugp.user.username }}
+                                        {% if ugp.status == 0 %}
+                                            <i>(en attente d'approbation)</i>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    Il n'y a pas de groupes de projet
+                {% endif %}
             </div>
+            <br>
+            <div>
+                Etudiant qui ont choisi leurs groupes de projet :
+                {{ users_in|length }}
+                {% if users_in|length > 0 %}
+                    <summary>
+                        <details>
+                            {% for user_in in users_in %} {{ user_in.firstname }} {{ user_in.lastname }} {% if user_in.firstname == '' %} {{ user_in.username }} {% endif %} {% if not loop.last %},{% endif %}{% endfor %}
+                        </details>
+                    </summary>
+                {% endif %}
+                <br>
+                Etudiant qui n'ont pas choisi leur groupe de projet
+                :
+                {{ users_out|length }}
+                {% if users_out|length > 0 %}
+                    <summary>
+                        <details>
+                            {% for user_out in users_out %} {{ user_out.firstname }} {{ user_out.lastname }} {% if user_out.firstname == '' %} {{ user_out.username }} {% endif %} {% if not loop.last %},{% endif %}{% endfor %}
+                        </details>
+                    </summary>
+                {% endif %}
+            </div>
+
         </div>
     </div>
 {% endblock %}
@@ -37,49 +63,63 @@
 {% block rendus %}
     <div class="item">
         <h3>Rendus</h3>
-        <table>
-            <thead>
-            <tr>
-                <th>Groupe</th>
-                <th>Date de rendu théorique</th>
-                <th>Date de rendu</th>
-                <th>Retard</th>
-                <th>Archive</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for gp in groupes_projets %}
-
+        {% if groupes_projets|length > 0 %}
+            <table>
+                <thead>
                 <tr>
-                    <td>{{ gp.name }}</td>
-                    <td>{{ gp.date_theorique|date("d/m/Y - H:m:s") }}</td>
-                    <td>
-                        {% if gp.date is defined %}
-                            {{ gp.date|date("d/m/Y - H:m:s") }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if gp.diff is defined %}
-                            {{ gp.diff|date("%a jours, %h heures, %i minutes") }}
-                        {% endif %}
-                    </td>
-                    <td>{% if gp.filename is defined %}
-                            <a href="{{ path("download_devoir_rendu",{devoir:devoir.id, groupe_projet:gp.id} ) }}">{{ gp.filename }}</a>
-                        {% endif %}
-                    </td>
+                    <th>Groupe</th>
+                    <th>Date de rendu théorique</th>
+                    <th>Date de rendu</th>
+                    <th>Retard</th>
+                    <th>Archive</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for gp in groupes_projets %}
+                    <tr>
+                        <td>{{ gp.name }}</td>
+                        <td>{{ gp.date_theorique|date("d/m/Y - H:m:s") }}</td>
+                        <td>
+                            {% if gp.date is defined %}
+                                {{ gp.date|date("d/m/Y - H:m:s") }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if gp.diff is defined %}
+                                {{ gp.diff|date("%a jours, %h heures, %i minutes") }}
+                            {% endif %}
+                        </td>
+                        <td>{% if gp.filename is defined %}
+                                <a href="{{ path("download_devoir_rendu",{devoir:devoir.id, groupe_projet:gp.id} ) }}">{{ gp.filename }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <br>
+            Il n'y a pas de groupes de projet constitués
+        {% endif %}
     </div>
 {% endblock %}
 
 {% block actions %}
+    {% set download_archives = false %}
+    {% for gp in groupes_projets %}
+        {% if gp.filename is defined %}
+            {% set download_archives = true %}
+        {% endif %}
+    {% endfor %}
     <div class="item">
         <h3>Actions</h3>
         <br>
-        <a href="{{ path("download_devoirs_rendus",{devoir:devoir.id} ) }}"
-           class="btn btn-primary">Télécharger tous les rendus</a>
+        {% if download_archives %}
+            <a href="{{ path("download_devoirs_rendus",{devoir:devoir.id} ) }}"
+               class="btn btn-primary">Télécharger tous les rendus</a>
+        {% else %}
+            Le téléchargement des rendus est actuellement impossible.
+        {% endif %}
     </div>
 {% endblock %}
 

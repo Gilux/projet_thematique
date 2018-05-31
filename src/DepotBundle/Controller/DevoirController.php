@@ -81,6 +81,8 @@ class DevoirController extends Controller
                 }
             }
         }
+        $users_status = $this->getUsersStatusInDevoir($devoir);
+
 
         //Récupère la date de Rendu et le fichier
         $gp = $this->getDoctrine()->getRepository(Groupe_projet::class)->findByDevoirAndUser($devoir, $user);
@@ -95,12 +97,54 @@ class DevoirController extends Controller
             "date_rendu" => $gp ? $gp->getDate() : false,
             "fichier_rendu" => $gp ? $gp->getFilename() : false,
             "groupe" => $groupe,
+            "users_out" => $users_status['users_out'],
+            "users_in" => $users_status['users_in']
         ]);
+    }
+
+    private function getUsersStatusInDevoir(Devoir $devoir)
+    {
+        $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir")->findByDevoir($devoir);
+
+        $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir");
+        $users_in_project = [];
+        $users_not_in_groupe_projet = [];
+
+        foreach ($groupes_devoir as $gp_devoir) {
+
+            $users = $gp_devoir->getGroupe()->getUsers();
+
+            foreach ($users as $user) {
+                $flag = false;
+
+                foreach ($groupes_projet as $gp) {
+
+                    $usr = $ugp_repo->findBy(["groupe_projet" => $gp, "user" => $user]);
+
+                    if ($usr) {
+                        $users_in_project[] = $usr;
+                        $flag = true;
+                    }
+                }
+                if (!$flag) {
+                    $users_not_in_groupe_projet[] = $user;
+                }
+            }
+        }
+        return [
+            'users_out' => $users_not_in_groupe_projet,
+            'users_in' => $users_in_project
+        ];
     }
 
     public function showEnseignantAction(Devoir $devoir)
     {
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        $users_status = $this->getUsersStatusInDevoir($devoir);
+
 
         foreach ($groupes_projet as $key => $gp) {
             $date_theorique = $gp->getGroupeDevoir()->getDateARendre();
@@ -115,10 +159,13 @@ class DevoirController extends Controller
         return $this->render('DepotBundle:Devoir:showEnseignant.html.twig', [
             "devoir" => $devoir,
             "groupes_projets" => $groupes_projet,
+            "users_out" => $users_status['users_out'],
+            "users_in" => $users_status['users_in']
         ]);
     }
 
-    public function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
+    public
+    function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
     {
         $ueName = $groupeDevoir->getGroupe()->getUE();
         $groupeName = $groupeDevoir->getGroupe()->getName();
@@ -158,7 +205,8 @@ class DevoirController extends Controller
 
     }
 
-    public function newAction(Request $request)
+    public
+    function newAction(Request $request)
     {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_ENSEIGNANT')) {
             $user = $this->getDoctrine()->getRepository("UserBundle:User")->find($this->getUser());
@@ -283,7 +331,8 @@ class DevoirController extends Controller
         }
     }
 
-    public function renduAction(Devoir $devoir, Groupe_projet $groupe_projet)
+    public
+    function renduAction(Devoir $devoir, Groupe_projet $groupe_projet)
     {
         $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
         $zip = new \ZipArchive();
@@ -479,19 +528,16 @@ class DevoirController extends Controller
 
                 /********************************
                  * SI LE NOMBRE D'ETUDIANT CHANGE
-                 * ALORS IL FAUT SUPPRIMER TOUS LES 
+                 * ALORS IL FAUT SUPPRIMER TOUS LES
                  * GROUPES PROJETS et USERS GROUPES PROJETS
                  */
-                if($editForm->get("nb_max_etudiant")->getData() != $gd['nb_max_etudiant'] || $editForm->get("nb_min_etudiant")->getData() || $gd['nb_min_etudiant']);
+                if ($editForm->get("nb_max_etudiant")->getData() != $gd['nb_max_etudiant'] || $editForm->get("nb_min_etudiant")->getData() || $gd['nb_min_etudiant']) ;
                 {
-                    foreach ($temp_groupes_devoirs as $tgd)
-                    {
+                    foreach ($temp_groupes_devoirs as $tgd) {
                         $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $tgd->getGroupe()]);
-                        foreach($gps as $gp)
-                        {
+                        foreach ($gps as $gp) {
                             $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
-                            foreach($ugps as $ugp)
-                            {
+                            foreach ($ugps as $ugp) {
                                 $em = $this->getDoctrine()->getManager();
                                 $em->remove($ugp);
                                 $em->flush();
@@ -504,7 +550,7 @@ class DevoirController extends Controller
                         $tgd->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
                         $tgd->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
                         $this->getDoctrine()->getManager()->flush();
-                        
+
                         //Si le devoir est individuel
                         if ($editForm->get("nb_max_etudiant")->getData() == 1 && $editForm->get("nb_min_etudiant")->getData() == 1) {
                             $em = $this->getDoctrine()->getManager();
@@ -531,15 +577,15 @@ class DevoirController extends Controller
                 /**********************
                  * FIN
                  */
-                
+
 
                 /************************
                  * SI LES DATES ONT ETE CHANGEES
                  * ALORS IL FAUT LES METTRE A JOURS
-                 * 
+                 *
                  * SI LES GROUPES DEVOIRS CHANGENT
                  * ALORS IL FAUT SOIT SUPPRIMER OU
-                 * AJOUTER DES GROUPES PROJETS ET 
+                 * AJOUTER DES GROUPES PROJETS ET
                  * USERS GROUPES PROJETS
                  */
                 $flag = array();
@@ -550,37 +596,27 @@ class DevoirController extends Controller
                         $id = key($data[$i]['id']);
                         // Récupération de la date de rendu saisie
                         $date_rendu = new \DateTime($data[$i]["date"]);
-                        if(isset($temp_groupes_devoirs[$i]))
-                        {
-                            if($id == $temp_groupes_devoirs[$i]->getGroupe()->getId() && $date_rendu == $temp_groupes_devoirs[$i]->getDateARendre())
-                            {
+                        if (isset($temp_groupes_devoirs[$i])) {
+                            if ($id == $temp_groupes_devoirs[$i]->getGroupe()->getId() && $date_rendu == $temp_groupes_devoirs[$i]->getDateARendre()) {
                                 array_push($flag, true);
-                            }
-                            else
-                            {
+                            } else {
                                 array_push($flag, false);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             array_push($flag, false);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         array_push($flag, false);
                     }
                 }
-                
+
                 $f = true;
-                for($i=0;$i<count($flag);$i++)
-                {
-                    if($flag[$i] == false)
+                for ($i = 0; $i < count($flag); $i++) {
+                    if ($flag[$i] == false)
                         $f = false;
                 }
                 //Gestion des groupes devoir
-                if(!$f)
-                {
+                if (!$f) {
                     // Si aucun groupe n'a été coché
                     if (count($devoir->getGroupeDevoir()) == 0) {
                         $errors["groupes_error"] = "Aucun groupe n'a été coché";
@@ -594,23 +630,21 @@ class DevoirController extends Controller
 
                         return $this->redirectToRoute('edit_devoir', array("id" => $devoir->getId()));
                     }
-                    
+
                     $temp_g_id_actu = array();
                     $dates_rendus = array(); //Utilisé seulement en cas d'ajout;
                     for ($i = 0; $i < count($data); $i++) {
                         // Si le groupe est coché
                         if (isset($data[$i]['id'])) {
                             array_push($temp_g_id_actu, key($data[$i]['id']));
-                            array_push($dates_rendus, array("id_groupe"=>key($data[$i]['id']), "date"=>new \DateTime($data[$i]["date"])));
+                            array_push($dates_rendus, array("id_groupe" => key($data[$i]['id']), "date" => new \DateTime($data[$i]["date"])));
                             // Récupération de l'identifiant du groupe
                             $id = key($data[$i]['id']);
                             // Récupération de la date de rendu saisie
                             $date_rendu = new \DateTime($data[$i]["date"]);
-                            
-                            foreach ($temp_groupes_devoirs as $tgd)
-                            {
-                                if($tgd->getGroupe()->getId() == $id)
-                                {
+
+                            foreach ($temp_groupes_devoirs as $tgd) {
+                                if ($tgd->getGroupe()->getId() == $id) {
                                     $tgd->setDateARendre($date_rendu);
                                     $this->getDoctrine()->getManager()->flush();
                                 }
@@ -618,33 +652,26 @@ class DevoirController extends Controller
                         }
                     }
                     $temp_g_id = array();
-                    foreach ($temp_groupes_devoirs as $tgd)
-                    {
+                    foreach ($temp_groupes_devoirs as $tgd) {
                         array_push($temp_g_id, $tgd->getGroupe()->getId());
                     }
-                    
+
                     //SUPPRESSION
-                    if(count($temp_g_id)>count($temp_g_id_actu))
-                    {
+                    if (count($temp_g_id) > count($temp_g_id_actu)) {
                         $r = array_diff($temp_g_id, $temp_g_id_actu);
                         $r = array_values($r);
-                        for($i=0;$i<count($r);$i++)
-                        {
-                            foreach ($temp_groupes_devoirs as $tgd)
-                            {
-                                if($tgd->getGroupe()->getId() == $r[$i])
-                                {
+                        for ($i = 0; $i < count($r); $i++) {
+                            foreach ($temp_groupes_devoirs as $tgd) {
+                                if ($tgd->getGroupe()->getId() == $r[$i]) {
                                     $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $tgd->getGroupe()]);
-                                    foreach($gps as $gp)
-                                    {
+                                    foreach ($gps as $gp) {
                                         $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
-                                        foreach($ugps as $ugp)
-                                        {
+                                        foreach ($ugps as $ugp) {
                                             $em = $this->getDoctrine()->getManager();
                                             $em->remove($ugp);
                                             $em->flush();
                                         }
-                                        
+
                                         $em = $this->getDoctrine()->getManager();
                                         $em->remove($gp);
                                         $em->flush();
@@ -655,18 +682,13 @@ class DevoirController extends Controller
                                 }
                             }
                         }
-                    }
-                    //AJOUT
-                    else
-                    {
-                        $r = array_diff($temp_g_id_actu,$temp_g_id);
+                    } //AJOUT
+                    else {
+                        $r = array_diff($temp_g_id_actu, $temp_g_id);
                         $r = array_values($r);
-                        for($i=0;$i<count($dates_rendus);$i++)
-                        {
-                            for($j=0;$j<count($r);$j++)
-                            {
-                                if($dates_rendus[$i]['id_groupe'] == $r[$j])
-                                {
+                        for ($i = 0; $i < count($dates_rendus); $i++) {
+                            for ($j = 0; $j < count($r); $j++) {
+                                if ($dates_rendus[$i]['id_groupe'] == $r[$j]) {
                                     $groupe_devoir = new Groupe_Devoir();
                                     $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($r[$j]);
                                     $groupe_devoir->setGroupe($groupe[0]);
@@ -680,7 +702,7 @@ class DevoirController extends Controller
                                     $em->persist($groupe_devoir);
 
                                     $devoir->addGroupeDevoir($groupe_devoir);
-                                    
+
                                     //Si le devoir est individuel
                                     if ($editForm->get("nb_max_etudiant")->getData() == 1 && $editForm->get("nb_min_etudiant")->getData() == 1) {
                                         //Créer les groupe_projets
@@ -764,19 +786,17 @@ class DevoirController extends Controller
                 //Supprimer les Groupes Devoirs, Groupe Projets et Users Groupes Projets
                 foreach ($devoir->getGroupeDevoir() as $gd) {
                     $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $gd->getGroupe()]);
-                    foreach($gps as $gp)
-                    {
+                    foreach ($gps as $gp) {
                         $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
-                        foreach($ugps as $ugp)
-                        {
+                        foreach ($ugps as $ugp) {
                             $em->remove($ugp);
                         }
 
                         $em->remove($gp);
                     }
-                    
+
                     $devoir->removeGroupeDevoir($gd);
-                    
+
                     $em->remove($gd);
 
                 }
