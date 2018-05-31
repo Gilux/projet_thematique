@@ -54,3 +54,11 @@ groupe_edit:
 groupe_delete:
     path:   /groupes/delete/{id}
     defaults: { _controller: DepotBundle:Admin\Groupe:delete }
+    
+add_user_to_groupe:
+    path: /groupes/{groupe}/adduser/{user}
+    defaults: { _controller: DepotBundle:Admin\Groupe:addToGroupe }
+    
+remove_user_to_groupe:
+    path: /groupes/{groupe}/removeuser/{user}
+    defaults: { _controller: DepotBundle:Admin\Groupe:removeToGroupe }

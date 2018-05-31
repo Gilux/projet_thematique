@@ -14,8 +14,29 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findByRole($role)
     {
-        return $this->createQueryBuilder('u')
+        $qb = $this->createQueryBuilder('u')
             ->where('u.roles LIKE :role')
             ->setParameter('role', "%$role%");
+        
+        return $qb->getQuery()->getResult();
+    }
+    
+    public function findByGroupe($groupe)
+    {
+        $qb = $this->createQueryBuilder('u')
+                ->innerJoin('u.groupes', 'g')
+                ->where('g.id = :groupe')
+                ->setParameter('groupe', $groupe);
+        return $qb->getQuery()->getResult();
+    }
+    
+    public function findIfUserAppartientGroupeUE($ue)
+    {
+        $qb = $this->createQueryBuilder('u')
+                ->innerJoin('u.groupes', 'g')
+                ->where('g.UE = :ue')
+                ->setParameter('ue', $ue->getId())
+                ->getQuery()->getResult();
+        return $qb;
     }
 }

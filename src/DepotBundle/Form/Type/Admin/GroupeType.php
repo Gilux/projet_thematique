@@ -22,17 +22,7 @@ class GroupeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name',      TextType::class, array("label" => "Nom"))
-            ->add('users', EntityType::class, array(
-                'class' => User::class,
-                "label" => "Utilisateurs : ",
-                "required" => true,
-                "multiple" => true,
-                'query_builder' => function(UserRepository $repo) {
-                    return $repo->findByRole("ROLE_ETUDIANT");
-                }
-            ))
-            ->add('save',      SubmitType::class, array("label" => "Sauvegarder"));
+            ->add('name',      TextType::class, array("label" => "Nom"));
     }
 
     public function configureOptions(OptionsResolver $resolver)
