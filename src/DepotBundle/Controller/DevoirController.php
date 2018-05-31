@@ -477,6 +477,11 @@ class DevoirController extends Controller
                 // Récupération des données concernant les groupes
                 $data = $request->request->get('groupes');
 
+                /********************************
+                 * SI LE NOMBRE D'ETUDIANT CHANGE
+                 * ALORS IL FAUT SUPPRIMER TOUS LES 
+                 * GROUPES PROJETS et USERS GROUPES PROJETS
+                 */
                 if($editForm->get("nb_max_etudiant")->getData() != $gd['nb_max_etudiant'] || $editForm->get("nb_min_etudiant")->getData() || $gd['nb_min_etudiant']);
                 {
                     foreach ($temp_groupes_devoirs as $tgd)
@@ -523,9 +528,20 @@ class DevoirController extends Controller
                         }
                     }
                 }
+                /**********************
+                 * FIN
+                 */
+                
 
-                //IF TRUE : Date à rendre inchangée.
-                //Autrement dit, si les dates ont été changé il faut supprimer tous les user_groupe_projet, tous les groupes_projet et tous les groupes_devoirs.
+                /************************
+                 * SI LES DATES ONT ETE CHANGEES
+                 * ALORS IL FAUT LES METTRE A JOURS
+                 * 
+                 * SI LES GROUPES DEVOIRS CHANGENT
+                 * ALORS IL FAUT SOIT SUPPRIMER OU
+                 * AJOUTER DES GROUPES PROJETS ET 
+                 * USERS GROUPES PROJETS
+                 */
                 $flag = array();
                 for ($i = 0; $i < count($data); $i++) {
                     // Si le groupe est coché
@@ -689,6 +705,9 @@ class DevoirController extends Controller
                         }
                     }
                 }
+                /*************************
+                 * FIN
+                 */
 
                 if ($devoir->getFichier() != null) {
                     $f = new File($devoir->getFichier());
