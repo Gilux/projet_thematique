@@ -92,7 +92,8 @@ class NotificationController extends Controller
 
         $referer = $request->headers->get('referer');
 
-        return $this->redirect($referer);    }
+        return $this->redirect($referer);
+    }
 
     /**
      * Set all Notifications for a User as seen
@@ -116,5 +117,34 @@ class NotificationController extends Controller
 
         $referer = $request->headers->get('referer');
 
-        return $this->redirect($referer);    }
+        return $this->redirect($referer);
+    }
+
+    /**
+     * erase all Notifications for a User as seen
+     *
+     * @Route("/{notifiable}/eraseNotifications", name="notification_erase_all")
+     * @Method("POST")
+     * @param $notifiable
+     *
+     * @return JsonResponse
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function eraseNoticationsActions(Request $request, $notifiable)
+    {
+        $manager = $this->get('mgilet.notification');
+        $notifiable = $manager->getNotifiableInterface($manager->getNotifiableEntityById($notifiable));
+        $notifications = $manager->getNotifications($manager->getNotifiableInterface($manager->getNotifiableEntityById($notifiable)));
+
+        foreach ($notifications as $notification) {
+            $manager->removeNotification([$notifiable], $notification[0]);
+            $manager->deleteNotification($notification[0]);
+        }
+
+        $referer = $request->headers->get('referer');
+
+        return $this->redirect($referer);
+    }
 }

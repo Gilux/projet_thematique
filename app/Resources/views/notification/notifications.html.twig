@@ -6,6 +6,12 @@
               method="post">
             <button type="submit">Tout marquer comme lu</button>
         </form>
+        {# erase all notifications #}
+        <form action="{{ path('notification_erase_all', {'notifiable' : notifiableNotifications|first.notifiableEntity.id}) }}"
+              method="post">
+            <button type="submit">Vider les notifications</button>
+        </form>
+
     {% endif %}
     <ul class="notifications_list">
         {% for notifiableNotification in notifiableNotifications|reverse %}
