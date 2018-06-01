@@ -6,7 +6,8 @@
         <th>Nom du devoir</th>
         <th>Date de création</th>
         <th>Date de rendu</th>
-        <th>Rendus</th>
+        <th>Nombre de groupes constitués</th>
+        <th>Rendus d'étudiants</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -34,9 +35,13 @@
                 {% endif %}
             </td>
             <td>
-                {{ devoir.nombre_rendus }} / {{ devoir.nombre_groupes_devoir }}
-
+                {{ devoir.nombre_groupes_devoir }}
             </td>
+            <td>
+                {{ devoir.users_status['users_render'] }}
+                / {{ devoir.users_status['users_out']|length + devoir.users_status['users_in']|length }}
+            </td>
+
             <td>
                 <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a> /
                 <a href="{{ path("edit_devoir", {'id': devoir.id} ) }}">Éditer</a>
