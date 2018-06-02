@@ -136,11 +136,9 @@ class NotificationController extends Controller
     {
         $manager = $this->get('mgilet.notification');
         $notifiable = $manager->getNotifiableInterface($manager->getNotifiableEntityById($notifiable));
-        $notifications = $manager->getNotifications($manager->getNotifiableInterface($manager->getNotifiableEntityById($notifiable)));
-
+        $notifications = $manager->getNotifications($notifiable);
         foreach ($notifications as $notification) {
-            $manager->removeNotification([$notifiable], $notification[0]);
-            $manager->deleteNotification($notification[0]);
+            $manager->removeNotification([$notifiable], $notification[0], true);
         }
 
         $referer = $request->headers->get('referer');
