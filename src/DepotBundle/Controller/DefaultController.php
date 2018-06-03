@@ -55,7 +55,7 @@ class DefaultController extends Controller
     {
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
 
-        $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir")->findByDevoir($devoir);
+        $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_Devoir")->findByDevoir($devoir);
 
         $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:UserGroupeProjet");
 
@@ -99,7 +99,7 @@ class DefaultController extends Controller
     {
 
         $repo_groupe_projet = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_projet");
-        $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_devoir");
+        $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_Devoir");
         $data = $dates_a_rendre = [];
         $user = $this->getUser();
 

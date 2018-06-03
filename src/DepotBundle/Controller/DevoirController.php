@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
 
 
@@ -102,11 +103,26 @@ class DevoirController extends Controller
         ]);
     }
 
+    public function viewbytokenAction($utoken = "")
+    {
+        $groupeRepo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet");
+        $groupe = $groupeRepo->findOneBy(["token" => $utoken]);
+
+        if(is_null($groupe)) {
+            throw new NotFoundHttpException("Le devoir n'existe pas");
+        }
+
+        $file = $this->getParameter("depots_devoirs_directory") . "/" . $groupe->getFichier();
+        $response = new BinaryFileResponse($file);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+        return $response;
+    }
+
     private function getUsersStatusInDevoir(Devoir $devoir)
     {
         $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
 
-        $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir")->findByDevoir($devoir);
+        $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_Devoir")->findByDevoir($devoir);
 
         $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:UserGroupeProjet");
         $users_in_project = [];
@@ -164,8 +180,7 @@ class DevoirController extends Controller
         ]);
     }
 
-    public
-    function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
+    public function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
     {
         $ueName = $groupeDevoir->getGroupe()->getUE();
         $groupeName = $groupeDevoir->getGroupe()->getName();
@@ -368,8 +383,7 @@ class DevoirController extends Controller
     }
 
 
-    public
-    function rendusAction(Devoir $devoir)
+    public function rendusAction(Devoir $devoir)
     {
         $fileName = $this->get('kernel')->getRootDir() . '/../web/uploads/rendus_' . date('dmYhis') . '.zip';
         $zip = new \ZipArchive();
@@ -411,14 +425,12 @@ class DevoirController extends Controller
     /**
      * @return string
      */
-    private
-    function generateUniqueFileName()
+    private function generateUniqueFileName()
     {
         return md5(uniqid());
     }
 
-    public
-    function getGroupeAction(Request $request)
+    public function getGroupeAction(Request $request)
     {
         if ($request->request->get('ue_id')) {
             $groupes = $this->getDoctrine()->getRepository(Groupe::class)->findBy(["UE" => $request->request->get('ue_id')]);
@@ -824,13 +836,19 @@ class DevoirController extends Controller
      *
      * @param Devoir $devoir
      */
-    public
-    function depotAction(Request $request, Devoir $devoir)
+    public function depotAction(Request $request, Devoir $devoir)
     {
         // todo verifier la date d'upload si elle est valide
         // todo récupérer pour cela le groupe_devoir avec la date a rendre
 
         $file = $request->files->get("file");
+
+        $emails = $request->get("mails");
+
+        $emailsToSend = explode(",", $emails);
+
+        $user = $this->getUser();
+
 
         $extension = strtolower($file->getClientOriginalExtension());
         $allowed_extensions_raw = $devoir->getExtensions()->toArray();
@@ -872,13 +890,32 @@ class DevoirController extends Controller
         $groupeProjet->setFichier($fileName);
         $groupeProjet->setDate(new \DateTime());
 
+        $token = bin2hex(random_bytes(25));
+
+        $groupeProjet->setToken($token);
+
         $em = $this->getDoctrine()->getManager();
         $em->persist($groupeProjet);
         $em->flush();
 
+        foreach($emailsToSend as $dest) {
+            $message = (new \Swift_Message('[Dépôt de devoirs MIAGE] Un devoir est disponible pour consultation'))
+                ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs MIAGE'])
+                ->setTo($dest)
+                ->setBody(
+                    $this->renderView(
+                        'Emails/copie_devoir.html.twig',
+                        array(
+                            'user' => $user,
+                            'token' => $token,
+                        )
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($message);
+        }
+
         return new JsonResponse(array("status" => "ok"));
-
-
     }
 
     /**
@@ -888,8 +925,7 @@ class DevoirController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private
-    function createDeleteForm(Devoir $devoir)
+    private function createDeleteForm(Devoir $devoir)
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('delete_devoir', array('id' => $devoir->getId())))
@@ -897,8 +933,7 @@ class DevoirController extends Controller
             ->getForm();
     }
 
-    public
-    function downloadAction($filename)
+    public function downloadAction($filename)
     {
         $file = $this->getParameter('documents_devoirs_directory') . '/' . $filename;
 

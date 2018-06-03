@@ -30,4 +30,9 @@ mgilet_notifications:
     prefix: /notifications
     type: annotation
 
+view_by_token:
+    path: /devoir/view/{utoken}
+    defaults: { _controller: DepotBundle:Devoir:viewbytoken }
+    methods: GET
+
 

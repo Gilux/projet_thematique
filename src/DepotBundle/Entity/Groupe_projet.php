@@ -35,6 +35,11 @@ class Groupe_projet
     /**
      * @var string
      */
+    private $token;
+
+    /**
+     * @var string
+     */
     private $name;
 
     /**
@@ -271,7 +276,7 @@ class Groupe_projet
         $this->users_groupes_projets->removeElement($usersGroupesProjet);
     }
     /**
-     * @var \DepotBundle\Entity\Groupe_devoir
+     * @var \DepotBundle\Entity\Groupe_Devoir
      */
     private $groupe_devoir;
 
@@ -279,7 +284,7 @@ class Groupe_projet
     /**
      * Set groupeDevoir
      *
-     * @param \DepotBundle\Entity\Groupe_devoir $groupeDevoir
+     * @param \DepotBundle\Entity\Groupe_Devoir $groupeDevoir
      *
      * @return Groupe_projet
      */
@@ -293,10 +298,28 @@ class Groupe_projet
     /**
      * Get groupeDevoir
      *
-     * @return \DepotBundle\Entity\Groupe_devoir
+     * @return \DepotBundle\Entity\Groupe_Devoir
      */
     public function getGroupeDevoir()
     {
         return $this->groupe_devoir;
     }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+
 }

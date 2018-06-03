@@ -3,6 +3,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset("vendor/dropzone/dropzone.css") }}">
+    <link rel="stylesheet" href="{{ asset("vendor/multiple-emails/multiple-emails.css") }}">
 {% endblock %}
 
 {% block groupes %}
@@ -167,7 +168,12 @@
             {% elseif not in_groupe or not approbation %}
                 Vous n'avez pas rejoint de groupe ou vous n'avez pas obtenu l'approbation du chef de groupe
             {% else %}
-        <form class="dropzone" id="depot-devoir"></form>
+        <form id="depot-devoir" class="dropzone" action="{{ path("depot_devoir", {"devoir":devoir.id}) }}"></form>
+        <div class="form-group">
+            <label for="emails">Adress</label>
+            <input type="text" id="emails" name="emails">
+        </div>
+        <button id="depot-submit">Envoyer le devoir</button>
         {% endif %}
         </p>
     </div>
@@ -183,12 +189,29 @@
         {% endfor %}
     </script>
     <script src="{{ asset("vendor/dropzone/dropzone.js") }}"></script>
+    <script src="{{ asset("vendor/multiple-emails/multiple-emails.js") }}"></script>
     <script>
-        var drop = new Dropzone("#depot-devoir",
-            {
-                url: "{{ path('depot_devoir', {devoir: devoir.id}) }}",
-                maxFiles: 1,
+        Dropzone.options.depotDevoir = {
+            autoProcessQueue:false,
+            maxFiles:1,
+            sending: function(file, xhr, formData){
+                formData.append('mails', JSON.parse($('#emails').val()));
             }
-        );
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            $("#emails").multiple_emails({theme:"basic"});
+        })
+
+        $(function() {
+            $("#depot-submit").click(function(e) {
+                e.preventDefault();
+                console.log($('#emails').val())
+
+                document.querySelector("#depot-devoir").dropzone.processQueue();
+            })
+        })
+
+
     </script>
 {% endblock %}
