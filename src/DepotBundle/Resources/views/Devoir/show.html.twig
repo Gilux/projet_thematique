@@ -1,27 +1,27 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Devoir {{ devoir.titre }}{% endblock %}
+
 {% block javascripts %}
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
     <script>
-        $("form[id^='form_commentaire']").on('submit', function(){
+        $("form[id^='form_commentaire']").on('submit', function () {
             $(this).append("<input type='hidden' name='devoir' value='{{ devoir.id }}' />")
             var form = $(this).serializeArray();
 
-            for(var i = 0;i<form.length;i++)
-            {
-                if(form[i].value != "" && (form[i].name.startsWith("comment_nochild") || form[i].name.startsWith("comment_withchild")))
-                {
+            for (var i = 0; i < form.length; i++) {
+                if (form[i].value != "" && (form[i].name.startsWith("comment_nochild") || form[i].name.startsWith("comment_withchild"))) {
                     return true;
                 }
 
-                if(form[i].value == "")
+                if (form[i].value == "")
                     return false;
             }
         });
 
-        $("button[id^='commenter']").on("click", function(){
+        $("button[id^='commenter']").on("click", function () {
 
             $("button[id^='commenter']").each(function () {
                 $(this).show();
@@ -39,7 +39,9 @@
         <div class="row">
             <div class="col-xs-12">
                 <h1>Visualisation du devoir {{ devoir.titre }}</h1>
-                <h2><small>{{ devoir.user.firstName }} {{ devoir.user.lastName }} - {{ devoir.ue.nom }}</small></h2>
+                <h2>
+                    <small>{{ devoir.user.firstName }} {{ devoir.user.lastName }} - {{ devoir.ue.nom }}</small>
+                </h2>
             </div>
         </div>
 
@@ -54,7 +56,7 @@
 
                 <div class="item">
                     <h3>Description</h3>
-                    {{  devoir.intitule|raw }}
+                    {{ devoir.intitule|raw }}
                 </div>
                 {% block actions %}{% endblock %}
             </div>
@@ -64,68 +66,81 @@
                 {% block rendus %}{% endblock %} {# Liste des rendus de l'enseignant #}
 
                 {% if devoir.fichier is not null %}
-                <div class="item">
-                    <h3>Document fourni par l'enseignant</h3>
-                    <p>
-                        <a href="{{ path("download_file_devoir", {'filename': devoir.fichier} ) }}">
-                            Documents.zip
-                        </a>
-                    </p>
-                </div>
+                    <div class="item">
+                        <h3>Document fourni par l'enseignant</h3>
+                        <p>
+                            <a href="{{ path("download_file_devoir", {'filename': devoir.fichier} ) }}">
+                                Documents.zip
+                            </a>
+                        </p>
+                    </div>
                 {% endif %}
 
                 <div class="item">
                     <h3>Discussion autour du sujet</h3>
 
-                        {% if(devoir.commentaires|length != 0) %}
+                    {% if(devoir.commentaires|length != 0) %}
                         <ul class="media-list">
 
                             {% for c in devoir.commentaires %}
                                 {% if c.commentaireParent is null %}
-                                <li class="media">
-                                    <div class="media-left">
-                                        <a href="#">
-                                            <img class="media-object" src="http://via.placeholder.com/50x50" alt="avatar">
-                                        </a>
-                                    </div>
-                                    <div class="media-body">
-                                        <h4 class="media-heading"> {{ c.user.firstName }} {{ c.user.lastName }} <small>{{ c.date|date("d/m/Y H:i:s") }}</small></h4>
-                                        <p>{{ c.texte }}</p>
+                                    <li class="media">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img class="media-object" src="http://via.placeholder.com/50x50"
+                                                     alt="avatar">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h4 class="media-heading"> {{ c.user.firstName }} {{ c.user.lastName }}
+                                                <small>{{ c.date|date("d/m/Y H:i:s") }}</small>
+                                            </h4>
+                                            <p>{{ c.texte }}</p>
 
-                                        {% for cf in c.commentairesFils %}
-                                            <div class="media">
-                                                <div class="media-left">
-                                                    <a href="#">
-                                                        <img alt="64x64" class="media-object" data-src="holder.js/64x64" src="http://via.placeholder.com/50x50" data-holder-rendered="true">
-                                                    </a></div>
-                                                <div class="media-body">
-                                                    <h4 class="media-heading"> {{ cf.user.firstName }} {{ cf.user.lastName }} <small>{{ cf.date|date("d/m/Y H:i:s") }}</small></h4>
-                                                    <p>{{ cf.texte }}</p>
+                                            {% for cf in c.commentairesFils %}
+                                                <div class="media">
+                                                    <div class="media-left">
+                                                        <a href="#">
+                                                            <img alt="64x64" class="media-object"
+                                                                 data-src="holder.js/64x64"
+                                                                 src="http://via.placeholder.com/50x50"
+                                                                 data-holder-rendered="true">
+                                                        </a></div>
+                                                    <div class="media-body">
+                                                        <h4 class="media-heading"> {{ cf.user.firstName }} {{ cf.user.lastName }}
+                                                            <small>{{ cf.date|date("d/m/Y H:i:s") }}</small>
+                                                        </h4>
+                                                        <p>{{ cf.texte }}</p>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            <div id="block_rep[{{ loop.index }}]">
+                                                <button role="button" id="commenter[{{ loop.index }}]">Répondre</button>
+                                                <div id="block_commenter[{{ loop.index }}]" style="display: none">
+                                                    <form id="form_commentaire[{{ loop.index }}]"
+                                                          action="{{ (path('new_commentaire')) }}" method="POST">
+                                                        <textarea class="comment_nochild"
+                                                                  name="comment_nochild[{{ loop.index }}]"
+                                                                  style="width: 100%"></textarea>
+                                                        <input type="hidden" name="input[{{ loop.index }}]"
+                                                               value="{{ c.id }}"/>
+                                                        <input type="submit" class="btn btn-primary" id="_submit"
+                                                               name="_submit" value="Enregistrer"/>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        {% endfor %}
-                                        <div id="block_rep[{{ loop.index }}]">
-                                            <button role="button" id="commenter[{{ loop.index }}]">Répondre</button>
-                                            <div id="block_commenter[{{ loop.index }}]" style="display: none">
-                                                <form id="form_commentaire[{{ loop.index }}]" action="{{ (path('new_commentaire')) }}" method="POST">
-                                                    <textarea class="comment_nochild" name="comment_nochild[{{ loop.index }}]" style="width: 100%"></textarea>
-                                                    <input type="hidden" name="input[{{ loop.index }}]" value="{{ c.id }}" />
-                                                    <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />
-                                                </form>
-                                            </div>
                                         </div>
-                                    </div>
-                                </li>
+                                    </li>
                                 {% endif %}
                             {% endfor %}
                         </ul>
-                            {% else %}
-                            <p>Aucun commentaire pour le moment.</p>
-                        {% endif %}
+                    {% else %}
+                        <p>Aucun commentaire pour le moment.</p>
+                    {% endif %}
                     <form id="form_commentaire" action="{{ (path('new_commentaire')) }}" method="POST">
 
                         <textarea id="comment_withchild" name="comment_withchild" style="width: 100%"></textarea>
-                        <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer" />
+                        <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer"/>
 
                     </form>
                 </div>

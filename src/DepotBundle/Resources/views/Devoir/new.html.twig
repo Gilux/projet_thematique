@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
 {% endblock %}
 
+{% block title %}Nouveau devoir{% endblock %}
+
 {% block javascripts %}
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -11,21 +13,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <script src="{{ asset("vendor/ckeditor/ckeditor.js") }}"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function(e){
-            CKEDITOR.replace( "{{ add_form.intitule.vars.id }}" )
+        document.addEventListener("DOMContentLoaded", function (e) {
+            CKEDITOR.replace("{{ add_form.intitule.vars.id }}")
         });
 
         $("#{{ add_form.UE.vars.id }}").on("change", function () {
             $.ajax({
-                url:'{{ (path('get_groupe')) }}',
+                url: '{{ (path('get_groupe')) }}',
                 type: "POST",
                 dataType: "text",
                 data: {
                     "ue_id": $("#{{ add_form.UE.vars.id }}").val()
                 },
                 async: true,
-                success: function (data)
-                {
+                success: function (data) {
                     $("#bloc_groupes").html(data);
                 }
             });
@@ -35,13 +36,11 @@
 
         $("#{{ add_form.extensions.vars.id }}").select2({width: '100%'});
 
-        $("#{{ add_form.if_groupes.vars.id }}").on("change", function(){
-            if($(this).is(":checked"))
-            {
+        $("#{{ add_form.if_groupes.vars.id }}").on("change", function () {
+            if ($(this).is(":checked")) {
                 $("#bloc_nb_etudiant").show();
             }
-            else
-            {
+            else {
                 $("#{{ add_form.nb_min_etudiant.vars.id }}").val(1);
                 $("#{{ add_form.nb_max_etudiant.vars.id }}").val(1);
                 $("#bloc_nb_etudiant").hide();
@@ -55,111 +54,113 @@
 
 {% block main %}
     <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <h1>Créer un nouveau devoir</h1>
-                </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Créer un nouveau devoir</h1>
             </div>
+        </div>
 
-            {{ form_start(add_form) }}
+        {{ form_start(add_form) }}
 
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="item">
-                        <h3>Informations générales du devoir</h3>
-                        <div class="form-group">
-                            {{ form_row(add_form.titre) }}
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="item">
+                    <h3>Informations générales du devoir</h3>
+                    <div class="form-group">
+                        {{ form_row(add_form.titre) }}
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                {{ form_row(add_form.if_groupes) }}
+                            </label>
                         </div>
-
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    {{ form_row(add_form.if_groupes) }}
-                                </label>
-                            </div>
-                        </div>
+                    </div>
 
 
-                        <div class="form-group" id="bloc_nb_etudiant">
-                            <div class="row">
-                                <span class="col-md-3 control-label">Configuration des groupes</span>
-                                <div class="col-md-9">
-                                    <div class="form-group row">
-                                        <label for="inputValue" class="col-md-1 control-label">{{ form_label(add_form.nb_min_etudiant) }}</label>
-                                        <div class="col-md-2">
-                                            {{ form_widget(add_form.nb_min_etudiant) }}
-                                        </div>
-                                        <label for="inputValue" class="col-md-1 control-label">{{ form_label(add_form.nb_max_etudiant) }}</label>
-                                        <div class="col-md-2">
-                                            {{ form_widget(add_form.nb_max_etudiant) }}
-                                        </div>
+                    <div class="form-group" id="bloc_nb_etudiant">
+                        <div class="row">
+                            <span class="col-md-3 control-label">Configuration des groupes</span>
+                            <div class="col-md-9">
+                                <div class="form-group row">
+                                    <label for="inputValue"
+                                           class="col-md-1 control-label">{{ form_label(add_form.nb_min_etudiant) }}</label>
+                                    <div class="col-md-2">
+                                        {{ form_widget(add_form.nb_min_etudiant) }}
+                                    </div>
+                                    <label for="inputValue"
+                                           class="col-md-1 control-label">{{ form_label(add_form.nb_max_etudiant) }}</label>
+                                    <div class="col-md-2">
+                                        {{ form_widget(add_form.nb_max_etudiant) }}
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
                     </div>
+
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-xs-5 col-left">
-                    <div class="item">
-                        <h3>Groupes d'étudiants concernés et rendus</h3>
-                        <div class="form-group">
-                            {{ form_row(add_form.UE) }}
-                        </div>
+        <div class="row">
+            <div class="col-xs-5 col-left">
+                <div class="item">
+                    <h3>Groupes d'étudiants concernés et rendus</h3>
+                    <div class="form-group">
+                        {{ form_row(add_form.UE) }}
+                    </div>
 
-                        <div class="form-group" id="bloc_groupes">
+                    <div class="form-group" id="bloc_groupes">
 
-                        </div>
+                    </div>
 
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    {{ form_row(add_form.date_bloquante) }}
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    {{ form_row(add_form.extensions) }}
-                                </label>
-                            </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                {{ form_row(add_form.date_bloquante) }}
+                            </label>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-xs-7 col-right">
-                    <div class="item">
-                        <h3>Description</h3>
-                        <div class="form-group">
-                            {{ form_widget(add_form.intitule) }}
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                {{ form_row(add_form.extensions) }}
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-xs-12 col-left">
-                    <div class="item">
-                        <h3>Consignes et documents</h3>
-                        {{ form_row(add_form.fichier) }}
-
+            <div class="col-xs-7 col-right">
+                <div class="item">
+                    <h3>Description</h3>
+                    <div class="form-group">
+                        {{ form_widget(add_form.intitule) }}
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    {{ form_widget(add_form.save, { 'attr': {'class': 'pull-right'} }) }}
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-left">
+                <div class="item">
+                    <h3>Consignes et documents</h3>
+                    {{ form_row(add_form.fichier) }}
+
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_widget(add_form.save, { 'attr': {'class': 'pull-right'} }) }}
+            </div>
+        </div>
 
 
-            {{ form_end(add_form) }}
+        {{ form_end(add_form) }}
 
     </div>
 
