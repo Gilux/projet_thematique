@@ -85,8 +85,10 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if gp.diff is defined %}
-                                {{ gp.diff|date("%a jours, %h heures, %i minutes") }}
+                            {% if gp.diff is defined  and gp.diff < "now" %}
+                               - {{ gp.diff|date("%a jours, %h heures, %i minutes") }}
+                            {% else %}
+                                A l'heure
                             {% endif %}
                         </td>
                         <td>{% if gp.filename is defined %}

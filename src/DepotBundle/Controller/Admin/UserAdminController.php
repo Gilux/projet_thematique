@@ -30,8 +30,7 @@ class UserAdminController extends Controller
             $em->flush();
 
             $this->addFlash("success", "L'utilisateur a été supprimé avec succès.");
-        } catch(\Doctrine\DBAL\DBALException $e)
-        {
+        } catch (\Doctrine\DBAL\DBALException $e) {
             $this->addFlash("error", "Impossible de supprimer cette utilisateur car il est lié à d'autres composants.");
         }
 
@@ -41,20 +40,24 @@ class UserAdminController extends Controller
 
     public function sendCredentials(User $user, $randomPassword)
     {
-        $message = (new \Swift_Message('[MIAGE] Vos identifiants du dépôt de devoirs en ligne'))
-            ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
-            ->setTo($user->getEmail())
-            ->setBody(
-                $this->renderView(
-                    'Emails/registration.html.twig',
-                    array('first_name' => $user->getFirstName(), 'last_name' => $user->getLastName(), 'credentials' => [
-                        'login' => $user->getEmail(),
-                        'first_password' => $randomPassword
-                    ])
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+        try {
+            $message = (new \Swift_Message('[MIAGE] Vos identifiants du dépôt de devoirs en ligne'))
+                ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'Emails/registration.html.twig',
+                        array('first_name' => $user->getFirstName(), 'last_name' => $user->getLastName(), 'credentials' => [
+                            'login' => $user->getEmail(),
+                            'first_password' => $randomPassword
+                        ])
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($message);
+        } catch (\Exception $e) {
+            $this->addFlash("error", "Une erreur est survenue.");
+        }
     }
 
     public function validateAccountAction(Request $request, User $user)
@@ -82,7 +85,7 @@ class UserAdminController extends Controller
 
     public function editAction(Request $request, User $user)
     {
-        $form = $this->get('form.factory')->create(UserEditType::class, $user, ["user"=>$user]);
+        $form = $this->get('form.factory')->create(UserEditType::class, $user, ["user" => $user]);
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -107,7 +110,7 @@ class UserAdminController extends Controller
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
             $if_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(["email" => $user->getEmail()]);
-            if(count($if_exist) == 0) {
+            if (count($if_exist) == 0) {
                 $user->setUsername($user->getEmail());
                 $randomFirstPassword = uniqid();
 
@@ -122,8 +125,7 @@ class UserAdminController extends Controller
                 $request->getSession()->getFlashBag()->add('notice', 'Utilisateur bien enregistré.');
 
                 return $this->redirectToRoute('users_admin');
-            }
-            else{
+            } else {
                 $this->addFlash("error", "Un utilisateur avec la même adresse email existe déjà.");
                 return $this->render('DepotBundle:Admin/Users:new.html.twig', array(
                     'form' => $form->createView(),

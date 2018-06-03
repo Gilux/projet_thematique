@@ -2,36 +2,39 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 {% endblock %}
 
 {% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         var users = $('#users').DataTable();
 
         yadcf.init(users, [
-            {column_number : 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
+            {column_number: 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
         ]);
 
         {% if users_pending is not empty %}
-            var v_users = $('#v_users').DataTable();
+        var v_users = $('#v_users').DataTable();
 
-            yadcf.init(v_users, [
-                {column_number : 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
-            ]);
+        yadcf.init(v_users, [
+            {column_number: 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
+        ]);
         {% endif %}
         $(".yadcf-filter-wrapper").attr("style", "color:black");
 
         {% for message in app.flashes('success') %}
-            toastr.success("{{ message }}", "Succès");
+        toastr.success("{{ message }}", "Succès");
         {% endfor %}
         {% for message in app.flashes('error') %}
-            toastr.error("{{ message }}", "Une erreur s'est produite");
+        toastr.error("{{ message }}", "Une erreur s'est produite");
         {% endfor %}
 
     </script>
@@ -45,55 +48,51 @@
             </div>
         </div>
         {% if users_pending is not empty %}
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="item">
-                        <h3>Liste des utilisateurs en attente de modération</h3>
-                        <table id="v_users">
-                            <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Adresse e-mail</th>
-                                <th>Rôle</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
+            <div class="item">
+                <h3>Liste des utilisateurs en attente de modération</h3>
+                <table id="v_users">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Adresse e-mail</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
 
-                            <tbody>
-                            {% for u in users_pending %}
-                                <tr>
-                                    <td>{{ u.lastName }}</td>
-                                    <td>{{ u.firstName }}</td>
-                                    <td>{{ u.email }}</td>
-                                    <td>
-                                        {% if "ROLE_ADMIN" in u.roles %}
-                                            Administrateur
-                                        {% elseif "ROLE_ETUDIANT" in u.roles %}
-                                            Étudiant
-                                        {% elseif "ROLE_ENSEIGNANT" in u.roles %}
-                                            Enseignant
-                                        {% else %}
-                                            Non défini
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
-                                        /
-                                        <a href="{{ path("users_admin_delete", {id:u.id}) }}">
-                                            Supprimer
-                                        </a>
-                                        {% if u.lastLogin == null and not u.enabled %}
-                                            / <a href="{{ path("users_admin_validate_account", {id:u.id}) }}">Valider le
-                                            compte</a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                    <tbody>
+                    {% for u in users_pending %}
+                        <tr>
+                            <td>{{ u.lastName }}</td>
+                            <td>{{ u.firstName }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                {% if "ROLE_ADMIN" in u.roles %}
+                                    Administrateur
+                                {% elseif "ROLE_ETUDIANT" in u.roles %}
+                                    Étudiant
+                                {% elseif "ROLE_ENSEIGNANT" in u.roles %}
+                                    Enseignant
+                                {% else %}
+                                    Non défini
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path("users_admin_edit", {id:u.id}) }}">Modifier</a>
+                                /
+                                <a href="{{ path("users_admin_delete", {id:u.id}) }}">
+                                    Supprimer
+                                </a>
+                                {% if u.lastLogin == null and not u.enabled %}
+                                    / <a href="{{ path("users_admin_validate_account", {id:u.id}) }}">Valider le
+                                    compte</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
         {% endif %}
 

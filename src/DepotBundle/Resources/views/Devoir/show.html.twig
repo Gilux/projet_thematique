@@ -8,9 +8,7 @@
             crossorigin="anonymous"></script>
     <script>
         $("form[id^='form_commentaire']").on('submit', function () {
-            $(this).append("<input type='hidden' name='devoir' value='{{ devoir.id }}' />")
             var form = $(this).serializeArray();
-
             for (var i = 0; i < form.length; i++) {
                 if (form[i].value != "" && (form[i].name.startsWith("comment_nochild") || form[i].name.startsWith("comment_withchild"))) {
                     return true;
@@ -119,6 +117,7 @@
                                                 <div id="block_commenter[{{ loop.index }}]" style="display: none">
                                                     <form id="form_commentaire[{{ loop.index }}]"
                                                           action="{{ (path('new_commentaire')) }}" method="POST">
+                                                        <input type="hidden" name="devoir" value="{{ devoir.id }}"/>
                                                         <textarea class="comment_nochild"
                                                                   name="comment_nochild[{{ loop.index }}]"
                                                                   style="width: 100%"></textarea>
@@ -140,6 +139,7 @@
                     <form id="form_commentaire" action="{{ (path('new_commentaire')) }}" method="POST">
 
                         <textarea id="comment_withchild" name="comment_withchild" style="width: 100%"></textarea>
+                        <input type="hidden" name="devoir" value="{{ devoir.id }}"/>
                         <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="Enregistrer"/>
 
                     </form>

@@ -1,10 +1,10 @@
-<table>
+<table id="liste_devoirs">
     <thead>
     <tr>
         <th>UE</th>
         <th>Enseignant</th>
-        <th>Nom du devoir</th>
         <th>Groupe</th>
+        <th>Nom du devoir</th>
         <th>Date de rendu</th>
         <th>Statut</th>
         <th>Rendus d'étudiants</th>
@@ -22,12 +22,10 @@
                 {{ dat.devoir.user.firstName }} {{ dat.devoir.user.lastName }}
             </td>
             <td>
-                {{ dat.devoir.titre }}
+                {{ dat.groupe.name }}
             </td>
             <td>
-                {% for groupe in dat.groupe %}
-                    Groupe {{ groupe.name }}
-                {% endfor %}
+                {{ dat.devoir.titre }}
             </td>
             <td>
                 {{ dat.date_rendu|date("d/m/Y H:i") }}

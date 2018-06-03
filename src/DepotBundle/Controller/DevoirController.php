@@ -10,6 +10,7 @@ use DepotBundle\Entity\Groupe_projet;
 use DepotBundle\Entity\UserGroupeProjet;
 use Mgilet\NotificationBundle\Entity\Notification;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -182,9 +183,9 @@ class DevoirController extends Controller
 
     public function sendNotification(User $user, Groupe_Devoir $groupeDevoir)
     {
-        $ueName = $groupeDevoir->getGroupe()->getUE();
-        $groupeName = $groupeDevoir->getGroupe()->getName();
         try {
+            $ueName = $groupeDevoir->getGroupe()->getUE();
+            $groupeName = $groupeDevoir->getGroupe()->getName();
             $message = (new \Swift_Message('[MIAGE] Vous avez un nouveau devoir concernant : ' . $ueName . '/' . $groupeName . ''))
                 ->setFrom([$this->getParameter('mailer_user') => 'Dépôt de devoirs'])
                 ->setTo($user->getEmail())
@@ -206,18 +207,18 @@ class DevoirController extends Controller
                     'text/html'
                 );
             $this->get('mailer')->send($message);
-        } catch (\Exception $e) {
+            //notifications
+            $manager = $this->get('mgilet.notification');
+            $notif = $manager->createNotification('Nouveau devoir');
+            $notif->setMessage($ueName . '/' . $groupeName . ' : ' . $groupeDevoir->getDevoir()->getTitre() . '');
+            $notif->setLink('http://symfony.com/');
+            $manager->addNotification(array($user), $notif, true);
+        } catch (\Swift_TransportException $e) {
+            $this->addFlash("error", "L'email n'a pas pu être envoyé.");
+        } catch (FatalErrorException $e) {
             $this->addFlash("error", "Une erreur est survenue.");
+
         }
-
-        //notifications
-        $manager = $this->get('mgilet.notification');
-        $notif = $manager->createNotification('Nouveau devoir');
-        $notif->setMessage($ueName . '/' . $groupeName . ' : ' . $groupeDevoir->getDevoir()->getTitre() . '');
-        $notif->setLink('http://symfony.com/');
-        $manager->addNotification(array($user), $notif, true);
-
-
     }
 
     public
@@ -273,7 +274,7 @@ class DevoirController extends Controller
                             //Créer les groupe_projets
                             foreach ($groupe[0]->getUsers()->getValues() as $user) {
                                 $groupe_projet = new Groupe_projet();
-                                $groupe_projet->setDevoir($devoir);
+                                $groupe_projet->setDevoir($devoir);;
                                 $groupe_projet->setName($user->getLastName());
                                 $groupe_projet->setGroupe($groupe[0]);
                                 $groupe_projet->setGroupeDevoir($groupe_devoir);
@@ -287,6 +288,7 @@ class DevoirController extends Controller
                                 $em->persist($user_groupe_projet);
                             }
                         }
+
 
                         //récupérer les données des utilisateurs de tous les groupes set une notification + envoyer un mail
                         foreach ($groupe[0]->getUsers()->getValues() as $user) {

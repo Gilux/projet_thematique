@@ -84,6 +84,7 @@ fos_user:
                 sender_name: "%mailer_user%"
 
 swiftmailer:
+    spool: { type: file }
     transport: '%mailer_transport%'
     host:      '%mailer_host%'
     username:  '%mailer_user%'

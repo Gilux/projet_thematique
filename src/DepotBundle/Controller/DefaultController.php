@@ -32,7 +32,6 @@ class DefaultController extends Controller
                 $gpRepo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet");
 
                 $devoir = $gd->getDevoir();
-                $groupes_rendus = $gpRepo->findByDevoir($devoir);
 
                 $users_status = $this->getUsersStatusInDevoir($devoir);
                 $devoir->users_status = $users_status;
@@ -40,7 +39,7 @@ class DefaultController extends Controller
                 $gp = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoirAndUser($devoir, $user);
                 $data[] = [
                     "devoir" => $devoir,
-                    "groupe" => $groupes_rendus,
+                    "groupe" => $g,
                     "date_rendu" => $gd->getDateARendre(),
                     "date_rendu_file" => $gp ? $gp->getDate() : false,
                 ];
@@ -111,6 +110,17 @@ class DefaultController extends Controller
                 $devoir->users_status = $users_status;
                 $devoir->nombre_rendus = 0;
                 $devoir->nombre_groupes_projet = 0;
+
+                foreach ($devoir->getGroupeDevoir() as $groupe_devoir) {
+                    $dates_a_rendre[] = $groupe_devoir->getDateARendre();
+                }
+                if (count($dates_a_rendre) >= 2) {
+                    $devoir->min_date_a_rendre = min($dates_a_rendre);
+                    $devoir->max_date_a_rendre = max($dates_a_rendre);
+                } else {
+                    $devoir->unique_date_a_rendre = $dates_a_rendre[0];
+                }
+
                 //pour chaque devoir compter le nombre de rendus
                 $gps = $repo_groupe_projet->findByDevoir($devoir);
                 foreach ($gps as $gp) {
@@ -118,21 +128,6 @@ class DefaultController extends Controller
                         $devoir->nombre_rendus++;
                     }
                     $devoir->nombre_groupes_projet++;
-
-                    $groupe = $gp->getGroupe();
-
-                    //avec le $devoir et le $groupe get le groupe devoir
-                    $groupes_devoir = $repo_groupe_devoir->findBy(['devoir' => $devoir, 'groupe' => $groupe]);
-
-                    foreach ($groupes_devoir as $groupe_devoir) {
-                        $dates_a_rendre[] = $groupe_devoir->getDateARendre();
-                    }
-                    if (count($dates_a_rendre) >= 2) {
-                        $devoir->min_date_a_rendre = min($dates_a_rendre);
-                        $devoir->max_date_a_rendre = max($dates_a_rendre);
-                    } else {
-                        $devoir->unique_date_a_rendre = $dates_a_rendre[0];
-                    }
                 }
                 $data[] = $devoir;
             }

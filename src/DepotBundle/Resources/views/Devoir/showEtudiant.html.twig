@@ -10,8 +10,7 @@
     <div class="col-xs-12">
         <div class="item">
             <h3>Choisir un groupe de projet</h3>
-            <p>Vous n'avez pas encore choisi votre groupe de projet. Veuillez vous positionner dans un groupe ouvert, ou
-                en créer un nouveau.<br>
+            <p>
                 Ce devoir étant ouvert à {{ groupe_devoir.groupe.users|length }} étudiants en groupes de
                 <strong>{{ groupe_devoir.nbMinEtudiant }}</strong> à <strong>{{ groupe_devoir.nbMaxEtudiant }}</strong>,
                 de {{ minmax_groups.min }} à {{ minmax_groups.max }} groupes sont ouverts.
@@ -34,7 +33,7 @@
                                         {% set leader = true %}
                                     {% endif %}
                                 {% endif %}
-                                <li>{{ ugp.user.username }}
+                                <li>{{ ugp.user.firstname }} {{ ugp.user.lastname }}
                                     {% if ugp.status == 0 %}
                                         <i>(en attente d'approbation)</i>
                                         {% if leader %}
@@ -93,15 +92,6 @@
                 {% endif %}
             </div>
         </div>
-    </div>
-{% endblock %}
-
-{% block groupechoisi %}
-    <div class="item">
-        <h3>Votre groupe de projet</h3>
-        <p>
-            {#todo écrire quoi ?#}
-        </p>
     </div>
 {% endblock %}
 
@@ -170,7 +160,7 @@
             {% else %}
         <form id="depot-devoir" class="dropzone" action="{{ path("depot_devoir", {"devoir":devoir.id}) }}"></form>
         <div class="form-group">
-            <label for="emails">Adress</label>
+            <label for="emails">E-mails en copie</label>
             <input type="text" id="emails" name="emails">
         </div>
         <button id="depot-submit">Envoyer le devoir</button>

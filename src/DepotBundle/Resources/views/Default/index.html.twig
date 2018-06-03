@@ -2,33 +2,58 @@
 
 {% block title %}Affichage des devoirs{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+{% endblock %}
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        var liste_devoirs = $('#liste_devoirs').DataTable();
+
+        yadcf.init(liste_devoirs);
+
+        $(".yadcf-filter-wrapper").attr("style", "color:black");
+
+        {% for message in app.flashes('success') %}
+        toastr.success("{{ message }}", "Succès");
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+        toastr.error("{{ message }}", "Une erreur s'est produite");
+        {% endfor %}
+
+    </script>
+{% endblock %}
+
 {% block main %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <h1>Affichage des devoirs </h1>
                 {% if "ROLE_ENSEIGNANT" in app.user.roles %}
-                <h2>
-                    <small>
-                        {% for ue in app.user.ues %}
-                            {{ ue.code ~ '-' ~ ue.nom }}<br/>
-                        {% endfor %}
-                    </small>
-                </h2>
+                    <h2>
+                        <small>
+                            {% for ue in app.user.ues %}
+                                {{ ue.code ~ '-' ~ ue.nom }}<br/>
+                            {% endfor %}
+                        </small>
+                    </h2>
                 {% endif %}
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="item">
-                    {% if "ROLE_ENSEIGNANT" in app.user.roles %}
-                        {% include "DepotBundle:Partials/Default:liste_enseignant.html.twig" with {'data': data} %}
-                    {% else %}
-                        {% include "DepotBundle:Partials/Default:liste_etudiant.html.twig" with {'data': data} %}
-                    {% endif %}
-                </div>
-            </div>
+        <div class="item">
+            {% if "ROLE_ENSEIGNANT" in app.user.roles %}
+                {% include "DepotBundle:Partials/Default:liste_enseignant.html.twig" with {'data': data} %}
+            {% else %}
+                {% include "DepotBundle:Partials/Default:liste_etudiant.html.twig" with {'data': data} %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}
