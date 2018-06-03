@@ -57,7 +57,8 @@ class DefaultController extends Controller
 
         $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir")->findByDevoir($devoir);
 
-        $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir");
+        $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:UserGroupeProjet");
+
         $users_in_project = [];
         $users_not_in_groupe_projet = [];
         $users_render = 0;
