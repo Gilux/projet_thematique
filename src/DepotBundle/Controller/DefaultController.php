@@ -75,7 +75,7 @@ class DefaultController extends Controller
                     $usr = $ugp_repo->findBy(["groupe_projet" => $gp, "user" => $user]);
 
                     if ($usr) {
-                        $users_in_project[] = $usr;
+                        $users_in_project[] = $user;
                         $flag = true;
 
                         if ($gp->getFichier() != '') {
