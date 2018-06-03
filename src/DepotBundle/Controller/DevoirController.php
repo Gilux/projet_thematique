@@ -108,7 +108,7 @@ class DevoirController extends Controller
 
         $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir")->findByDevoir($devoir);
 
-        $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_devoir");
+        $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:UserGroupeProjet");
         $users_in_project = [];
         $users_not_in_groupe_projet = [];
 
@@ -124,7 +124,7 @@ class DevoirController extends Controller
                     $usr = $ugp_repo->findBy(["groupe_projet" => $gp, "user" => $user]);
 
                     if ($usr) {
-                        $users_in_project[] = $usr;
+                        $users_in_project[] = $user;
                         $flag = true;
                     }
                 }
