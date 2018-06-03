@@ -2,36 +2,6 @@
 
 {% block title %}Devoir {{ devoir.titre }}{% endblock %}
 
-{% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-            crossorigin="anonymous"></script>
-    <script>
-        $("form[id^='form_commentaire']").on('submit', function () {
-            var form = $(this).serializeArray();
-            for (var i = 0; i < form.length; i++) {
-                if (form[i].value != "" && (form[i].name.startsWith("comment_nochild") || form[i].name.startsWith("comment_withchild"))) {
-                    return true;
-                }
-
-                if (form[i].value == "")
-                    return false;
-            }
-        });
-
-        $("button[id^='commenter']").on("click", function () {
-
-            $("button[id^='commenter']").each(function () {
-                $(this).show();
-                $(this).parent().find("div").hide()
-            });
-
-            $(this).parent().find("div").show()
-            $(this).hide();
-        })
-    </script>
-{% endblock %}
-
 {% block main %}
     <div class="container">
         <div class="row">
