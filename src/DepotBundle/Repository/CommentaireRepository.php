@@ -2,6 +2,8 @@
 
 namespace DepotBundle\Repository;
 
+use DepotBundle\Entity\Devoir;
+
 /**
  * CommentaireRepository
  *
@@ -10,4 +12,13 @@ namespace DepotBundle\Repository;
  */
 class CommentaireRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getCommentaireParentNotNull(Devoir $devoir)
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->where('c.commentaire_parent is not null AND c.devoir = :devoir')
+        ->setParameter('devoir', $devoir);
+
+        return $qb->getQuery()
+            ->getResult();
+    }
 }
