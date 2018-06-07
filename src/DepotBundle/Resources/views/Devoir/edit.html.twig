@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
 {% endblock %}
 
+{% block title %}Editer un devoir{% endblock %}
+
 {% block javascripts %}
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -11,21 +13,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <script src="{{ asset("vendor/ckeditor/ckeditor.js") }}"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function(e){
-            CKEDITOR.replace( "{{ edit_form.intitule.vars.id }}" )
+        document.addEventListener("DOMContentLoaded", function (e) {
+            CKEDITOR.replace("{{ edit_form.intitule.vars.id }}")
         });
 
         $("#{{ edit_form.UE.vars.id }}").on("change", function () {
             var groupes = [];
             var groupes_checked = [];
             {% if groupes is defined %}
-                {% for groupe in groupes %}
-                    groupes.push({"groupe": {{ groupe["groupe"].id }}, "date": "{{ groupe["date_a_rendre"] }}"});
-                {% endfor %}
+            {% for groupe in groupes %}
+            groupes.push({"groupe": {{ groupe["groupe"].id }}, "date": "{{ groupe["date_a_rendre"] }}"});
+            {% endfor %}
             {% endif %}
 
             $.ajax({
-                url:'{{ (path('get_groupe')) }}',
+                url: '{{ (path('get_groupe')) }}',
                 type: "POST",
                 dataType: "html",
                 data: {
@@ -33,12 +35,11 @@
                     "groupes_checked": groupes
                 },
                 async: true,
-                success: function (data)
-                {
+                success: function (data) {
                     $("#bloc_groupes").html("");
                     $("#bloc_groupes").append(data);
                     {% if errors is defined %}
-                        $("#bloc_groupes").append("{{ errors.groupes_error }}");
+                    $("#bloc_groupes").append("{{ errors.groupes_error }}");
                     {% endif %}
                 }
             });
@@ -48,13 +49,11 @@
 
         $("#{{ edit_form.extensions.vars.id }}").select2({width: '100%'});
 
-        $("#{{ edit_form.if_groupes.vars.id }}").on("change", function(){
-            if($(this).is(":checked"))
-            {
+        $("#{{ edit_form.if_groupes.vars.id }}").on("change", function () {
+            if ($(this).is(":checked")) {
                 $("#bloc_nb_etudiant").show();
             }
-            else
-            {
+            else {
                 $("#{{ edit_form.nb_min_etudiant.vars.id }}").val(1);
                 $("#{{ edit_form.nb_max_etudiant.vars.id }}").val(1);
                 $("#bloc_nb_etudiant").hide();
@@ -64,10 +63,10 @@
         $("#{{ edit_form.if_groupes.vars.id }}").trigger("change");
 
         {% if edit_form.fichier.vars.data.filename is defined %}
-            $("#{{ edit_form.conserve_file.vars.id }}").parent().show();
+        $("#{{ edit_form.conserve_file.vars.id }}").parent().show();
         {% else %}
-            $("#{{ edit_form.conserve_file.vars.id }}").prop("checked", false);
-            $("#{{ edit_form.conserve_file.vars.id }}").parent().hide();
+        $("#{{ edit_form.conserve_file.vars.id }}").prop("checked", false);
+        $("#{{ edit_form.conserve_file.vars.id }}").parent().hide();
         {% endif %}
 
     </script>
@@ -105,11 +104,13 @@
                             <span class="col-md-3 control-label">Configuration des groupes</span>
                             <div class="col-md-9">
                                 <div class="form-group row">
-                                    <label for="inputValue" class="col-md-1 control-label">{{ form_label(edit_form.nb_min_etudiant) }}</label>
+                                    <label for="inputValue"
+                                           class="col-md-1 control-label">{{ form_label(edit_form.nb_min_etudiant) }}</label>
                                     <div class="col-md-2">
                                         {{ form_widget(edit_form.nb_min_etudiant) }}
                                     </div>
-                                    <label for="inputValue" class="col-md-1 control-label">{{ form_label(edit_form.nb_max_etudiant) }}</label>
+                                    <label for="inputValue"
+                                           class="col-md-1 control-label">{{ form_label(edit_form.nb_max_etudiant) }}</label>
                                     <div class="col-md-2">
                                         {{ form_widget(edit_form.nb_max_etudiant) }}
                                     </div>
@@ -184,14 +185,12 @@
         <div class="row">
             <div class="col-xs-12">
                 {{ form_widget(edit_form.save, { 'attr': {'class': 'pull-right'} }) }}
-        {{ form_end(edit_form) }}
-        {{ form_start(delete_form, { 'attr': {'class': 'pull-right'} }) }}
+                {{ form_end(edit_form) }}
+                {{ form_start(delete_form, { 'attr': {'class': 'pull-right'} }) }}
                 <button class="btn pull-right" style="margin-right: 15px" type="submit">Supprimer</button>
-        {{ form_end(delete_form) }}
+                {{ form_end(delete_form) }}
             </div>
         </div>
-
-
 
 
     </div>

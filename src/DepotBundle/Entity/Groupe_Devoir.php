@@ -207,11 +207,11 @@ class Groupe_Devoir
     /**
      * Set groupesProjets
      *
-     * @param \DepotBundle\Entity\Groupe_Projet $groupesProjets
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjets
      *
      * @return Groupe_Devoir
      */
-    public function setGroupesProjets(\DepotBundle\Entity\Groupe_Projet $groupesProjets = null)
+    public function setGroupesProjets(\DepotBundle\Entity\Groupe_projet $groupesProjets = null)
     {
         $this->groupes_projets = $groupesProjets;
 
@@ -221,7 +221,7 @@ class Groupe_Devoir
     /**
      * Get groupesProjets
      *
-     * @return \DepotBundle\Entity\Groupe_Projet
+     * @return \DepotBundle\Entity\Groupe_projet
      */
     public function getGroupesProjets()
     {
@@ -238,11 +238,11 @@ class Groupe_Devoir
     /**
      * Add groupesProjet
      *
-     * @param \DepotBundle\Entity\Groupe_Projet $groupesProjet
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
      *
      * @return Groupe_Devoir
      */
-    public function addGroupesProjet(\DepotBundle\Entity\Groupe_Projet $groupesProjet)
+    public function addGroupesProjet(\DepotBundle\Entity\Groupe_projet $groupesProjet)
     {
         $this->groupes_projets[] = $groupesProjet;
 
@@ -252,9 +252,9 @@ class Groupe_Devoir
     /**
      * Remove groupesProjet
      *
-     * @param \DepotBundle\Entity\Groupe_Projet $groupesProjet
+     * @param \DepotBundle\Entity\Groupe_projet $groupesProjet
      */
-    public function removeGroupesProjet(\DepotBundle\Entity\Groupe_Projet $groupesProjet)
+    public function removeGroupesProjet(\DepotBundle\Entity\Groupe_projet $groupesProjet)
     {
         $this->groupes_projets->removeElement($groupesProjet);
     }

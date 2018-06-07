@@ -34,6 +34,7 @@ class UEController extends Controller
         return $this->render('DepotBundle:Admin\UE:edit.html.twig', array(
             'ue' => $ue,
             'edit_form' => $editForm->createView(),
+            'groupes' => $ue->getGroupes(),
         ));
     }
 
@@ -47,7 +48,7 @@ class UEController extends Controller
             $em->persist($ue);
             $em->flush();
 
-            return $this->redirectToRoute('ue_list');
+            return $this->redirectToRoute('ue_edit', ["id"=>$ue->getId()]);
         }
 
         return $this->render('DepotBundle:Admin\UE:add.html.twig', array(

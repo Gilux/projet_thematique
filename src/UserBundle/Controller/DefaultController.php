@@ -18,7 +18,7 @@ class DefaultController extends Controller
             return $this->redirectToRoute("depot_homepage");
         }
         else {
-            return $this->render('UserBundle:Default:index.html.twig');
+            return $this->redirectToRoute("fos_user_security_login");
         }
     }
 }

@@ -14,12 +14,17 @@ DepotBundle\Entity\Groupe_projet:
             length: 60
         fichier:
             type: string
-            length: 60
+            length: 200
             nullable: true
         filename:
             type: string
-            length: 60
+            length: 200
             nullable: true
+        token:
+            type: string
+            length: 200
+            nullable: true
+
         date:
             type: datetime
             nullable: true

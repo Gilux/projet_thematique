@@ -39,7 +39,6 @@ class CommentaireController extends Controller
             // Assigner le commentaire parent à NULL
             $commentaire_parent = null;
         }
-
         $devoir = $this->getDoctrine()->getRepository("DepotBundle:Devoir")->find($data["devoir"]);
 
         $commentaire = new Commentaire();

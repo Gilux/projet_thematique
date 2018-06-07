@@ -29,6 +29,10 @@
         <a href="{{ path('fos_user_resetting_request') }}">{{ 'resetting.reset.submit'|trans }}</a>
     </div>
 
+    <div class="form-group">
+        Vous êtes un enseignant ?
+        <a href="{{ path("user_demandecompte") }}">Demander la création de mon compte</a>
+    </div>
 
     <input type="submit" class="btn btn-primary" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
 </form>

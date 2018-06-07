@@ -42,3 +42,23 @@ ue_edit:
 import_admin:
     path: /import
     defaults: { _controller: DepotBundle:Admin\Import:import }
+
+groupe_add:
+    path: /groupes/add/{ue}
+    defaults: { _controller: DepotBundle:Admin\Groupe:add }
+
+groupe_edit:
+    path:   /groupes/edit/{id}
+    defaults: { _controller: DepotBundle:Admin\Groupe:edit }
+
+groupe_delete:
+    path:   /groupes/delete/{id}
+    defaults: { _controller: DepotBundle:Admin\Groupe:delete }
+    
+add_user_to_groupe:
+    path: /groupes/{groupe}/adduser/{user}
+    defaults: { _controller: DepotBundle:Admin\Groupe:addToGroupe }
+    
+remove_user_to_groupe:
+    path: /groupes/{groupe}/removeuser/{user}
+    defaults: { _controller: DepotBundle:Admin\Groupe:removeToGroupe }

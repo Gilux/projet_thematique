@@ -2,8 +2,10 @@
 
 namespace DepotBundle\Controller;
 
+use DepotBundle\Entity\Devoir;
 use DepotBundle\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use DepotBundle\Controller\DevoirController;
 
 class DefaultController extends Controller
 {
@@ -28,15 +30,16 @@ class DefaultController extends Controller
             $groupes_devoir = $g->getGroupeDevoir();
             foreach ($groupes_devoir as $gd) {
                 $gpRepo = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet");
-                $groupes_rendus = $gpRepo->findByDevoir($gd->getDevoir());
-                $gp = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoirAndUser($gd->getDevoir(), $user);
 
+                $devoir = $gd->getDevoir();
+
+                $users_status = $this->getUsersStatusInDevoir($devoir);
+                $devoir->users_status = $users_status;
+
+                $gp = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoirAndUser($devoir, $user);
                 $data[] = [
-                    "id" => $gd->getDevoir()->getId(),
-                    "ue" => $gd->getDevoir()->getUe()->getNom(),
-                    "user" => $gd->getDevoir()->getUser(),
-                    "titre" => $gd->getDevoir()->getTitre(),
-                    "groupe" => $groupes_rendus,
+                    "devoir" => $devoir,
+                    "groupe" => $g,
                     "date_rendu" => $gd->getDateARendre(),
                     "date_rendu_file" => $gp ? $gp->getDate() : false,
                 ];
@@ -47,41 +50,84 @@ class DefaultController extends Controller
         return $this->render('DepotBundle:Default:index.html.twig', array('data' => $data));
     }
 
+    private function getUsersStatusInDevoir(Devoir $devoir)
+    {
+        $groupes_projet = $this->getDoctrine()->getRepository("DepotBundle:Groupe_projet")->findByDevoir($devoir);
+
+        $groupes_devoir = $this->getDoctrine()->getRepository("DepotBundle:Groupe_Devoir")->findByDevoir($devoir);
+
+        $ugp_repo = $this->getDoctrine()->getRepository("DepotBundle:UserGroupeProjet");
+
+        $users_in_project = [];
+        $users_not_in_groupe_projet = [];
+        $users_render = 0;
+
+        foreach ($groupes_devoir as $gp_devoir) {
+
+            $users = $gp_devoir->getGroupe()->getUsers();
+
+            foreach ($users as $user) {
+                $flag = false;
+
+                foreach ($groupes_projet as $gp) {
+
+                    $usr = $ugp_repo->findBy(["groupe_projet" => $gp, "user" => $user]);
+
+                    if ($usr) {
+                        $users_in_project[] = $user;
+                        $flag = true;
+
+                        if ($gp->getFichier() != '') {
+                            $users_render++;
+                        }
+                    }
+                }
+                if (!$flag) {
+                    $users_not_in_groupe_projet[] = $user;
+                }
+            }
+        }
+        return [
+            'users_out' => $users_not_in_groupe_projet,
+            'users_in' => $users_in_project,
+            'users_render' => $users_render
+        ];
+    }
 
     public function getEnseignantDevoirsAction()
     {
 
         $repo_groupe_projet = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_projet");
-        $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_devoir");
+        $repo_groupe_devoir = $this->getDoctrine()->getEntityManager()->getRepository("DepotBundle:Groupe_Devoir");
         $data = $dates_a_rendre = [];
         $user = $this->getUser();
 
+
         foreach ($user->getUes() as $ue) {
             foreach ($ue->getDevoirs() as $devoir) {
+
+                $users_status = $this->getUsersStatusInDevoir($devoir);
+                $devoir->users_status = $users_status;
                 $devoir->nombre_rendus = 0;
-                $devoir->nombre_groupes_devoir = 0;
+                $devoir->nombre_groupes_projet = 0;
+
+                foreach ($devoir->getGroupeDevoir() as $groupe_devoir) {
+                    $dates_a_rendre[] = $groupe_devoir->getDateARendre();
+                }
+                if (count($dates_a_rendre) >= 2) {
+                    $devoir->min_date_a_rendre = min($dates_a_rendre);
+                    $devoir->max_date_a_rendre = max($dates_a_rendre);
+                } else {
+                    $devoir->unique_date_a_rendre = $dates_a_rendre[0];
+                }
+
                 //pour chaque devoir compter le nombre de rendus
                 $gps = $repo_groupe_projet->findByDevoir($devoir);
                 foreach ($gps as $gp) {
                     if ($gp->getFichier() != null) {
                         $devoir->nombre_rendus++;
                     }
-                    $devoir->nombre_groupes_devoir++;
-
-                    $groupe = $gp->getGroupe();
-
-                    //avec le $devoir et le $groupe get le groupe devoir
-                    $groupes_devoir = $repo_groupe_devoir->findBy(['devoir' => $devoir, 'groupe' => $groupe]);
-
-                    foreach ($groupes_devoir as $groupe_devoir) {
-                        $dates_a_rendre[] = $groupe_devoir->getDateARendre();
-                    }
-                    if (count($dates_a_rendre) >= 2) {
-                        $devoir->min_date_a_rendre = min($dates_a_rendre);
-                        $devoir->max_date_a_rendre = max($dates_a_rendre);
-                    } else {
-                        $devoir->unique_date_a_rendre = $dates_a_rendre[0];
-                    }
+                    $devoir->nombre_groupes_projet++;
                 }
                 $data[] = $devoir;
             }

@@ -1,45 +1,48 @@
-<table>
+<table id="liste_devoirs">
     <thead>
     <tr>
         <th>UE</th>
         <th>Enseignant</th>
-        <th>Nom du devoir</th>
         <th>Groupe</th>
+        <th>Nom du devoir</th>
         <th>Date de rendu</th>
         <th>Statut</th>
+        <th>Rendus d'étudiants</th>
         <th>Actions</th>
     </tr>
     </thead>
 
     <tbody>
-    {% for devoir in data %}
+    {% for dat in data %}
         <tr>
             <td>
-                {{ devoir.ue }}
+                {{ dat.devoir.ue }}
             </td>
             <td>
-                {{ devoir.user.firstName }} {{ devoir.user.lastName }}
+                {{ dat.devoir.user.firstName }} {{ dat.devoir.user.lastName }}
             </td>
             <td>
-                {{ devoir.titre }}
+                {{ dat.groupe.name }}
             </td>
             <td>
-                {% for groupe in devoir.groupe %}
-                    Groupe {{ groupe.name }}
-                {% endfor %}
+                {{ dat.devoir.titre }}
             </td>
             <td>
-                {{ devoir.date_rendu|date("d/m/Y H:i") }}
+                {{ dat.date_rendu|date("d/m/Y H:i") }}
             </td>
             <td>
-                {% if devoir.date_rendu_file %}
-                    <span class="badge success">Rendu le {{ devoir.date_rendu_file|date("d/m/Y H:i") }}</span>
+                {% if dat.date_rendu_file %}
+                    <span class="badge success">Rendu le {{ dat.date_rendu_file|date("d/m/Y H:i") }}</span>
                 {% else %}
                     Non rendu
                 {% endif %}
             </td>
             <td>
-                <a href="{{ path("show_devoir", {'devoir': devoir.id} ) }}">Détails</a>
+                {{ dat.devoir.users_status['users_render'] }}
+                / {{ dat.devoir.users_status['users_out']|length + dat.devoir.users_status['users_in']|length }}
+            </td>
+            <td>
+                <a href="{{ path("show_devoir", {'devoir': dat.devoir.id} ) }}">Détails</a>
             </td>
         </tr>
     {% endfor %}

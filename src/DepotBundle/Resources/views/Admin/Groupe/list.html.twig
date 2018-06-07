@@ -18,41 +18,39 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <h1>Édition d'une UE</h1>
+                <h1>Administration des UEs</h1>
             </div>
         </div>
-
         <div class="row">
             <div class="col-xs-12">
                 <div class="item">
-                    {{ form_start(edit_form) }}
-                        {{ form_widget(edit_form) }}
-                        <a href="{{ path("groupe_add", {ue:ue.id}) }}" class="btn btn-primary">Ajouter un groupe</a>
-                        <table style="margin: 15px 0">
-                            <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
+                    <h3>Liste des UEs enregistrée</h3>
+                    <a class="btn btn-primary" href="{{ path("ue_add") }}">Ajouter une UE</a>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>UE</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
 
-                            <tbody>
-                            {% for groupe in groupes %}
+                        <tbody>
+                            {% for ue in ues %}
                                 <tr>
-                                    <td>{{ groupe.name }}</td>
+                                    <td>{{ ue.code }}</td>
+                                    <td>{{ ue.nom }}</td>
                                     <td>
-                                        <a href="{{ path("groupe_edit", {id:groupe.id}) }}">Modifier</a>
+                                        <a href="{{ path("ue_edit", {id:ue.id}) }}">Modifier</a>
                                         /
-                                        <a href="{{ path("groupe_delete", {id:groupe.id}) }}">
+                                        <a href="{{ path("ue_delete", {id:ue.id}) }}">
                                             Supprimer
                                         </a>
                                     </td>
                                 </tr>
                             {% endfor %}
-                            </tbody>
-                        </table>
-                        <button type="submit" class="btn btn-default">Sauvegarder</button>
-                    {{ form_end(edit_form) }}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

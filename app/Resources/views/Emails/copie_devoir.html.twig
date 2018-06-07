@@ -1,0 +1,12 @@
+{% extends '::Emails/base.html.twig' %}
+
+{% block body %}
+    <p>Bonjour,<br><br>
+
+    {{ user.firstname }} {{ user.lastname }} a déposé un devoir et a mis votre adresse e-mail en copie pour consultation.<br>
+    Vous pouvez télécharger le rendu <a href="{{ path("view_by_token", {'utoken':token}) }}">ici</a>.<br><br>
+
+    Cordialement,<br>
+    Le système de gestion des dépôts de devoirs MIAGE.</p>
+{% endblock %}
+

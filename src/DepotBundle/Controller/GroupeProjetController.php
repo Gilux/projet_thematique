@@ -42,7 +42,7 @@ class GroupeProjetController extends Controller
             $groupeProjet->setDevoir($devoir);
             $groupeProjet->setGroupe($groupe);
 
-            $groupeProjet->setName($this->getUser()->getLastName() . $devoir->getId());
+            $groupeProjet->setName($this->getUser()->getLastName());
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($groupeProjet);

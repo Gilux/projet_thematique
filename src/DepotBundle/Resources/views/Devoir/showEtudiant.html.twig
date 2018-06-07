@@ -3,14 +3,14 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset("vendor/dropzone/dropzone.css") }}">
+    <link rel="stylesheet" href="{{ asset("vendor/multiple-emails/multiple-emails.css") }}">
 {% endblock %}
 
 {% block groupes %}
     <div class="col-xs-12">
         <div class="item">
             <h3>Choisir un groupe de projet</h3>
-            <p>Vous n'avez pas encore choisi votre groupe de projet. Veuillez vous positionner dans un groupe ouvert, ou
-                en créer un nouveau.<br>
+            <p>
                 Ce devoir étant ouvert à {{ groupe_devoir.groupe.users|length }} étudiants en groupes de
                 <strong>{{ groupe_devoir.nbMinEtudiant }}</strong> à <strong>{{ groupe_devoir.nbMaxEtudiant }}</strong>,
                 de {{ minmax_groups.min }} à {{ minmax_groups.max }} groupes sont ouverts.
@@ -33,7 +33,7 @@
                                         {% set leader = true %}
                                     {% endif %}
                                 {% endif %}
-                                <li>{{ ugp.user.username }}
+                                <li>{{ ugp.user.firstname }} {{ ugp.user.lastname }}
                                     {% if ugp.status == 0 %}
                                         <i>(en attente d'approbation)</i>
                                         {% if leader %}
@@ -68,16 +68,30 @@
                     {% endif %}
                 {% endif %}
             </div>
+            <br>
+            <div>
+                Etudiant qui ont choisi leurs groupes de projet :
+                {{ users_in|length }}
+                {% if users_in|length > 0 %}
+                    <summary>
+                        <details>
+                            {% for user_in in users_in %} {{ user_in.firstname }} {{ user_in.lastname }} {% if user_in.firstname == '' %} {{ user_in.username }} {% endif %} {% if not loop.last %},{% endif %}{% endfor %}
+                        </details>
+                    </summary>
+                {% endif %}
+                <br>
+                Etudiant qui n'ont pas choisi leur groupe de projet
+                :
+                {{ users_out|length }}
+                {% if users_out|length > 0 %}
+                    <summary>
+                        <details>
+                            {% for user_out in users_out %} {{ user_out.firstname }} {{ user_out.lastname }} {% if user_out.firstname == '' %} {{ user_out.username }} {% endif %} {% if not loop.last %},{% endif %}{% endfor %}
+                        </details>
+                    </summary>
+                {% endif %}
+            </div>
         </div>
-    </div>
-{% endblock %}
-
-{% block groupechoisi %}
-    <div class="item">
-        <h3>Votre groupe de projet</h3>
-        <p>
-            {#todo écrire quoi ?#}
-        </p>
     </div>
 {% endblock %}
 
@@ -144,7 +158,12 @@
             {% elseif not in_groupe or not approbation %}
                 Vous n'avez pas rejoint de groupe ou vous n'avez pas obtenu l'approbation du chef de groupe
             {% else %}
-        <form class="dropzone" id="depot-devoir"></form>
+        <form id="depot-devoir" class="dropzone" action="{{ path("depot_devoir", {"devoir":devoir.id}) }}"></form>
+        <div class="form-group">
+            <label for="emails">E-mails en copie</label>
+            <input type="text" id="emails" name="emails">
+        </div>
+        <button id="depot-submit">Envoyer le devoir</button>
         {% endif %}
         </p>
     </div>
@@ -160,12 +179,53 @@
         {% endfor %}
     </script>
     <script src="{{ asset("vendor/dropzone/dropzone.js") }}"></script>
+    <script src="{{ asset("vendor/multiple-emails/multiple-emails.js") }}"></script>
     <script>
-        var drop = new Dropzone("#depot-devoir",
-            {
-                url: "{{ path('depot_devoir', {devoir: devoir.id}) }}",
-                maxFiles: 1,
+        Dropzone.options.depotDevoir = {
+            autoProcessQueue:false,
+            maxFiles:1,
+            sending: function(file, xhr, formData){
+                formData.append('mails', JSON.parse($('#emails').val()));
             }
-        );
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            $("#emails").multiple_emails({theme:"basic"});
+        })
+
+        $(function() {
+            $("#depot-submit").click(function(e) {
+                e.preventDefault();
+                console.log($('#emails').val())
+
+                document.querySelector("#depot-devoir").dropzone.processQueue();
+            })
+        })
+
+        $("form[id^='form_commentaire']").on('submit', function () {
+            var form = $(this).serializeArray();
+            for (var i = 0; i < form.length; i++) {
+                if (form[i].value != "" && (form[i].name.startsWith("comment_nochild") || form[i].name.startsWith("comment_withchild"))) {
+                    return true;
+                }
+
+                if (form[i].value == "")
+                    return false;
+            }
+        });
+
+        $("button[id^='commenter']").on("click", function () {
+
+            $("button[id^='commenter']").each(function () {
+                $(this).show();
+                $(this).parent().find("div").hide()
+            });
+
+            $(this).parent().find("div").show()
+            $(this).hide();
+        })
+    </script>
+
+
     </script>
 {% endblock %}
