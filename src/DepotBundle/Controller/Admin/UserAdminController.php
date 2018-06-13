@@ -94,7 +94,7 @@ class UserAdminController extends Controller
 
             $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
 
-            return $this->redirectToRoute('users_admin', array('id' => $user->getId()));
+            return $this->redirectToRoute('fos_user_security_logout');
         }
 
         return $this->render('DepotBundle:Admin/Users:edit.html.twig', array(

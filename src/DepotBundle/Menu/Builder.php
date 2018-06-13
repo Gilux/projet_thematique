@@ -18,17 +18,21 @@ class Builder implements ContainerAwareInterface
 
         $menu = $factory->createItem('root');
 
+        if($user->hasRole('ROLE_ADMIN')) {
+            $menu->addChild('Admin - Utilisateurs', array('route' => 'users_admin'))->setExtra('routes', ['users_admin', 'users_admin_new', 'users_admin_edit']);
+            $menu->addChild('Admin - UE', array('route' => 'ue_list'));
+            $menu->addChild('Admin - Import', array('route' => 'import_admin'));
+        }
+        
         if($user->hasRole('ROLE_ENSEIGNANT')) {
             $menu->addChild('Nouveau devoir', array('route' => 'new_devoir'));
         }
 
-        $menu->addChild('Mes Devoirs', array('route' => 'depot_homepage'));
+        if($user->hasRole('ROLE_ENSEIGNANT') || $user->hasRole('ROLE_ETUDIANT')) {
+            $menu->addChild('Mes Devoirs', array('route' => 'depot_homepage'));
 
-        if($user->hasRole('ROLE_ETUDIANT')) {
-            //$menu->addChild('Déposer un devoir', array('route' => 'show_devoir'));
+            $menu->addChild('Mon Profil', array('route' => 'fos_user_profile_show'));
         }
-
-        $menu->addChild('Mon Profil', array('route' => 'fos_user_profile_show'));
 
         return $menu;
     }

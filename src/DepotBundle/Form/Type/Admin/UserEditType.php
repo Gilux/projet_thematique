@@ -37,24 +37,25 @@ class UserEditType extends AbstractType
             ))
             ->add('enabled',    CheckboxType::class, array("label" => "Compte activé", "required" => false ));
 
-        $flag = false;
-        foreach ($user->getRoles() as $role) {
-            if($role == "ROLE_ENSEIGNANT")
-            {
-                $flag = true;
-            }
-        }
-        if($flag)
-        {
+//        $flag = false;
+//        foreach ($user->getRoles() as $role) {
+//            if($role == "ROLE_ENSEIGNANT")
+//            {
+//                $flag = true;
+//            }
+//        }
+//        if($flag)
+//        {
             $builder->add('ues', EntityType::class, array(
                 'class' => 'DepotBundle:UE',
                 'label' => 'Vos UEs : ',
+                'required' => false,
                 'choice_label' => function ($category) {
                     return $category->getCode() . ' ' . $category->getNom();
                 },
                 'multiple' => true
             ));
-        }
+//        }
 
         $builder->add('save',      SubmitType::class, array("label" => "Sauvegarder"));
     }

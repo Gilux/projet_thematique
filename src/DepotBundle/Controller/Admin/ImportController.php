@@ -24,6 +24,8 @@ class ImportController extends Controller
             ->getForm();
 
         $form->handleRequest($request);
+        
+        set_time_limit (0);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $file = file_get_contents($form['fichier']->getData());
@@ -32,21 +34,23 @@ class ImportController extends Controller
             $tab_users = array();
             foreach ($json_a["UES"] as $ue)
             {
-                foreach ($ue["groupes"] as $groupe) {
-                    if(isset($groupe["etudiants"])) {
-                        foreach ($groupe["etudiants"] as $etudiant) {
-                            if(!array_key_exists($etudiant["email"], $tab_users)) {
-                                $oEtudiant = new User();
-                                $oEtudiant->setUsername($etudiant["email"]);
-                                $oEtudiant->setUsernameCanonical($etudiant["email"]);
-                                $oEtudiant->setEmail($etudiant["email"]);
-                                $oEtudiant->setEmailCanonical($etudiant["email"]);
-                                $oEtudiant->setEnabled(true);
-                                $oEtudiant->setRoles(['ROLE_ETUDIANT']);
-                                $oEtudiant->setFirstName($etudiant["first_name"]);
-                                $oEtudiant->setLastName($etudiant["last_name"]);
+                if(isset($ue["groupes"])) {
+                    foreach ($ue["groupes"] as $groupe) {
+                        if(isset($groupe["etudiants"])) {
+                            foreach ($groupe["etudiants"] as $etudiant) {
+                                if(!array_key_exists($etudiant["email"], $tab_users)) {
+                                    $oEtudiant = new User();
+                                    $oEtudiant->setUsername($etudiant["email"]);
+                                    $oEtudiant->setUsernameCanonical($etudiant["email"]);
+                                    $oEtudiant->setEmail($etudiant["email"]);
+                                    $oEtudiant->setEmailCanonical($etudiant["email"]);
+                                    $oEtudiant->setEnabled(true);
+                                    $oEtudiant->setRoles(['ROLE_ETUDIANT']);
+                                    $oEtudiant->setFirstName($etudiant["first_name"]);
+                                    $oEtudiant->setLastName($etudiant["last_name"]);
 
-                                $tab_users[$etudiant["email"]] = $oEtudiant;
+                                    $tab_users[$etudiant["email"]] = $oEtudiant;
+                                }
                             }
                         }
                     }
@@ -93,7 +97,7 @@ class ImportController extends Controller
                             ),
                             'text/html'
                         );
-                    $this->get('mailer')->send($message);
+                    //$this->get('mailer')->send($message);
                 }
                 else{
                     $tab_users[$checkUser->getEmail()] = $checkUser;
@@ -102,31 +106,60 @@ class ImportController extends Controller
 
             foreach ($json_a["UES"] as $ue)
             {
-                $oUE = new UE();
-                $oUE->setNom($ue["nom"]);
-                $oUE->setCode($ue["code"]);
-                foreach ($ue["groupes"] as $groupe) {
-                    $oGroupe = new Groupe();
-                    $oGroupe->setName($groupe["name"]);
-                    $oGroupe->setUE($oUE);
-                    if(isset($groupe["etudiants"])) {
-                        foreach ($groupe["etudiants"] as $etudiant) {
-                            $oGroupe->addUser($tab_users[$etudiant["email"]]->addGroupe($oGroupe));
-                            $em->persist($tab_users[$etudiant["email"]]);
+                $checkUE = $this->getDoctrine()->getRepository(UE::class)->findOneBy(["code" => $ue["code"]]);
+                $flag = true;
+                
+                if(count($checkUE) != 0) {
+                    $ifDevoir = $this->getDoctrine()->getRepository(\DepotBundle\Entity\Devoir::class)->findBy(["UE" => $checkUE]);
+                    if(count($ifDevoir) != 0)
+                    {
+                        $flag = false;
+                        $this->addFlash("error", "Impossible de modifier l'ue ".$checkUE->getCode()." car un devoir est lié à cette UE. Cette erreur n'est pas bloquante, les autres UE ont pu être modifiée.");
+                    }
+                    else
+                    {
+                        $groupes = $this->getDoctrine()->getRepository(Groupe::class)->findBy(["UE" => $checkUE]);
+                        foreach ($groupes as $groupe)
+                        {
+                            $em->remove($groupe);
+                            $em->flush();
+                        }
+                        
+                        $em->remove($checkUE);
+                        $em->flush();
+                    }
+                }
+                
+                if($flag)
+                {
+                    $oUE = new UE();
+                    $oUE->setNom($ue["nom"]);
+                    $oUE->setCode($ue["code"]);
+                    if(isset($ue["groupes"])) {
+                        foreach ($ue["groupes"] as $groupe) {
+                            $oGroupe = new Groupe();
+                            $oGroupe->setName($groupe["name"]);
+                            $oGroupe->setUE($oUE);
+                            if(isset($groupe["etudiants"])) {
+                                foreach ($groupe["etudiants"] as $etudiant) {
+                                    $oGroupe->addUser($tab_users[$etudiant["email"]]->addGroupe($oGroupe));
+                                    $em->persist($tab_users[$etudiant["email"]]);
+                                }
+                            }
+                            $em->flush();
+                            $oUE->addGroupe($oGroupe);
                         }
                     }
-                    $em->flush();
-                    $oUE->addGroupe($oGroupe);
-                }
-                if(isset($ue["profs"])) {
-                    foreach ($ue["profs"] as $prof) {
-                        $oUE->addUser($tab_users[$prof["email"]]->addUE($oUE));
-                        $em->persist($tab_users[$prof["email"]]);
+                    if(isset($ue["profs"])) {
+                        foreach ($ue["profs"] as $prof) {
+                            $oUE->addUser($tab_users[$prof["email"]]->addUE($oUE));
+                            $em->persist($tab_users[$prof["email"]]);
+                        }
                     }
-                }
 
-                $em->persist($oUE);
-                $em->flush();
+                    $em->persist($oUE);
+                    $em->flush();
+                }
             }
         }
 

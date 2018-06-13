@@ -1,5 +1,47 @@
 {% extends 'admin.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $("#{{ form.ues.vars.id }}").parent().hide();
+        for(var i = 0; i < $("#{{ form.roles.vars.id }}").val().length; i++)
+        {
+            if($("#{{ form.roles.vars.id }}").val()[i] == "ROLE_ENSEIGNANT")
+            {
+                $("#{{ form.ues.vars.id }}").parent().show();
+            }
+        }
+        $("#{{ form.roles.vars.id }}").on("change", function(){
+            var flag = false;
+            for(var i =0;i<$(this).val().length;i++)
+            {
+                if($(this).val()[i] == "ROLE_ENSEIGNANT")
+                {
+                    flag = true;
+                }
+            }
+            if(flag)
+            {
+                $("#{{ form.ues.vars.id }}").attr("required", "required");
+                $("#{{ form.ues.vars.id }}").parent().show();
+            }
+            else {
+                $("#{{ form.ues.vars.id }}").parent().hide();
+                $("#{{ form.ues.vars.id }}").val("");
+            }
+        });
+
+        {% for message in app.flashes('error') %}
+            toastr.error("{{ message }}", "Une erreur s'est produite");
+        {% endfor %}
+    </script>
+{% endblock %}
+
 {% block main %}
     <div class="container">
         <div class="row">
