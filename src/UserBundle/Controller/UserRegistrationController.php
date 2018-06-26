@@ -21,14 +21,11 @@ class UserRegistrationController extends Controller
             $user->setUsername($user->getEmail());
             $randomFirstPassword = uniqid();
             $user->setPlainPassword($randomFirstPassword);
-            $user->addRole("ROLE_ENSEIGNANT");
-
+            $user->addRole($form->get('compte')->getData());
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
-            // TODO : Gérer les envois de mails
 
             $request->getSession()->getFlashBag()->add('notice', 'La demande de compte utilisateur a bien été créée.');
         }

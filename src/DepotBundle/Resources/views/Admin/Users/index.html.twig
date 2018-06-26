@@ -15,14 +15,44 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-        var users = $('#users').DataTable();
+        var users = $('#users').DataTable({
+            "language": {
+                "lengthMenu": "Affichage _MENU_ enregistrements par page",
+                "zeroRecords": "Aucune données",
+                "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                "infoEmpty": "Aucune données",
+                "infoFiltered": "(filtré sur _MAX_ enregistrements)",
+                "search":         "Rechercher :",
+                "paginate": {
+                    "first":      "Premier",
+                    "last":       "Dernier",
+                    "next":       "Suivant",
+                    "previous":   "Précédent"
+                },
+            }
+        });
 
         yadcf.init(users, [
             {column_number: 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}
         ]);
 
         {% if users_pending is not empty %}
-        var v_users = $('#v_users').DataTable();
+        var v_users = $('#v_users').DataTable({
+            "language": {
+                "lengthMenu": "Affichage _MENU_ enregistrements par page",
+                "zeroRecords": "Aucune données",
+                "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                "infoEmpty": "Aucune données",
+                "infoFiltered": "(filtré sur _MAX_ enregistrements)",
+                "search":         "Rechercher :",
+                "paginate": {
+                    "first":      "Premier",
+                    "last":       "Dernier",
+                    "next":       "Suivant",
+                    "previous":   "Précédent"
+                },
+            }
+        });
 
         yadcf.init(v_users, [
             {column_number: 3, column_data_type: "html", html_data_type: "text", filter_default_label: "Selection rôle"}

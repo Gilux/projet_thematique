@@ -25,6 +25,14 @@ class UserRegistrationType extends AbstractType
         $builder->add('first_name', TextType::class, array("label" => "Prénom"))
             ->add('last_name', TextType::class, array("label" => "Nom"))
             ->add('email', EmailType::class, array("label" => "E-mail"))
+            ->add('compte', ChoiceType::class, array(
+                'choices' => array(
+                    'Enseignant' => 'ROLE_ENSEIGNANT',
+                    'Étudiant' => 'ROLE_ETUDIANT'
+                ),
+                'label' => 'Vous faites un demande pour un compte : ',
+                'mapped' => false
+            ))
             ->add('ues', EntityType::class, array(
                 'class' => 'DepotBundle:UE',
                 'choice_label' => function ($category) {

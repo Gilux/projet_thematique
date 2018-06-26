@@ -11,8 +11,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         
-        $("#etud_dispo").DataTable();
-        $("#etud_in_grp").DataTable();
+        $("#etud_dispo").DataTable({
+            "language": {
+                "lengthMenu": "Affichage _MENU_ enregistrements par page",
+                "zeroRecords": "Aucune données",
+                "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                "infoEmpty": "Aucune données",
+                "infoFiltered": "(filtré sur _MAX_ enregistrements)",
+                "search":         "Rechercher :",
+                "paginate": {
+                    "first":      "Premier",
+                    "last":       "Dernier",
+                    "next":       "Suivant",
+                    "previous":   "Précédent"
+                },
+            }
+        });
+        $("#etud_in_grp").DataTable({
+            "language": {
+                "lengthMenu": "Affichage _MENU_ enregistrements par page",
+                "zeroRecords": "Aucune données",
+                "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                "infoEmpty": "Aucune données",
+                "infoFiltered": "(filtré sur _MAX_ enregistrements)",
+                "search":         "Rechercher :",
+                "paginate": {
+                    "first":      "Premier",
+                    "last":       "Dernier",
+                    "next":       "Suivant",
+                    "previous":   "Précédent"
+                },
+            }
+        });
         
         {% for message in app.flashes('error') %}
             toastr.error("{{ message }}", "Une erreur s'est produite");

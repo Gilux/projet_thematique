@@ -1,5 +1,41 @@
 {% extends "base.html.twig" %}
 
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>
+        if($("#{{ form.compte.vars.id }}").val() == "ROLE_ENSEIGNANT")
+        {
+            $("#{{ form.ues.vars.id }}").attr("required", "required");
+            $("#{{ form.ues.vars.id }}").parent().show();
+        }
+        else {
+            $("#{{ form.ues.vars.id }}").parent().hide();
+            $("#{{ form.ues.vars.id }}").removeAttr("required");
+            $("#{{ form.ues.vars.id }}").val("");
+        }
+        $("#{{ form.compte.vars.id }}").on("change", function(){
+            var flag = false;
+
+            if($(this).val() == "ROLE_ENSEIGNANT")
+            {
+                flag = true;
+            }
+
+            if(flag)
+            {
+                $("#{{ form.ues.vars.id }}").attr("required", "required");
+                $("#{{ form.ues.vars.id }}").parent().show();
+            }
+            else {
+                $("#{{ form.ues.vars.id }}").parent().hide();
+                $("#{{ form.ues.vars.id }}").removeAttr("required");
+                $("#{{ form.ues.vars.id }}").val("");
+            }
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
 
     <div class="login-form-main">
@@ -9,7 +45,7 @@
             {{ flashMessage }}
         {% endfor %}
 
-        <h2>Demander la création d'un compte Enseignant</h2>
+        <h2>Demander la création d'un compte</h2>
         <p>
             <em>Votre demande sera transmise à l'administrateur, qui pourra valider votre compte. Si votre compte est validé, vous recevrez alors
                 un e-mail vous indiquant vos identifiants temporaires.</em>
@@ -33,6 +69,12 @@
             {{ form_label(form.last_name) }}
             {{ form_errors(form.last_name) }}
             {{ form_widget(form.last_name) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.compte) }}
+            {{ form_errors(form.compte) }}
+            {{ form_widget(form.compte) }}
         </div>
 
         <div class="form-group">
