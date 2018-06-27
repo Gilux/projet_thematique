@@ -161,6 +161,8 @@ class ImportController extends Controller
                     $em->flush();
                 }
             }
+
+            $this->addFlash("success", "L'import des données est terminé.");
         }
 
 

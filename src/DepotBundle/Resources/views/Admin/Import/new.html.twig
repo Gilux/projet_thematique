@@ -13,6 +13,9 @@
         {% for message in app.flashes('error') %}
             toastr.error("{{ message }}", "Une erreur s'est produite");
         {% endfor %}
+        {% for message in app.flashes('success') %}
+        toastr.success("{{ message }}", "Fin de l'import des données");
+        {% endfor %}
     </script>
 {% endblock %}
 
