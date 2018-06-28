@@ -57,6 +57,29 @@ class ImportController extends Controller
                                     $verif_fichier = false;
                                     break;
                                 }
+                                else
+                                {
+                                    if (isset($groupe["etudiants"])) {
+                                        foreach ($groupe["etudiants"] as $etudiant) {
+                                            if(!isset($etudiant["first_name"]) || !isset($etudiant["last_name"]) || !isset($etudiant["email"]))
+                                            {
+                                                $this->addFlash('error', 'Mauvaise structure du fichier.');
+                                                $verif_fichier = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (isset($ue["profs"])) {
+                            foreach ($ue["profs"] as $prof) {
+                                if(!isset($prof["first_name"]) || !isset($prof["last_name"]) || !isset($prof["email"]))
+                                {
+                                    $this->addFlash('error', 'Mauvaise structure du fichier.');
+                                    $verif_fichier = false;
+                                    break;
+                                }
                             }
                         }
                     }
