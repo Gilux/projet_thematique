@@ -27,7 +27,7 @@ class CronCommand extends ContainerAwareCommand {
     {
         $this
             // the name of the command (the part after "bin/console")
-            ->setName('app:j-1_devoir')
+            ->setName('depot:rappel:devoir')
 
             // the short description shown while running "php bin/console list"
             ->setDescription('Envoie une notification et un email aux étudiants n\'ayant pas rendu leurs devoirs.')
