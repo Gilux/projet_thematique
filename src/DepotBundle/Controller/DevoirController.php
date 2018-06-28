@@ -233,100 +233,130 @@ class DevoirController extends Controller
 
             if ($form->isSubmitted() && $form->isValid()) {
 
-                // Récupération des données concernant les groupes
-                $data = $request->request->get('groupes');
+                if (
+                    $devoir->getTitre() == "" ||
+                    $form->get("nb_max_etudiant")->getData() == "" ||
+                    $form->get("nb_min_etudiant")->getData() == "" ||
+                    $devoir->getIntitule() == ""
+                ) {
 
-                // Ajouter le créateur et la date de création
-                $devoir->setUser($user);
-                $devoir->setCreated(new \DateTime("now"));
-
-
-                // Persister l'objet Devoir
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($devoir);
-                $em->flush();
-
-
-                $groupes = [];
-
-                for ($i = 0; $i < count($data); $i++) {
-                    // Si le groupe est coché
-                    if (isset($data[$i]['id'])) {
-                        // Récupération de l'identifiant du groupe
-                        $id = key($data[$i]['id']);
-                        // Récupération de la date de rendu saisie
-                        $date_rendu = new \DateTime($data[$i]["date"]);
-
-                        // Hydratation de l'objet Devoir
-                        $groupe_devoir = new Groupe_Devoir();
-                        $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($id);
-                        $groupes[] = $groupe;
-                        $groupe_devoir->setGroupe($groupe[0]);
-                        $groupe_devoir->setDevoir($devoir);
-                        $groupe_devoir->setDateARendre($date_rendu);
-                        $groupe_devoir->setDateBloquante($form->get("date_bloquante")->getData());
-                        $groupe_devoir->setNbMaxEtudiant($form->get("nb_max_etudiant")->getData());
-                        $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
-                        $em->persist($groupe_devoir);
-
-                        //Si le devoir est individuel
-                        if ($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1) {
-                            //Créer les groupe_projets
-                            foreach ($groupe[0]->getUsers()->getValues() as $user) {
-                                $groupe_projet = new Groupe_projet();
-                                $groupe_projet->setDevoir($devoir);;
-                                $groupe_projet->setName($user->getLastName());
-                                $groupe_projet->setGroupe($groupe[0]);
-                                $groupe_projet->setGroupeDevoir($groupe_devoir);
-                                $em->persist($groupe_projet);
-
-                                $user_groupe_projet = new UserGroupeProjet();
-                                $user_groupe_projet->setUser($user);
-                                $user_groupe_projet->setGroupeProjet($groupe_projet);
-                                $user_groupe_projet->setStatus(1);
-                                $user_groupe_projet->setLeader(1);
-                                $em->persist($user_groupe_projet);
-                            }
-                        }
-
-
-                        //récupérer les données des utilisateurs de tous les groupes set une notification + envoyer un mail
-                        foreach ($groupe[0]->getUsers()->getValues() as $user) {
-                            $this->sendNotification($user, $groupe_devoir);
-                        }
-
-                        $em = $this->getDoctrine()->getManager();
-                        $em->persist($groupe_devoir);
-
-                        $devoir->addGroupeDevoir($groupe_devoir);
-                    }
-                }
-
-
-                // Si aucun groupe n'a été coché
-                if (count($devoir->getGroupeDevoir()) == 0) {
-                    $errors[] = "Aucun groupe n'a été coché";
+                    $this->addFlash('error', 'Des champs sont vides ou incorrect');
 
                     return $this->render('DepotBundle:Devoir:new.html.twig', array(
                         'devoir' => $devoir,
                         'user' => $user,
-                        'add_form' => $form->createView(),
-                        'errors' => $errors
+                        'add_form' => $form->createView()
                     ));
                 }
+                else if(intval($form->get("nb_min_etudiant")->getData()) > intval($form->get("nb_max_etudiant")->getData()))
+                {
+                    $this->addFlash('error', 'Le nombre minimum d\'étudiant par groupe ne peut pas être supérieur au nombre maximum d\'étudiant par groupe.');
 
-                if ($devoir->getFichier() != null) {
-                    $f = new File($devoir->getFichier());
-                    $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
-                    $f->move($this->getParameter("documents_devoirs_directory"), $fname);
-                    $devoir->setFichier($fname);
+                    return $this->render('DepotBundle:Devoir:new.html.twig', array(
+                        'devoir' => $devoir,
+                        'user' => $user,
+                        'add_form' => $form->createView()
+                    ));
                 }
+                else {
 
-                // Insertion en base de données
-                $em->flush();
+                    // Récupération des données concernant les groupes
+                    $data = $request->request->get('groupes');
+
+                    // Ajouter le créateur et la date de création
+                    $devoir->setUser($user);
+                    $devoir->setCreated(new \DateTime("now"));
 
 
-                return $this->redirectToRoute('depot_homepage');
+                    // Persister l'objet Devoir
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($devoir);
+                    $em->flush();
+
+
+                    $groupes = [];
+
+                    for ($i = 0; $i < count($data); $i++) {
+                        // Si le groupe est coché
+                        if (isset($data[$i]['id'])) {
+                            // Récupération de l'identifiant du groupe
+                            $id = key($data[$i]['id']);
+                            // Récupération de la date de rendu saisie
+                            $date_rendu = new \DateTime($data[$i]["date"]);
+
+                            // Hydratation de l'objet Devoir
+                            $groupe_devoir = new Groupe_Devoir();
+                            $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($id);
+                            $groupes[] = $groupe;
+                            $groupe_devoir->setGroupe($groupe[0]);
+                            $groupe_devoir->setDevoir($devoir);
+                            $groupe_devoir->setDateARendre($date_rendu);
+                            $groupe_devoir->setDateBloquante($form->get("date_bloquante")->getData());
+                            $groupe_devoir->setNbMaxEtudiant($form->get("nb_max_etudiant")->getData());
+                            $groupe_devoir->setNbMinEtudiant($form->get("nb_min_etudiant")->getData());
+                            $em->persist($groupe_devoir);
+
+                            //Si le devoir est individuel
+                            if ($form->get("nb_max_etudiant")->getData() == 1 && $form->get("nb_min_etudiant")->getData() == 1) {
+                                //Créer les groupe_projets
+                                foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                                    $groupe_projet = new Groupe_projet();
+                                    $groupe_projet->setDevoir($devoir);;
+                                    $groupe_projet->setName($user->getLastName());
+                                    $groupe_projet->setGroupe($groupe[0]);
+                                    $groupe_projet->setGroupeDevoir($groupe_devoir);
+                                    $em->persist($groupe_projet);
+
+                                    $user_groupe_projet = new UserGroupeProjet();
+                                    $user_groupe_projet->setUser($user);
+                                    $user_groupe_projet->setGroupeProjet($groupe_projet);
+                                    $user_groupe_projet->setStatus(1);
+                                    $user_groupe_projet->setLeader(1);
+                                    $em->persist($user_groupe_projet);
+                                }
+                            }
+
+
+                            //récupérer les données des utilisateurs de tous les groupes set une notification + envoyer un mail
+                            foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                                $this->sendNotification($user, $groupe_devoir);
+                            }
+
+                            $em = $this->getDoctrine()->getManager();
+                            $em->persist($groupe_devoir);
+
+                            $devoir->addGroupeDevoir($groupe_devoir);
+                        }
+                    }
+
+
+                    // Si aucun groupe n'a été coché
+                    if (count($devoir->getGroupeDevoir()) == 0) {
+                        $errors[] = "Aucun groupe n'a été coché";
+
+                        $this->addFlash('error', 'Aucun groupe n\'a été coché');
+
+                        return $this->render('DepotBundle:Devoir:new.html.twig', array(
+                            'devoir' => $devoir,
+                            'user' => $user,
+                            'add_form' => $form->createView(),
+                            'errors' => $errors
+                        ));
+                    }
+
+                    if ($devoir->getFichier() != null) {
+                        $f = new File($devoir->getFichier());
+                        $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
+                        $f->move($this->getParameter("documents_devoirs_directory"), $fname);
+                        $devoir->setFichier($fname);
+                    }
+
+                    // Insertion en base de données
+                    $em->flush();
+
+
+                    return $this->redirectToRoute('depot_homepage');
+                }
             } else if ($form->isSubmitted() && !$form->isValid()) {
                 $errors = $this->getErrorMessages($form);
 
@@ -537,239 +567,271 @@ class DevoirController extends Controller
             $editForm->handleRequest($request);
 
             if ($editForm->isSubmitted() && $editForm->isValid()) {
-                // Récupération des données concernant les groupes
-                $data = $request->request->get('groupes');
 
-                /********************************
-                 * SI LE NOMBRE D'ETUDIANT CHANGE
-                 * ALORS IL FAUT SUPPRIMER TOUS LES
-                 * GROUPES PROJETS et USERS GROUPES PROJETS
-                 */
-                if ($editForm->get("nb_max_etudiant")->getData() != $gd['nb_max_etudiant'] || $editForm->get("nb_min_etudiant")->getData() || $gd['nb_min_etudiant']) ;
+                if (
+                    $devoir->getTitre() == "" ||
+                    $editForm->get("nb_max_etudiant")->getData() == "" ||
+                    $editForm->get("nb_min_etudiant")->getData() == "" ||
+                    $devoir->getIntitule() == ""
+                ) {
+
+                    $this->addFlash('error', 'Des champs sont vides ou incorrect');
+
+                    return $this->render('DepotBundle:Devoir:edit.html.twig', array(
+                        'devoir' => $devoir,
+                        'edit_form' => $editForm->createView(),
+                        'groupes' => $groupes,
+                        'delete_form' => $deleteForm->createView(),
+                    ));
+                }
+                else if(intval($editForm->get("nb_min_etudiant")->getData()) > intval($editForm->get("nb_max_etudiant")->getData()))
                 {
-                    foreach ($temp_groupes_devoirs as $tgd) {
-                        $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $tgd->getGroupe()]);
-                        foreach ($gps as $gp) {
-                            $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
-                            foreach ($ugps as $ugp) {
+                    $this->addFlash('error', 'Le nombre minimum d\'étudiant par groupe ne peut pas être supérieur au nombre maximum d\'étudiant par groupe.');
+
+                    return $this->render('DepotBundle:Devoir:edit.html.twig', array(
+                        'devoir' => $devoir,
+                        'edit_form' => $editForm->createView(),
+                        'groupes' => $groupes,
+                        'delete_form' => $deleteForm->createView(),
+                    ));
+                }
+                else {
+                    // Récupération des données concernant les groupes
+                    $data = $request->request->get('groupes');
+
+                    /********************************
+                     * SI LE NOMBRE D'ETUDIANT CHANGE
+                     * ALORS IL FAUT SUPPRIMER TOUS LES
+                     * GROUPES PROJETS et USERS GROUPES PROJETS
+                     */
+                    if ($editForm->get("nb_max_etudiant")->getData() != $gd['nb_max_etudiant'] || $editForm->get("nb_min_etudiant")->getData() || $gd['nb_min_etudiant']) ;
+                    {
+                        foreach ($temp_groupes_devoirs as $tgd) {
+                            $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $tgd->getGroupe()]);
+                            foreach ($gps as $gp) {
+                                $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
+                                foreach ($ugps as $ugp) {
+                                    $em = $this->getDoctrine()->getManager();
+                                    $em->remove($ugp);
+                                    $em->flush();
+                                }
+
                                 $em = $this->getDoctrine()->getManager();
-                                $em->remove($ugp);
+                                $em->remove($gp);
                                 $em->flush();
                             }
+                            $tgd->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
+                            $tgd->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
+                            $this->getDoctrine()->getManager()->flush();
 
-                            $em = $this->getDoctrine()->getManager();
-                            $em->remove($gp);
-                            $em->flush();
-                        }
-                        $tgd->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
-                        $tgd->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
-                        $this->getDoctrine()->getManager()->flush();
+                            //Si le devoir est individuel
+                            if ($editForm->get("nb_max_etudiant")->getData() == 1 && $editForm->get("nb_min_etudiant")->getData() == 1) {
+                                $em = $this->getDoctrine()->getManager();
+                                $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($tgd->getGroupe()->getId());
+                                //Créer les groupe_projets
+                                foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                                    $groupe_projet = new Groupe_projet();
+                                    $groupe_projet->setDevoir($devoir);
+                                    $groupe_projet->setName($user->getLastName());
+                                    $groupe_projet->setGroupe($groupe[0]);
+                                    $groupe_projet->setGroupeDevoir($tgd);
+                                    $em->persist($groupe_projet);
 
-                        //Si le devoir est individuel
-                        if ($editForm->get("nb_max_etudiant")->getData() == 1 && $editForm->get("nb_min_etudiant")->getData() == 1) {
-                            $em = $this->getDoctrine()->getManager();
-                            $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($tgd->getGroupe()->getId());
-                            //Créer les groupe_projets
-                            foreach ($groupe[0]->getUsers()->getValues() as $user) {
-                                $groupe_projet = new Groupe_projet();
-                                $groupe_projet->setDevoir($devoir);
-                                $groupe_projet->setName($user->getLastName());
-                                $groupe_projet->setGroupe($groupe[0]);
-                                $groupe_projet->setGroupeDevoir($tgd);
-                                $em->persist($groupe_projet);
-
-                                $user_groupe_projet = new UserGroupeProjet();
-                                $user_groupe_projet->setUser($user);
-                                $user_groupe_projet->setGroupeProjet($groupe_projet);
-                                $user_groupe_projet->setStatus(1);
-                                $user_groupe_projet->setLeader(1);
-                                $em->persist($user_groupe_projet);
+                                    $user_groupe_projet = new UserGroupeProjet();
+                                    $user_groupe_projet->setUser($user);
+                                    $user_groupe_projet->setGroupeProjet($groupe_projet);
+                                    $user_groupe_projet->setStatus(1);
+                                    $user_groupe_projet->setLeader(1);
+                                    $em->persist($user_groupe_projet);
+                                }
                             }
                         }
                     }
-                }
-                /**********************
-                 * FIN
-                 */
+                    /**********************
+                     * FIN
+                     */
 
 
-                /************************
-                 * SI LES DATES ONT ETE CHANGEES
-                 * ALORS IL FAUT LES METTRE A JOURS
-                 *
-                 * SI LES GROUPES DEVOIRS CHANGENT
-                 * ALORS IL FAUT SOIT SUPPRIMER OU
-                 * AJOUTER DES GROUPES PROJETS ET
-                 * USERS GROUPES PROJETS
-                 */
-                $flag = array();
-                for ($i = 0; $i < count($data); $i++) {
-                    // Si le groupe est coché
-                    if (isset($data[$i]['id'])) {
-                        // Récupération de l'identifiant du groupe
-                        $id = key($data[$i]['id']);
-                        // Récupération de la date de rendu saisie
-                        $date_rendu = new \DateTime($data[$i]["date"]);
-                        if (isset($temp_groupes_devoirs[$i])) {
-                            if ($id == $temp_groupes_devoirs[$i]->getGroupe()->getId() && $date_rendu == $temp_groupes_devoirs[$i]->getDateARendre()) {
-                                array_push($flag, true);
+                    /************************
+                     * SI LES DATES ONT ETE CHANGEES
+                     * ALORS IL FAUT LES METTRE A JOURS
+                     *
+                     * SI LES GROUPES DEVOIRS CHANGENT
+                     * ALORS IL FAUT SOIT SUPPRIMER OU
+                     * AJOUTER DES GROUPES PROJETS ET
+                     * USERS GROUPES PROJETS
+                     */
+                    $flag = array();
+                    for ($i = 0; $i < count($data); $i++) {
+                        // Si le groupe est coché
+                        if (isset($data[$i]['id'])) {
+                            // Récupération de l'identifiant du groupe
+                            $id = key($data[$i]['id']);
+                            // Récupération de la date de rendu saisie
+                            $date_rendu = new \DateTime($data[$i]["date"]);
+                            if (isset($temp_groupes_devoirs[$i])) {
+                                if ($id == $temp_groupes_devoirs[$i]->getGroupe()->getId() && $date_rendu == $temp_groupes_devoirs[$i]->getDateARendre()) {
+                                    array_push($flag, true);
+                                } else {
+                                    array_push($flag, false);
+                                }
                             } else {
                                 array_push($flag, false);
                             }
                         } else {
                             array_push($flag, false);
                         }
-                    } else {
-                        array_push($flag, false);
-                    }
-                }
-
-                $f = true;
-                for ($i = 0; $i < count($flag); $i++) {
-                    if ($flag[$i] == false)
-                        $f = false;
-                }
-                //Gestion des groupes devoir
-                if (!$f) {
-                    // Si aucun groupe n'a été coché
-                    if (count($devoir->getGroupeDevoir()) == 0) {
-                        $errors["groupes_error"] = "Aucun groupe n'a été coché";
-
-                        foreach ($devoir->getGroupeDevoir() as $gd) {
-                            $devoir->removeGroupeDevoir($gd);
-                        }
-                        foreach ($temp_groupes_devoirs as $gd) {
-                            $devoir->addGroupeDevoir($gd);
-                        }
-
-                        return $this->redirectToRoute('edit_devoir', array("id" => $devoir->getId()));
                     }
 
-                    $temp_g_id_actu = array();
-                    $dates_rendus = array(); //Utilisé seulement en cas d'ajout;
-                    for ($i = 0; $i < count($data); $i++) {
-                        // Si le groupe est coché
-                        if (isset($data[$i]['id'])) {
-                            array_push($temp_g_id_actu, key($data[$i]['id']));
-                            array_push($dates_rendus, array("id_groupe" => key($data[$i]['id']), "date" => new \DateTime($data[$i]["date"])));
-                            // Récupération de l'identifiant du groupe
-                            $id = key($data[$i]['id']);
-                            // Récupération de la date de rendu saisie
-                            $date_rendu = new \DateTime($data[$i]["date"]);
+                    $f = true;
+                    for ($i = 0; $i < count($flag); $i++) {
+                        if ($flag[$i] == false)
+                            $f = false;
+                    }
+                    //Gestion des groupes devoir
+                    if (!$f) {
+                        // Si aucun groupe n'a été coché
+                        if (count($devoir->getGroupeDevoir()) == 0) {
+                            $errors["groupes_error"] = "Aucun groupe n'a été coché";
 
-                            foreach ($temp_groupes_devoirs as $tgd) {
-                                if ($tgd->getGroupe()->getId() == $id) {
-                                    $tgd->setDateARendre($date_rendu);
-                                    $this->getDoctrine()->getManager()->flush();
+                            $this->addFlash('error', 'Aucun groupe n\'a été coché');
+
+                            foreach ($devoir->getGroupeDevoir() as $gd) {
+                                $devoir->removeGroupeDevoir($gd);
+                            }
+                            foreach ($temp_groupes_devoirs as $gd) {
+                                $devoir->addGroupeDevoir($gd);
+                            }
+
+                            return $this->redirectToRoute('edit_devoir', array("id" => $devoir->getId()));
+                        }
+
+                        $temp_g_id_actu = array();
+                        $dates_rendus = array(); //Utilisé seulement en cas d'ajout;
+                        for ($i = 0; $i < count($data); $i++) {
+                            // Si le groupe est coché
+                            if (isset($data[$i]['id'])) {
+                                array_push($temp_g_id_actu, key($data[$i]['id']));
+                                array_push($dates_rendus, array("id_groupe" => key($data[$i]['id']), "date" => new \DateTime($data[$i]["date"])));
+                                // Récupération de l'identifiant du groupe
+                                $id = key($data[$i]['id']);
+                                // Récupération de la date de rendu saisie
+                                $date_rendu = new \DateTime($data[$i]["date"]);
+
+                                foreach ($temp_groupes_devoirs as $tgd) {
+                                    if ($tgd->getGroupe()->getId() == $id) {
+                                        $tgd->setDateARendre($date_rendu);
+                                        $this->getDoctrine()->getManager()->flush();
+                                    }
                                 }
                             }
                         }
-                    }
-                    $temp_g_id = array();
-                    foreach ($temp_groupes_devoirs as $tgd) {
-                        array_push($temp_g_id, $tgd->getGroupe()->getId());
-                    }
+                        $temp_g_id = array();
+                        foreach ($temp_groupes_devoirs as $tgd) {
+                            array_push($temp_g_id, $tgd->getGroupe()->getId());
+                        }
 
-                    //SUPPRESSION
-                    if (count($temp_g_id) > count($temp_g_id_actu)) {
-                        $r = array_diff($temp_g_id, $temp_g_id_actu);
-                        $r = array_values($r);
-                        for ($i = 0; $i < count($r); $i++) {
-                            foreach ($temp_groupes_devoirs as $tgd) {
-                                if ($tgd->getGroupe()->getId() == $r[$i]) {
-                                    $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $tgd->getGroupe()]);
-                                    foreach ($gps as $gp) {
-                                        $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
-                                        foreach ($ugps as $ugp) {
+                        //SUPPRESSION
+                        if (count($temp_g_id) > count($temp_g_id_actu)) {
+                            $r = array_diff($temp_g_id, $temp_g_id_actu);
+                            $r = array_values($r);
+                            for ($i = 0; $i < count($r); $i++) {
+                                foreach ($temp_groupes_devoirs as $tgd) {
+                                    if ($tgd->getGroupe()->getId() == $r[$i]) {
+                                        $gps = $this->getDoctrine()->getRepository(Groupe_projet::class)->findBy(["groupe" => $tgd->getGroupe()]);
+                                        foreach ($gps as $gp) {
+                                            $ugps = $this->getDoctrine()->getRepository(UserGroupeProjet::class)->findBy(["groupe_projet" => $gp]);
+                                            foreach ($ugps as $ugp) {
+                                                $em = $this->getDoctrine()->getManager();
+                                                $em->remove($ugp);
+                                                $em->flush();
+                                            }
+
                                             $em = $this->getDoctrine()->getManager();
-                                            $em->remove($ugp);
+                                            $em->remove($gp);
                                             $em->flush();
                                         }
-
                                         $em = $this->getDoctrine()->getManager();
-                                        $em->remove($gp);
+                                        $em->remove($tgd);
                                         $em->flush();
                                     }
-                                    $em = $this->getDoctrine()->getManager();
-                                    $em->remove($tgd);
-                                    $em->flush();
                                 }
                             }
-                        }
-                    } //AJOUT
-                    else {
-                        $r = array_diff($temp_g_id_actu, $temp_g_id);
-                        $r = array_values($r);
-                        for ($i = 0; $i < count($dates_rendus); $i++) {
-                            for ($j = 0; $j < count($r); $j++) {
-                                if ($dates_rendus[$i]['id_groupe'] == $r[$j]) {
-                                    $groupe_devoir = new Groupe_Devoir();
-                                    $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($r[$j]);
-                                    $groupe_devoir->setGroupe($groupe[0]);
-                                    $groupe_devoir->setDevoir($devoir);
-                                    $groupe_devoir->setDateARendre($dates_rendus[$i]['date']);
-                                    $groupe_devoir->setDateBloquante($editForm->get("date_bloquante")->getData());
-                                    $groupe_devoir->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
-                                    $groupe_devoir->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
+                        } //AJOUT
+                        else {
+                            $r = array_diff($temp_g_id_actu, $temp_g_id);
+                            $r = array_values($r);
+                            for ($i = 0; $i < count($dates_rendus); $i++) {
+                                for ($j = 0; $j < count($r); $j++) {
+                                    if ($dates_rendus[$i]['id_groupe'] == $r[$j]) {
+                                        $groupe_devoir = new Groupe_Devoir();
+                                        $groupe = $this->getDoctrine()->getRepository(Groupe::class)->findById($r[$j]);
+                                        $groupe_devoir->setGroupe($groupe[0]);
+                                        $groupe_devoir->setDevoir($devoir);
+                                        $groupe_devoir->setDateARendre($dates_rendus[$i]['date']);
+                                        $groupe_devoir->setDateBloquante($editForm->get("date_bloquante")->getData());
+                                        $groupe_devoir->setNbMaxEtudiant($editForm->get("nb_max_etudiant")->getData());
+                                        $groupe_devoir->setNbMinEtudiant($editForm->get("nb_min_etudiant")->getData());
 
-                                    $em = $this->getDoctrine()->getManager();
-                                    $em->persist($groupe_devoir);
+                                        $em = $this->getDoctrine()->getManager();
+                                        $em->persist($groupe_devoir);
 
-                                    $devoir->addGroupeDevoir($groupe_devoir);
+                                        $devoir->addGroupeDevoir($groupe_devoir);
 
-                                    //Si le devoir est individuel
-                                    if ($editForm->get("nb_max_etudiant")->getData() == 1 && $editForm->get("nb_min_etudiant")->getData() == 1) {
-                                        //Créer les groupe_projets
-                                        foreach ($groupe[0]->getUsers()->getValues() as $user) {
-                                            $groupe_projet = new Groupe_projet();
-                                            $groupe_projet->setDevoir($devoir);
-                                            $groupe_projet->setName($user->getLastName());
-                                            $groupe_projet->setGroupe($groupe[0]);
-                                            $groupe_projet->setGroupeDevoir($groupe_devoir);
-                                            $em->persist($groupe_projet);
+                                        //Si le devoir est individuel
+                                        if ($editForm->get("nb_max_etudiant")->getData() == 1 && $editForm->get("nb_min_etudiant")->getData() == 1) {
+                                            //Créer les groupe_projets
+                                            foreach ($groupe[0]->getUsers()->getValues() as $user) {
+                                                $groupe_projet = new Groupe_projet();
+                                                $groupe_projet->setDevoir($devoir);
+                                                $groupe_projet->setName($user->getLastName());
+                                                $groupe_projet->setGroupe($groupe[0]);
+                                                $groupe_projet->setGroupeDevoir($groupe_devoir);
+                                                $em->persist($groupe_projet);
 
-                                            $user_groupe_projet = new UserGroupeProjet();
-                                            $user_groupe_projet->setUser($user);
-                                            $user_groupe_projet->setGroupeProjet($groupe_projet);
-                                            $user_groupe_projet->setStatus(1);
-                                            $user_groupe_projet->setLeader(1);
-                                            $em->persist($user_groupe_projet);
+                                                $user_groupe_projet = new UserGroupeProjet();
+                                                $user_groupe_projet->setUser($user);
+                                                $user_groupe_projet->setGroupeProjet($groupe_projet);
+                                                $user_groupe_projet->setStatus(1);
+                                                $user_groupe_projet->setLeader(1);
+                                                $em->persist($user_groupe_projet);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                /*************************
-                 * FIN
-                 */
+                    /*************************
+                     * FIN
+                     */
 
-                if ($devoir->getFichier() != null) {
-                    $f = new File($devoir->getFichier());
-                    $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
-                    $f->move($this->getParameter("documents_devoirs_directory"), $fname);
-                    $devoir->setFichier($fname);
+                    if ($devoir->getFichier() != null) {
+                        $f = new File($devoir->getFichier());
+                        $fname = $this->generateUniqueFileName() . '.' . $f->guessExtension();
+                        $f->move($this->getParameter("documents_devoirs_directory"), $fname);
+                        $devoir->setFichier($fname);
 
-                    if (isset($temp_filename)) {
-                        $fileSystem = new Filesystem();
-                        $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
-                    }
-                } else {
-                    if ($editForm->get("conserve_file")->getData()) {
-                        $devoir->setFichier($temp_filename);
-                    } else {
                         if (isset($temp_filename)) {
                             $fileSystem = new Filesystem();
                             $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
                         }
+                    } else {
+                        if ($editForm->get("conserve_file")->getData()) {
+                            $devoir->setFichier($temp_filename);
+                        } else {
+                            if (isset($temp_filename)) {
+                                $fileSystem = new Filesystem();
+                                $fileSystem->remove(array($this->getParameter("documents_devoirs_directory") . "/" . $temp_filename));
+                            }
+                        }
                     }
+
+
+                    $this->getDoctrine()->getManager()->flush();
+
+                    return $this->redirectToRoute('edit_devoir', array('id' => $devoir->getId()));
                 }
-
-
-                $this->getDoctrine()->getManager()->flush();
-
-                return $this->redirectToRoute('edit_devoir', array('id' => $devoir->getId()));
             }
             return $this->render('DepotBundle:Devoir:edit.html.twig', array(
                 'devoir' => $devoir,

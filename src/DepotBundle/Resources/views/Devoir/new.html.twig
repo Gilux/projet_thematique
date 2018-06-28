@@ -2,6 +2,7 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 {% endblock %}
 
 {% block title %}Nouveau devoir{% endblock %}
@@ -12,6 +13,7 @@
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <script src="{{ asset("vendor/ckeditor/ckeditor.js") }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function (e) {
             CKEDITOR.replace("{{ add_form.intitule.vars.id }}")
@@ -48,6 +50,11 @@
         });
 
         $("#{{ add_form.if_groupes.vars.id }}").trigger("change");
+
+
+        {% for message in app.flashes('error') %}
+        toastr.error("{{ message }}", "Une erreur s'est produite");
+        {% endfor %}
 
     </script>
 {% endblock %}
