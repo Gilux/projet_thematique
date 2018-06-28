@@ -17,6 +17,15 @@ class UserRegistrationController extends Controller
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
 
+            if($user->getFirstName() == "" || $user->getLastName() == "" || $user->getEmail() == "")
+            {
+                $request->getSession()->getFlashBag()->add('notice', 'Des champs sont vides.');
+
+                return $this->render('UserBundle:UserRegistration:demande.html.twig', array(
+                    'form' => $form->createView(),
+                ));
+            }
+
             // Mettre un username et un mot de passe temporaire
             $user->setUsername($user->getEmail());
             $randomFirstPassword = uniqid();
