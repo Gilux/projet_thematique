@@ -919,9 +919,7 @@ class DevoirController extends Controller
 
         $file = $request->files->get("file");
 
-        $emails = $request->get("mails");
-
-        $emailsToSend = explode(",", $emails);
+        $emailsToSend = json_decode($request->get("mails"));
 
         $user = $this->getUser();
 

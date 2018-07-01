@@ -185,7 +185,7 @@
             autoProcessQueue:false,
             maxFiles:1,
             sending: function(file, xhr, formData){
-                formData.append('mails', JSON.parse($('#emails').val()));
+                formData.append('mails', $('#emails').val());
             }
         }
 
