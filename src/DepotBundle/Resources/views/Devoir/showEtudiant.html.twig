@@ -152,12 +152,12 @@
                     {% endif %}
                 {% endfor %}
             {% endfor %}
-
-            {% if date(groupe_devoir.datearendre)|date_modify("+7 day") < "now" %}
+                {% if groupe_devoir.datearendre|date_modify("+1 month")|date('Y-m-d') < "now"|date('Y-m-d') %}
             Vous ne pouvez plus déposer de rendu
             {% elseif not in_groupe or not approbation %}
                 Vous n'avez pas rejoint de groupe ou vous n'avez pas obtenu l'approbation du chef de groupe
             {% else %}
+
         <form id="depot-devoir" class="dropzone" action="{{ path("depot_devoir", {"devoir":devoir.id}) }}"></form>
         <div class="form-group">
             <label for="emails">E-mails en copie</label>
@@ -165,7 +165,6 @@
         </div>
         <button id="depot-submit">Envoyer le devoir</button>
         {% endif %}
-        </p>
     </div>
 {% endblock %}
 
