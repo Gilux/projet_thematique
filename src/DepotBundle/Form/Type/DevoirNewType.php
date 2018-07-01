@@ -43,7 +43,7 @@ class DevoirNewType extends AbstractType
                 "required" => false,
                 "data" => true
             ))
-            ->add('nb_min_etudiant', IntegerType::class, array("label" => "Minimum", "mapped" => false))
+            ->add('nb_min_etudiant', IntegerType::class, array("label" => "Minimum", "mapped" => false, "attr" => array("min"=>1)))
             ->add('nb_max_etudiant', IntegerType::class, array("label" => "Maximum","mapped" => false))
             ->add('date_bloquante', CheckboxType::class, array("label" => "Les dates de rendus sont-elles bloquantes ?", "mapped" => false, "required" => false))
 

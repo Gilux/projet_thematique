@@ -233,13 +233,22 @@ class DevoirController extends Controller
 
             if ($form->isSubmitted() && $form->isValid()) {
 
-                if (
+                if (intval($form->get("nb_min_etudiant")->getData()) <= 0) {
+                    $this->addFlash('error', 'Le nombre minimum d\'étudiants par groupes ne peut pas être inférieur à 1.');
+
+                    return $this->render('DepotBundle:Devoir:new.html.twig', array(
+                        'devoir' => $devoir,
+                        'user' => $user,
+                        'add_form' => $form->createView()
+                    ));
+                }
+                else if (
                     $devoir->getTitre() == "" ||
                     $form->get("nb_max_etudiant")->getData() == "" ||
                     $form->get("nb_min_etudiant")->getData() == "" ||
                     $devoir->getIntitule() == ""
-                ) {
-
+                )
+                {
                     $this->addFlash('error', 'Des champs sont vides ou incorrect');
 
                     return $this->render('DepotBundle:Devoir:new.html.twig', array(
@@ -250,7 +259,7 @@ class DevoirController extends Controller
                 }
                 else if(intval($form->get("nb_min_etudiant")->getData()) > intval($form->get("nb_max_etudiant")->getData()))
                 {
-                    $this->addFlash('error', 'Le nombre minimum d\'étudiant par groupe ne peut pas être supérieur au nombre maximum d\'étudiant par groupe.');
+                    $this->addFlash('error', 'Le nombre minimum d\'étudiants par groupes ne peut pas être supérieur au nombre maximum d\'étudiants par groupes.');
 
                     return $this->render('DepotBundle:Devoir:new.html.twig', array(
                         'devoir' => $devoir,
@@ -568,13 +577,24 @@ class DevoirController extends Controller
 
             if ($editForm->isSubmitted() && $editForm->isValid()) {
 
-                if (
+                if (intval($editForm->get("nb_min_etudiant")->getData()) <= 0)
+                {
+                    $this->addFlash('error', 'Le nombre minimum d\'étudiants par groupes ne peut pas être inférieur à 1.');
+
+                    return $this->render('DepotBundle:Devoir:edit.html.twig', array(
+                        'devoir' => $devoir,
+                        'edit_form' => $editForm->createView(),
+                        'groupes' => $groupes,
+                        'delete_form' => $deleteForm->createView(),
+                    ));
+                }
+                else if (
                     $devoir->getTitre() == "" ||
                     $editForm->get("nb_max_etudiant")->getData() == "" ||
                     $editForm->get("nb_min_etudiant")->getData() == "" ||
                     $devoir->getIntitule() == ""
-                ) {
-
+                )
+                {
                     $this->addFlash('error', 'Des champs sont vides ou incorrect');
 
                     return $this->render('DepotBundle:Devoir:edit.html.twig', array(
@@ -586,7 +606,7 @@ class DevoirController extends Controller
                 }
                 else if(intval($editForm->get("nb_min_etudiant")->getData()) > intval($editForm->get("nb_max_etudiant")->getData()))
                 {
-                    $this->addFlash('error', 'Le nombre minimum d\'étudiant par groupe ne peut pas être supérieur au nombre maximum d\'étudiant par groupe.');
+                    $this->addFlash('error', 'Le nombre minimum d\'étudiants par groupes ne peut pas être supérieur au nombre maximum d\'étudiants par groupes.');
 
                     return $this->render('DepotBundle:Devoir:edit.html.twig', array(
                         'devoir' => $devoir,
