@@ -161,7 +161,7 @@
         <form id="depot-devoir" class="dropzone" action="{{ path("depot_devoir", {"devoir":devoir.id}) }}"></form>
         <div class="form-group">
             <label for="emails">E-mails en copie</label>
-            <input type="text" id="emails" name="emails">
+            <input type="text" id="emails" name="emails" value="[]">
         </div>
         <button id="depot-submit">Envoyer le devoir</button>
         {% endif %}
@@ -227,5 +227,4 @@
     </script>
 
 
-    </script>
 {% endblock %}
