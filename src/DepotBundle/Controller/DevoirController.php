@@ -935,9 +935,6 @@ class DevoirController extends Controller
             $allowed_extensions[] = $ae->getExtension();
         }
 
-        dump($extension);
-        dump($allowed_extensions);
-
         $valid_extension = false;
 
         if (in_array($extension, $allowed_extensions)) {
